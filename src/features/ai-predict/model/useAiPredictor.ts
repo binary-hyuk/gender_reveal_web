@@ -19,6 +19,13 @@ import { predictByDigitalDna } from "@/features/digital-dna-predict/model/useDig
 import { predictByOhang } from '@/features/ohang-predict/model/useOhangPredictor';
 import { predictCBR } from "@/features/cbr-predict/model/useCBRPredictor";
 import { predictBySamwon } from "@/features/samwon-predict/model/useSamwonPredictor";
+import {
+  datesInRange,
+  triangularWeights,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
 export type AiGender = "Boy" | "Girl";
@@ -62,7 +69,8 @@ export interface AiPredictResult {
 
 export interface AiPredictState {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   fatherBirthDate: string;
   momBlood: BloodType;
   dadBlood: BloodType;
@@ -86,7 +94,8 @@ export interface AiPredictState {
 
 export interface AiPredictActions {
   setMotherBirthDate: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   setFatherBirthDate: (v: string) => void;
   setMomBlood: (v: BloodType) => void;
   setDadBlood: (v: BloodType) => void;
@@ -430,9 +439,95 @@ function runAllMethods(
   };
 }
 
+/**
+ * 임신 추정일 기간에 대해 runAllMethods를 각 날짜별로 실행하고,
+ * 삼각 가중치로 각 방법별 gender를 합산. 최종 per-method gender로
+ * boy/girl score를 다시 계산한다.
+ */
+function runAllMethodsOverRange(
+  motherBirth: Date,
+  startIso: string,
+  endIso: string,
+  fatherBirth: Date,
+  momBlood: BloodType,
+  dadBlood: BloodType,
+  momName: string,
+  dadName: string,
+  locationString: string,
+  isNorthernHemisphere: boolean,
+  lastPeriodDate: string,
+  direction: string,
+  houseDirection: string,
+  floorNumber: string,
+  momMBTI: string,
+  dadMBTI: string,
+  favEmoji: string,
+  fatherVibe: FatherVibe,
+  intuition: number,
+): AiPredictResult {
+  const days = datesInRange(startIso, endIso);
+  const weights = triangularWeights(days.length);
+  const midIdx = Math.floor((days.length - 1) / 2);
+
+  const perDayResults = days.map((iso) =>
+    runAllMethods(
+      motherBirth, new Date(iso), fatherBirth,
+      momBlood, dadBlood, momName, dadName,
+      locationString, isNorthernHemisphere, lastPeriodDate, direction,
+      houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
+    )
+  );
+
+  const methodCount = perDayResults[0].methods.length;
+  const aggregated: MethodResult[] = [];
+  let boyScore = 0;
+  let girlScore = 0;
+
+  for (let m = 0; m < methodCount; m++) {
+    let bw = 0;
+    let gw = 0;
+    for (let d = 0; d < days.length; d++) {
+      const r = perDayResults[d].methods[m];
+      if (!r.available) continue;
+      if (r.gender === "Boy") bw += weights[d];
+      else gw += weights[d];
+    }
+    const midMethod = perDayResults[midIdx].methods[m];
+    let finalGender: AiGender;
+    if (bw + gw === 0) {
+      finalGender = midMethod.gender;
+    } else if (bw === gw) {
+      finalGender = fallbackTieBreaker(days[midIdx]);
+    } else {
+      finalGender = bw > gw ? "Boy" : "Girl";
+    }
+    const agg: MethodResult = { ...midMethod, gender: finalGender };
+    aggregated.push(agg);
+    if (agg.available) {
+      if (agg.gender === "Boy") boyScore += agg.score;
+      else girlScore += agg.score;
+    }
+  }
+
+  let finalGender: AiGender;
+  if (boyScore === girlScore) {
+    finalGender = fallbackTieBreaker(days[midIdx]);
+  } else {
+    finalGender = boyScore > girlScore ? "Boy" : "Girl";
+  }
+
+  return {
+    finalGender,
+    boyScore,
+    girlScore,
+    methods: aggregated,
+  };
+}
+
 export function useAiPredictor(): AiPredictState & AiPredictActions {
   const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [fatherBirthDate, setFatherBirthDate] = useState("");
   const [momBlood, setMomBlood] = useState<BloodType>("A");
   const [dadBlood, setDadBlood] = useState<BloodType>("A");
@@ -456,20 +551,28 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   function predict() {
     setError(null);
 
-    if (!motherBirthDate || !conceptionDate || !fatherBirthDate) {
-      setError("모든 날짜를 입력해주세요.");
+    if (!motherBirthDate || !fatherBirthDate) {
+      setError("부모 생년월일을 입력해주세요.");
+      return;
+    }
+
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
 
     const motherBirth = new Date(motherBirthDate);
-    const conception = new Date(conceptionDate);
     const fatherBirth = new Date(fatherBirthDate);
+    const days = datesInRange(startIso, endIso);
+    const firstDay = new Date(days[0]);
 
-    if (motherBirth >= conception) {
+    if (motherBirth >= firstDay) {
       setError("임신일은 엄마 생년월일보다 이후여야 합니다.");
       return;
     }
-    if (fatherBirth >= conception) {
+    if (fatherBirth >= firstDay) {
       setError("임신일은 아빠 생년월일보다 이후여야 합니다.");
       return;
     }
@@ -481,7 +584,12 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     const delay = 5500 + Math.random() * 1500;
     setTimeout(() => {
       try {
-        const res = runAllMethods(motherBirth, conception, fatherBirth, momBlood, dadBlood, momName, dadName, locationString, isNorthernHemisphere, lastPeriodDate, direction, houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition);
+        const res = runAllMethodsOverRange(
+          motherBirth, startIso, endIso, fatherBirth,
+          momBlood, dadBlood, momName, dadName,
+          locationString, isNorthernHemisphere, lastPeriodDate, direction,
+          houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
+        );
         setResult(res);
       } catch {
         setError("예측 중 오류가 발생했습니다.");
@@ -495,7 +603,8 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     setError(null);
     setIsLoading(false);
     setMotherBirthDate("");
-    setConceptionDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
     setFatherBirthDate("");
     setMomBlood("A");
     setDadBlood("A");
@@ -515,12 +624,12 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   }
 
   return {
-    motherBirthDate, conceptionDate, fatherBirthDate,
+    motherBirthDate, conceptionStart, conceptionEnd, fatherBirthDate,
     momBlood, dadBlood, momName, dadName,
     locationString, isNorthernHemisphere, lastPeriodDate, direction,
     houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
     isLoading, result, error,
-    setMotherBirthDate, setConceptionDate, setFatherBirthDate,
+    setMotherBirthDate, setConceptionStart, setConceptionEnd, setFatherBirthDate,
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
     setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,

@@ -8,12 +8,12 @@ import {
 
 export default function AiPredictPage() {
   const {
-    motherBirthDate, conceptionDate, fatherBirthDate,
+    motherBirthDate, conceptionStart, conceptionEnd, fatherBirthDate,
     momBlood, dadBlood, momName, dadName,
     locationString, isNorthernHemisphere, lastPeriodDate, direction,
     houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
     isLoading, result, error,
-    setMotherBirthDate, setConceptionDate, setFatherBirthDate,
+    setMotherBirthDate, setConceptionStart, setConceptionEnd, setFatherBirthDate,
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
     setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
@@ -32,7 +32,8 @@ export default function AiPredictPage() {
       ) : (
         <AiPredictForm
           motherBirthDate={motherBirthDate}
-          conceptionDate={conceptionDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           fatherBirthDate={fatherBirthDate}
           momBlood={momBlood}
           dadBlood={dadBlood}
@@ -49,7 +50,8 @@ export default function AiPredictPage() {
           favEmoji={favEmoji}
           error={error}
           onMotherBirthDateChange={setMotherBirthDate}
-          onConceptionDateChange={setConceptionDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onFatherBirthDateChange={setFatherBirthDate}
           onMomBloodChange={setMomBlood}
           onDadBloodChange={setDadBlood}

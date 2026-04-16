@@ -6,7 +6,7 @@ import {
 } from "@/features/lunar-zodiac-predict";
 
 export default function LunarZodiacPage() {
-  const { conceptionDate, result, error, setConceptionDate, predict, reset } =
+  const { conceptionStart, conceptionEnd, result, error, setConceptionStart, setConceptionEnd, predict, reset } =
     useLunarZodiacPredictor();
 
   return (
@@ -18,9 +18,11 @@ export default function LunarZodiacPage() {
         <LunarZodiacPredictResult result={result} onReset={reset} />
       ) : (
         <LunarZodiacPredictForm
-          conceptionDate={conceptionDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
-          onConceptionDateChange={setConceptionDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

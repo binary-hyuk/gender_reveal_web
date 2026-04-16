@@ -1,4 +1,10 @@
 import { useState } from 'react';
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from '@/shared/lib/dateRangePrediction';
 
 export type OhangGender = 'Boy' | 'Girl';
 
@@ -45,14 +51,16 @@ export function predictByOhang(
 export interface OhangState {
   momBirth: string;
   dadBirth: string;
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: OhangResult | null;
   error: string | null;
 }
 export interface OhangActions {
   setMomBirth: (v: string) => void;
   setDadBirth: (v: string) => void;
-  setConceptionMonth: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
@@ -60,32 +68,54 @@ export interface OhangActions {
 export function useOhangPredictor(): OhangState & OhangActions {
   const [momBirth, setMomBirth] = useState('');
   const [dadBirth, setDadBirth] = useState('');
-  const [conceptionMonth, setConceptionMonth] = useState('');
+  const [conceptionStart, setConceptionStart] = useState('');
+  const [conceptionEnd, setConceptionEnd] = useState('');
   const [result, setResult] = useState<OhangResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function predict() {
     setError(null); setResult(null);
-    if (!momBirth || !dadBirth || !conceptionMonth) {
-      setError('모든 항목을 입력해주세요.');
+    if (!momBirth || !dadBirth) {
+      setError('부모 생년월일을 입력해주세요.');
       return;
     }
     if (momBirth.length !== 8 || dadBirth.length !== 8) {
       setError('생년월일은 8자리 숫자여야 합니다. 예: 19950115');
       return;
     }
-    const month = parseInt(conceptionMonth, 10);
-    if (isNaN(month) || month < 1 || month > 12) {
-      setError('임신 월은 1~12 사이여야 합니다.');
+
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
-    setResult(predictByOhang(momBirth, dadBirth, month));
+
+    try {
+      const aggregated = aggregateByRange<OhangResult>(
+        startIso,
+        endIso,
+        (iso) => {
+          const conceptionMonth = new Date(iso).getMonth() + 1;
+          return predictByOhang(momBirth, dadBirth, conceptionMonth);
+        },
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null); setError(null);
-    setMomBirth(''); setDadBirth(''); setConceptionMonth('');
+    setMomBirth(''); setDadBirth(''); setConceptionStart(''); setConceptionEnd('');
   }
 
-  return { momBirth, dadBirth, conceptionMonth, result, error, setMomBirth, setDadBirth, setConceptionMonth, predict, reset };
+  return {
+    momBirth, dadBirth, conceptionStart, conceptionEnd, result, error,
+    setMomBirth, setDadBirth, setConceptionStart, setConceptionEnd, predict, reset,
+  };
 }

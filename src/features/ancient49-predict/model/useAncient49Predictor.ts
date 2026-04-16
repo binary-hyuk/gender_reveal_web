@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { getChineseAge, solarToLunar } from "@/shared/lib/lunarConverter";
 import { AGE_MIN, AGE_MAX } from "@/features/gender-predict/model/genderTable";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+  datesInRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type Ancient49Gender = "Boy" | "Girl";
 
@@ -28,21 +35,24 @@ export function predictByAncient49(
 
 export interface Ancient49State {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: Ancient49Result | null;
   error: string | null;
 }
 
 export interface Ancient49Actions {
   setMotherBirthDate: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function useAncient49Predictor(): Ancient49State & Ancient49Actions {
   const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<Ancient49Result | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,55 +60,77 @@ export function useAncient49Predictor(): Ancient49State & Ancient49Actions {
     setError(null);
     setResult(null);
 
-    if (!motherBirthDate || !conceptionDate) {
-      setError("날짜를 모두 입력해주세요.");
+    if (!motherBirthDate) {
+      setError("엄마 생년월일을 입력해주세요.");
+      return;
+    }
+
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
 
     const birth = new Date(motherBirthDate);
-    const conception = new Date(conceptionDate);
-
-    if (birth >= conception) {
+    const days = datesInRange(startIso, endIso);
+    if (birth >= new Date(days[0])) {
       setError("임신일은 엄마 생년월일보다 이후여야 합니다.");
       return;
     }
 
-    const momLunarAge = getChineseAge(birth, conception);
-
-    if (momLunarAge < AGE_MIN || momLunarAge > AGE_MAX) {
-      setError(`음력 연나이 ${momLunarAge}세는 계산 범위를 벗어납니다.`);
+    // 각 날짜에서 음력 연나이 범위 체크 (모두 벗어나면 실패)
+    const midIdx = Math.floor((days.length - 1) / 2);
+    const midMomAge = getChineseAge(birth, new Date(days[midIdx]));
+    if (midMomAge < AGE_MIN || midMomAge > AGE_MAX) {
+      setError(`음력 연나이 ${midMomAge}세는 계산 범위를 벗어납니다.`);
       return;
     }
 
-    const lunarConception = solarToLunar(conception);
-    const { gender, calcValue, isOdd } = predictByAncient49(
-      momLunarAge,
-      lunarConception.month
-    );
-
-    setResult({
-      gender,
-      momLunarAge,
-      lunarConceptionMonth: lunarConception.month,
-      calcValue,
-      isOdd,
-    });
+    try {
+      const aggregated = aggregateByRange<Ancient49Result>(
+        startIso,
+        endIso,
+        (iso) => {
+          const conception = new Date(iso);
+          const momLunarAge = getChineseAge(birth, conception);
+          const lunarConception = solarToLunar(conception);
+          const r = predictByAncient49(momLunarAge, lunarConception.month);
+          return {
+            gender: r.gender,
+            momLunarAge,
+            lunarConceptionMonth: lunarConception.month,
+            calcValue: r.calcValue,
+            isOdd: r.isOdd,
+          };
+        },
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
+      void _rangeInfo;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null);
     setError(null);
     setMotherBirthDate("");
-    setConceptionDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
   return {
     motherBirthDate,
-    conceptionDate,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
     setMotherBirthDate,
-    setConceptionDate,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   };

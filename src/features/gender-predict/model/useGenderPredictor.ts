@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { getChineseAge, solarToLunar } from "@/shared/lib/lunarConverter";
 import { predictGender, AGE_MIN, AGE_MAX } from "./genderTable";
+import {
+  datesInRange,
+  triangularWeights,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export interface PredictResult {
   gender: "아들" | "딸";
@@ -10,21 +17,24 @@ export interface PredictResult {
 
 export interface GenderPredictorState {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: PredictResult | null;
   error: string | null;
 }
 
 export interface GenderPredictorActions {
   setMotherBirthDate: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function useGenderPredictor(): GenderPredictorState & GenderPredictorActions {
   const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<PredictResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,57 +42,104 @@ export function useGenderPredictor(): GenderPredictorState & GenderPredictorActi
     setError(null);
     setResult(null);
 
-    if (!motherBirthDate || !conceptionDate) {
-      setError("날짜를 모두 입력해주세요.");
+    if (!motherBirthDate) {
+      setError("엄마 생년월일을 입력해주세요.");
+      return;
+    }
+
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
 
     const birth = new Date(motherBirthDate);
-    const conception = new Date(conceptionDate);
-
-    if (birth >= conception) {
+    const days = datesInRange(startIso, endIso);
+    if (birth >= new Date(days[0])) {
       setError("임신일은 엄마 생년월일보다 이후여야 합니다.");
       return;
     }
 
-    const chineseAge = getChineseAge(birth, conception);
+    const weights = triangularWeights(days.length);
+    const midIdx = Math.floor((days.length - 1) / 2);
 
-    if (chineseAge < AGE_MIN || chineseAge > AGE_MAX) {
-      setError(
-        `음력 연나이 ${chineseAge}세는 예측 범위(${AGE_MIN}~${AGE_MAX}세)를 벗어납니다.`
-      );
+    let midResult: PredictResult | null = null;
+    let boyW = 0;
+    let girlW = 0;
+
+    for (let i = 0; i < days.length; i++) {
+      const conception = new Date(days[i]);
+      const chineseAge = getChineseAge(birth, conception);
+      if (chineseAge < AGE_MIN || chineseAge > AGE_MAX) continue;
+      const lunar = solarToLunar(conception);
+      const korean = predictGender(chineseAge, lunar.month);
+      if (!korean) continue;
+
+      if (korean === "아들") boyW += weights[i];
+      else girlW += weights[i];
+
+      if (i === midIdx) {
+        midResult = {
+          gender: korean,
+          chineseAge,
+          lunarConceptionMonth: lunar.month,
+        };
+      }
+    }
+
+    // midpoint가 실패했다면 성공한 다른 날짜를 대체 표시값으로 사용
+    if (!midResult) {
+      for (let i = 0; i < days.length; i++) {
+        const conception = new Date(days[i]);
+        const chineseAge = getChineseAge(birth, conception);
+        if (chineseAge < AGE_MIN || chineseAge > AGE_MAX) continue;
+        const lunar = solarToLunar(conception);
+        const korean = predictGender(chineseAge, lunar.month);
+        if (korean) {
+          midResult = {
+            gender: korean,
+            chineseAge,
+            lunarConceptionMonth: lunar.month,
+          };
+          break;
+        }
+      }
+    }
+
+    if (!midResult || boyW + girlW === 0) {
+      setError("예측 범위를 벗어나는 기간입니다.");
       return;
     }
 
-    const lunarConception = solarToLunar(conception);
-    const gender = predictGender(chineseAge, lunarConception.month);
-
-    if (!gender) {
-      setError("예측할 수 없는 범위입니다.");
-      return;
+    let finalKorean: "아들" | "딸";
+    if (boyW === girlW) {
+      const tb = fallbackTieBreaker(days[midIdx]);
+      finalKorean = tb === "Boy" ? "아들" : "딸";
+    } else {
+      finalKorean = boyW > girlW ? "아들" : "딸";
     }
 
-    setResult({
-      gender,
-      chineseAge,
-      lunarConceptionMonth: lunarConception.month,
-    });
+    setResult({ ...midResult, gender: finalKorean });
   }
 
   function reset() {
     setResult(null);
     setError(null);
     setMotherBirthDate("");
-    setConceptionDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
   return {
     motherBirthDate,
-    conceptionDate,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
     setMotherBirthDate,
-    setConceptionDate,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   };

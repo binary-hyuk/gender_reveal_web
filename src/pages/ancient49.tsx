@@ -8,11 +8,13 @@ import {
 export default function Ancient49Page() {
   const {
     motherBirthDate,
-    conceptionDate,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
     setMotherBirthDate,
-    setConceptionDate,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   } = useAncient49Predictor();
@@ -27,10 +29,12 @@ export default function Ancient49Page() {
       ) : (
         <Ancient49PredictForm
           motherBirthDate={motherBirthDate}
-          conceptionDate={conceptionDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
           onMotherBirthDateChange={setMotherBirthDate}
-          onConceptionDateChange={setConceptionDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

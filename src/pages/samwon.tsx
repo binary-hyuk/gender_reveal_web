@@ -7,8 +7,8 @@ import {
 
 export default function SamwonPage() {
   const {
-    motherBirthDate, fatherBirthDate, conceptionMonth, intuition, result, error,
-    setMotherBirthDate, setFatherBirthDate, setConceptionMonth, setIntuition, predict, reset,
+    motherBirthDate, fatherBirthDate, conceptionStart, conceptionEnd, intuition, result, error,
+    setMotherBirthDate, setFatherBirthDate, setConceptionStart, setConceptionEnd, setIntuition, predict, reset,
   } = useSamwonPredictor();
 
   return (
@@ -22,12 +22,14 @@ export default function SamwonPage() {
         <SamwonPredictForm
           motherBirthDate={motherBirthDate}
           fatherBirthDate={fatherBirthDate}
-          conceptionMonth={conceptionMonth}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           intuition={intuition}
           error={error}
           onMotherBirthDateChange={setMotherBirthDate}
           onFatherBirthDateChange={setFatherBirthDate}
-          onConceptionMonthChange={setConceptionMonth}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onIntuitionChange={setIntuition}
           onPredict={predict}
         />

@@ -1,4 +1,5 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 import { VIBE_INFO } from "@/features/cbr-predict/model/useCBRPredictor";
 import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
@@ -6,18 +7,20 @@ const VIBES: FatherVibe[] = ["PASSION", "CALM", "STABLE", "FLEXIBLE"];
 
 interface Props {
   motherDob: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   fatherVibe: FatherVibe;
   error: string | null;
   onMotherDobChange: (v: string) => void;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onFatherVibeChange: (v: FatherVibe) => void;
   onPredict: () => void;
 }
 
 export function CBRPredictForm({
-  motherDob, conceptionDate, fatherVibe, error,
-  onMotherDobChange, onConceptionDateChange, onFatherVibeChange, onPredict,
+  motherDob, conceptionStart, conceptionEnd, fatherVibe, error,
+  onMotherDobChange, onConceptionStartChange, onConceptionEndChange, onFatherVibeChange, onPredict,
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -34,11 +37,12 @@ export function CBRPredictForm({
         onChange={onMotherDobChange}
       />
 
-      <DateTextInput
+      <ConceptionDateRangeInput
         label="수정 추정일"
-        hint="(양력)"
-        value={conceptionDate}
-        onChange={onConceptionDateChange}
+        startValue={conceptionStart}
+        endValue={conceptionEnd}
+        onStartChange={onConceptionStartChange}
+        onEndChange={onConceptionEndChange}
       />
 
       <div className="space-y-2">

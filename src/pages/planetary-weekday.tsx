@@ -7,10 +7,12 @@ import {
 
 export default function PlanetaryWeekdayPage() {
   const {
-    conceptionDate,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
-    setConceptionDate,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   } = usePlanetaryWeekdayPredictor();
@@ -24,9 +26,11 @@ export default function PlanetaryWeekdayPage() {
         <PlanetaryWeekdayPredictResult result={result} onReset={reset} />
       ) : (
         <PlanetaryWeekdayPredictForm
-          conceptionDate={conceptionDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
-          onConceptionDateChange={setConceptionDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

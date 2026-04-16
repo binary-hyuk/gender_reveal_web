@@ -1,4 +1,10 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type PlanetaryGender = "Boy" | "Girl";
 
@@ -37,19 +43,22 @@ export function predictByPlanetaryWeekday(conceptionDateIso: string): PlanetaryR
 }
 
 export interface PlanetaryState {
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: PlanetaryResult | null;
   error: string | null;
 }
 
 export interface PlanetaryActions {
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function usePlanetaryWeekdayPredictor(): PlanetaryState & PlanetaryActions {
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<PlanetaryResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,22 +66,37 @@ export function usePlanetaryWeekdayPredictor(): PlanetaryState & PlanetaryAction
     setError(null);
     setResult(null);
 
-    if (!conceptionDate) {
-      setError("임신(수정)일을 입력해주세요.");
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
 
-    setResult(predictByPlanetaryWeekday(conceptionDate));
+    try {
+      const aggregated = aggregateByRange<PlanetaryResult>(
+        startIso,
+        endIso,
+        (iso) => predictByPlanetaryWeekday(iso),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null);
     setError(null);
-    setConceptionDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
   return {
-    conceptionDate, result, error,
-    setConceptionDate, predict, reset,
+    conceptionStart, conceptionEnd, result, error,
+    setConceptionStart, setConceptionEnd, predict, reset,
   };
 }

@@ -1,4 +1,10 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type EgyptWheatGender = "Boy" | "Girl";
 
@@ -35,14 +41,16 @@ export function predictByEgyptWheat(
 
 export interface EgyptWheatState {
   momName: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   locationString: string;
   result: EgyptWheatResult | null;
   error: string | null;
 }
 export interface EgyptWheatActions {
   setMomName: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   setLocationString: (v: string) => void;
   predict: () => void;
   reset: () => void;
@@ -50,7 +58,8 @@ export interface EgyptWheatActions {
 
 export function useEgyptWheatPredictor(): EgyptWheatState & EgyptWheatActions {
   const [momName, setMomName] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [locationString, setLocationString] = useState("");
   const [result, setResult] = useState<EgyptWheatResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,17 +67,38 @@ export function useEgyptWheatPredictor(): EgyptWheatState & EgyptWheatActions {
   function predict() {
     setError(null);
     setResult(null);
-    if (!momName.trim() || !conceptionDate || !locationString.trim()) {
-      setError("모든 항목을 입력해주세요.");
+    if (!momName.trim() || !locationString.trim()) {
+      setError("엄마 이름과 거주 지역을 입력해주세요.");
       return;
     }
-    setResult(predictByEgyptWheat(momName.trim(), conceptionDate, locationString.trim()));
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
+      return;
+    }
+    try {
+      const aggregated = aggregateByRange<EgyptWheatResult>(
+        startIso,
+        endIso,
+        (iso) => predictByEgyptWheat(momName.trim(), iso, locationString.trim()),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null); setError(null);
-    setMomName(""); setConceptionDate(""); setLocationString("");
+    setMomName(""); setConceptionStart(""); setConceptionEnd(""); setLocationString("");
   }
 
-  return { momName, conceptionDate, locationString, result, error, setMomName, setConceptionDate, setLocationString, predict, reset };
+  return {
+    momName, conceptionStart, conceptionEnd, locationString, result, error,
+    setMomName, setConceptionStart, setConceptionEnd, setLocationString, predict, reset,
+  };
 }

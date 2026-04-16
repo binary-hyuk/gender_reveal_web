@@ -8,11 +8,13 @@ import {
 export default function GypsyPage() {
   const {
     motherBirthDate,
-    conceptionDate,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
     setMotherBirthDate,
-    setConceptionDate,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   } = useGypsyPredictor();
@@ -27,10 +29,12 @@ export default function GypsyPage() {
       ) : (
         <GypsyPredictForm
           motherBirthDate={motherBirthDate}
-          conceptionDate={conceptionDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
           onMotherBirthDateChange={setMotherBirthDate}
-          onConceptionDateChange={setConceptionDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

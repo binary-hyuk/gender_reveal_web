@@ -1,5 +1,12 @@
 import { useState } from "react";
 import { getAgeAtDate } from "@/shared/lib/ageUtils";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+  datesInRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type GypsyGender = "Boy" | "Girl";
 
@@ -40,21 +47,24 @@ export function predictByGypsy(
 
 export interface GypsyState {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: GypsyResult | null;
   error: string | null;
 }
 
 export interface GypsyActions {
   setMotherBirthDate: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function useGypsyPredictor(): GypsyState & GypsyActions {
   const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<GypsyResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,31 +72,50 @@ export function useGypsyPredictor(): GypsyState & GypsyActions {
     setError(null);
     setResult(null);
 
-    if (!motherBirthDate || !conceptionDate) {
-      setError("모든 날짜를 입력해주세요.");
+    if (!motherBirthDate) {
+      setError("엄마 생년월일을 입력해주세요.");
+      return;
+    }
+
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
 
     const birthDate = new Date(motherBirthDate);
-    const conception = new Date(conceptionDate);
-
-    if (birthDate >= conception) {
+    const days = datesInRange(startIso, endIso);
+    if (birthDate >= new Date(days[0])) {
       setError("임신일은 엄마 생년월일보다 이후여야 합니다.");
       return;
     }
 
-    setResult(predictByGypsy(motherBirthDate, conceptionDate));
+    try {
+      const aggregated = aggregateByRange<GypsyResult>(
+        startIso,
+        endIso,
+        (iso) => predictByGypsy(motherBirthDate, iso),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null);
     setError(null);
     setMotherBirthDate("");
-    setConceptionDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
   return {
-    motherBirthDate, conceptionDate, result, error,
-    setMotherBirthDate, setConceptionDate, predict, reset,
+    motherBirthDate, conceptionStart, conceptionEnd, result, error,
+    setMotherBirthDate, setConceptionStart, setConceptionEnd, predict, reset,
   };
 }

@@ -1,20 +1,25 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 
 interface Props {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   error: string | null;
   onMotherBirthDateChange: (v: string) => void;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onPredict: () => void;
 }
 
 export function GypsyPredictForm({
   motherBirthDate,
-  conceptionDate,
+  conceptionStart,
+  conceptionEnd,
   error,
   onMotherBirthDateChange,
-  onConceptionDateChange,
+  onConceptionStartChange,
+  onConceptionEndChange,
   onPredict,
 }: Props) {
   return (
@@ -33,15 +38,13 @@ export function GypsyPredictForm({
           value={motherBirthDate}
           onChange={onMotherBirthDateChange}
         />
-        <DateTextInput
+        <ConceptionDateRangeInput
           label="임신(수정)일"
-          hint="(양력)"
-          value={conceptionDate}
-          onChange={onConceptionDateChange}
+          startValue={conceptionStart}
+          endValue={conceptionEnd}
+          onStartChange={onConceptionStartChange}
+          onEndChange={onConceptionEndChange}
         />
-        <p className="text-xs text-gray-400">
-          * 정확한 수정일을 모를 경우 마지막 생리 시작일 + 14일을 입력하세요
-        </p>
       </div>
 
       {error && (

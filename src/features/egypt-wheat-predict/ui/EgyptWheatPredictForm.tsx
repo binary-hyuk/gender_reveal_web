@@ -1,19 +1,21 @@
-import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 
 interface Props {
   momName: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   locationString: string;
   error: string | null;
   onMomNameChange: (v: string) => void;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onLocationStringChange: (v: string) => void;
   onPredict: () => void;
 }
 
 export function EgyptWheatPredictForm({
-  momName, conceptionDate, locationString, error,
-  onMomNameChange, onConceptionDateChange, onLocationStringChange, onPredict,
+  momName, conceptionStart, conceptionEnd, locationString, error,
+  onMomNameChange, onConceptionStartChange, onConceptionEndChange, onLocationStringChange, onPredict,
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -34,11 +36,12 @@ export function EgyptWheatPredictForm({
         />
       </div>
 
-      <DateTextInput
+      <ConceptionDateRangeInput
         label="임신(수정)일"
-        hint="(양력)"
-        value={conceptionDate}
-        onChange={onConceptionDateChange}
+        startValue={conceptionStart}
+        endValue={conceptionEnd}
+        onStartChange={onConceptionStartChange}
+        onEndChange={onConceptionEndChange}
       />
 
       <div className="space-y-1.5">

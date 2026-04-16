@@ -1,4 +1,5 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 import { BLOOD_TYPES } from "@/features/blood-type-predict/model/useBloodTypePredictor";
 import type { BloodType } from "@/features/blood-type-predict/model/bloodTypeMatrix";
 
@@ -13,7 +14,8 @@ const EMOJI_PRESETS_AI = ["🔥","💧","🌿","⚡","🌙","☀️","💎","�
 
 interface Props {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   fatherBirthDate: string;
   momBlood: BloodType;
   dadBlood: BloodType;
@@ -32,7 +34,8 @@ interface Props {
   intuition: number;
   error: string | null;
   onMotherBirthDateChange: (v: string) => void;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onFatherBirthDateChange: (v: string) => void;
   onMomBloodChange: (v: BloodType) => void;
   onDadBloodChange: (v: BloodType) => void;
@@ -87,12 +90,12 @@ function BloodTypeSelector({
 }
 
 export function AiPredictForm({
-  motherBirthDate, conceptionDate, fatherBirthDate,
+  motherBirthDate, conceptionStart, conceptionEnd, fatherBirthDate,
   momBlood, dadBlood, momName, dadName,
   locationString, isNorthernHemisphere, lastPeriodDate, direction,
   houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe,
   intuition, error,
-  onMotherBirthDateChange, onConceptionDateChange, onFatherBirthDateChange,
+  onMotherBirthDateChange, onConceptionStartChange, onConceptionEndChange, onFatherBirthDateChange,
   onMomBloodChange, onDadBloodChange, onMomNameChange, onDadNameChange,
   onLocationStringChange, onIsNorthernHemisphereChange, onLastPeriodDateChange, onDirectionChange,
   onHouseDirectionChange, onFloorNumberChange, onMomMBTIChange, onDadMBTIChange, onFavEmojiChange, onFatherVibeChange,
@@ -117,15 +120,13 @@ export function AiPredictForm({
           value={fatherBirthDate}
           onChange={onFatherBirthDateChange}
         />
-        <DateTextInput
+        <ConceptionDateRangeInput
           label="임신(수정)일"
-          hint="(양력)"
-          value={conceptionDate}
-          onChange={onConceptionDateChange}
+          startValue={conceptionStart}
+          endValue={conceptionEnd}
+          onStartChange={onConceptionStartChange}
+          onEndChange={onConceptionEndChange}
         />
-        <p className="text-xs text-gray-400">
-          * 정확한 수정일을 모를 경우 마지막 생리 시작일 + 14일을 입력하세요
-        </p>
       </div>
 
       {/* 이름 섹션 (수비학용, 선택) */}

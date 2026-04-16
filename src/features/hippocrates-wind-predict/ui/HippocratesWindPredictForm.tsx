@@ -1,15 +1,19 @@
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+
 interface Props {
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   isNorthernHemisphere: boolean;
   error: string | null;
-  onConceptionMonthChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onIsNorthernHemisphereChange: (v: boolean) => void;
   onPredict: () => void;
 }
 
 export function HippocratesWindPredictForm({
-  conceptionMonth, isNorthernHemisphere, error,
-  onConceptionMonthChange, onIsNorthernHemisphereChange, onPredict,
+  conceptionStart, conceptionEnd, isNorthernHemisphere, error,
+  onConceptionStartChange, onConceptionEndChange, onIsNorthernHemisphereChange, onPredict,
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -19,18 +23,13 @@ export function HippocratesWindPredictForm({
         <span className="text-xs text-sky-400">북풍(건조) → 아들 / 남풍(다습) → 딸</span>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">임신 월 <span className="font-normal text-gray-400">(1~12)</span></label>
-        <input
-          type="number"
-          min={1}
-          max={12}
-          value={conceptionMonth}
-          onChange={(e) => onConceptionMonthChange(e.target.value)}
-          placeholder="예: 5"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100"
-        />
-      </div>
+      <ConceptionDateRangeInput
+        label="임신(수정)일"
+        startValue={conceptionStart}
+        endValue={conceptionEnd}
+        onStartChange={onConceptionStartChange}
+        onEndChange={onConceptionEndChange}
+      />
 
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-700">거주 반구</label>

@@ -1,4 +1,11 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+  datesInRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type FatherVibe = "PASSION" | "CALM" | "STABLE" | "FLEXIBLE";
 export type CBRGender = "Boy" | "Girl";
@@ -81,14 +88,16 @@ export function predictCBR(
 
 export interface CBRState {
   motherDob: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   fatherVibe: FatherVibe;
   result: CBRResult | null;
   error: string | null;
 }
 export interface CBRActions {
   setMotherDob: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   setFatherVibe: (v: FatherVibe) => void;
   predict: () => void;
   reset: () => void;
@@ -96,34 +105,57 @@ export interface CBRActions {
 
 export function useCBRPredictor(): CBRState & CBRActions {
   const [motherDob, setMotherDob] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [fatherVibe, setFatherVibe] = useState<FatherVibe>("STABLE");
   const [result, setResult] = useState<CBRResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function predict() {
     setError(null); setResult(null);
-    if (!motherDob || !conceptionDate) {
-      setError("날짜를 모두 입력해주세요.");
+    if (!motherDob) {
+      setError("산모 생년월일을 입력해주세요.");
       return;
     }
     const mom = new Date(motherDob);
-    const con = new Date(conceptionDate);
-    if (isNaN(mom.getTime()) || isNaN(con.getTime())) {
-      setError("올바른 날짜를 입력해주세요.");
+    if (isNaN(mom.getTime())) {
+      setError("올바른 산모 생년월일을 입력해주세요.");
       return;
     }
-    if (mom >= con) {
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
+      return;
+    }
+    const days = datesInRange(startIso, endIso);
+    if (mom >= new Date(days[0])) {
       setError("수정일은 산모 생년월일 이후여야 합니다.");
       return;
     }
-    setResult(predictCBR(mom, con, fatherVibe));
+
+    try {
+      const aggregated = aggregateByRange<CBRResult>(
+        startIso,
+        endIso,
+        (iso) => predictCBR(mom, new Date(iso), fatherVibe),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null); setError(null);
-    setMotherDob(""); setConceptionDate(""); setFatherVibe("STABLE");
+    setMotherDob(""); setConceptionStart(""); setConceptionEnd(""); setFatherVibe("STABLE");
   }
 
-  return { motherDob, conceptionDate, fatherVibe, result, error, setMotherDob, setConceptionDate, setFatherVibe, predict, reset };
+  return {
+    motherDob, conceptionStart, conceptionEnd, fatherVibe, result, error,
+    setMotherDob, setConceptionStart, setConceptionEnd, setFatherVibe, predict, reset,
+  };
 }

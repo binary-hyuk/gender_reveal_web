@@ -7,8 +7,8 @@ import {
 
 export default function ChinesePage() {
   const {
-    motherBirthDate, conceptionDate, result, error,
-    setMotherBirthDate, setConceptionDate, predict, reset,
+    motherBirthDate, conceptionStart, conceptionEnd, result, error,
+    setMotherBirthDate, setConceptionStart, setConceptionEnd, predict, reset,
   } = useGenderPredictor();
 
   return (
@@ -21,10 +21,12 @@ export default function ChinesePage() {
       ) : (
         <GenderPredictForm
           motherBirthDate={motherBirthDate}
-          conceptionDate={conceptionDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
           onMotherBirthDateChange={setMotherBirthDate}
-          onConceptionDateChange={setConceptionDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

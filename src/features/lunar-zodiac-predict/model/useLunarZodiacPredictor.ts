@@ -5,6 +5,12 @@ import {
   MALE_SIGNS,
   type ZodiacSign,
 } from "@/shared/lib/moonSign";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type LunarZodiacGender = "Boy" | "Girl";
 
@@ -31,19 +37,22 @@ export function predictByLunarZodiac(conceptionDate: Date): LunarZodiacResult {
 }
 
 export interface LunarZodiacState {
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: LunarZodiacResult | null;
   error: string | null;
 }
 
 export interface LunarZodiacActions {
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function useLunarZodiacPredictor(): LunarZodiacState & LunarZodiacActions {
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<LunarZodiacResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,25 +60,37 @@ export function useLunarZodiacPredictor(): LunarZodiacState & LunarZodiacActions
     setError(null);
     setResult(null);
 
-    if (!conceptionDate) {
-      setError("임신(수정) 날짜를 입력해주세요.");
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
 
-    const date = new Date(conceptionDate);
-    if (isNaN(date.getTime())) {
-      setError("올바른 날짜를 입력해주세요.");
-      return;
+    try {
+      const aggregated = aggregateByRange<LunarZodiacResult>(
+        startIso,
+        endIso,
+        (iso) => predictByLunarZodiac(new Date(iso)),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
     }
-
-    setResult(predictByLunarZodiac(date));
   }
 
   function reset() {
     setResult(null);
     setError(null);
-    setConceptionDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
-  return { conceptionDate, result, error, setConceptionDate, predict, reset };
+  return {
+    conceptionStart, conceptionEnd, result, error,
+    setConceptionStart, setConceptionEnd, predict, reset,
+  };
 }

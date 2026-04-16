@@ -1,4 +1,5 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 import { DIRECTIONS } from "@/features/ayurveda-predict/model/useAyurvedaPredictor";
 import type { Direction } from "@/features/ayurveda-predict/model/useAyurvedaPredictor";
 
@@ -11,18 +12,20 @@ const DIR_LABEL: Record<Direction, string> = {
 
 interface Props {
   lastPeriodDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   direction: Direction;
   error: string | null;
   onLastPeriodDateChange: (v: string) => void;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onDirectionChange: (v: Direction) => void;
   onPredict: () => void;
 }
 
 export function AyurvedaPredictForm({
-  lastPeriodDate, conceptionDate, direction, error,
-  onLastPeriodDateChange, onConceptionDateChange, onDirectionChange, onPredict,
+  lastPeriodDate, conceptionStart, conceptionEnd, direction, error,
+  onLastPeriodDateChange, onConceptionStartChange, onConceptionEndChange, onDirectionChange, onPredict,
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -39,11 +42,12 @@ export function AyurvedaPredictForm({
         onChange={onLastPeriodDateChange}
       />
 
-      <DateTextInput
+      <ConceptionDateRangeInput
         label="임신(수정)일"
-        hint="(양력)"
-        value={conceptionDate}
-        onChange={onConceptionDateChange}
+        startValue={conceptionStart}
+        endValue={conceptionEnd}
+        onStartChange={onConceptionStartChange}
+        onEndChange={onConceptionEndChange}
       />
 
       <div className="space-y-2">

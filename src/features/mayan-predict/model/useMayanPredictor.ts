@@ -1,4 +1,12 @@
 import { useState } from "react";
+import { getAgeAtDate } from "@/shared/lib/ageUtils";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+  datesInRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type MayanGender = "Boy" | "Girl";
 
@@ -24,22 +32,25 @@ export function predictByMayan(
 }
 
 export interface MayanState {
-  momAge: string;
-  conceptionMonth: string;
+  motherBirthDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: MayanResult | null;
   error: string | null;
 }
 
 export interface MayanActions {
-  setMomAge: (v: string) => void;
-  setConceptionMonth: (v: string) => void;
+  setMotherBirthDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function useMayanPredictor(): MayanState & MayanActions {
-  const [momAge, setMomAge] = useState("");
-  const [conceptionMonth, setConceptionMonth] = useState("");
+  const [motherBirthDate, setMotherBirthDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<MayanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,37 +58,61 @@ export function useMayanPredictor(): MayanState & MayanActions {
     setError(null);
     setResult(null);
 
-    const age = parseInt(momAge, 10);
-    const month = parseInt(conceptionMonth, 10);
-
-    if (!momAge || !conceptionMonth) {
-      setError("모든 항목을 입력해주세요.");
-      return;
-    }
-    if (isNaN(age) || age < 1 || age > 99) {
-      setError("올바른 나이를 입력해주세요. (1~99)");
-      return;
-    }
-    if (isNaN(month) || month < 1 || month > 12) {
-      setError("임신 월은 1~12 사이여야 합니다.");
+    if (!motherBirthDate) {
+      setError("엄마 생년월일을 입력해주세요.");
       return;
     }
 
-    setResult({
-      gender: predictByMayan(age, month),
-      momAge: age,
-      conceptionMonth: month,
-      momIsEven: age % 2 === 0,
-      monthIsEven: month % 2 === 0,
-    });
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
+      return;
+    }
+
+    const birth = new Date(motherBirthDate);
+    const days = datesInRange(startIso, endIso);
+    if (birth >= new Date(days[0])) {
+      setError("임신일은 엄마 생년월일보다 이후여야 합니다.");
+      return;
+    }
+
+    try {
+      const aggregated = aggregateByRange<MayanResult>(
+        startIso,
+        endIso,
+        (iso) => {
+          const conception = new Date(iso);
+          const momAge = getAgeAtDate(birth, conception);
+          const conceptionMonth = conception.getMonth() + 1;
+          return {
+            gender: predictByMayan(momAge, conceptionMonth),
+            momAge,
+            conceptionMonth,
+            momIsEven: momAge % 2 === 0,
+            monthIsEven: conceptionMonth % 2 === 0,
+          };
+        },
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null);
     setError(null);
-    setMomAge("");
-    setConceptionMonth("");
+    setMotherBirthDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
-  return { momAge, conceptionMonth, result, error, setMomAge, setConceptionMonth, predict, reset };
+  return {
+    motherBirthDate, conceptionStart, conceptionEnd, result, error,
+    setMotherBirthDate, setConceptionStart, setConceptionEnd, predict, reset,
+  };
 }

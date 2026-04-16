@@ -1,4 +1,10 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type HippocratesGender = "Boy" | "Girl";
 
@@ -32,20 +38,23 @@ export function predictByHippocratesWind(
 }
 
 export interface HippocratesState {
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   isNorthernHemisphere: boolean;
   result: HippocratesResult | null;
   error: string | null;
 }
 export interface HippocratesActions {
-  setConceptionMonth: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   setIsNorthernHemisphere: (v: boolean) => void;
   predict: () => void;
   reset: () => void;
 }
 
 export function useHippocratesWindPredictor(): HippocratesState & HippocratesActions {
-  const [conceptionMonth, setConceptionMonth] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [isNorthernHemisphere, setIsNorthernHemisphere] = useState(true);
   const [result, setResult] = useState<HippocratesResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,18 +62,37 @@ export function useHippocratesWindPredictor(): HippocratesState & HippocratesAct
   function predict() {
     setError(null);
     setResult(null);
-    const month = parseInt(conceptionMonth, 10);
-    if (!conceptionMonth || isNaN(month) || month < 1 || month > 12) {
-      setError("임신 월은 1~12 사이여야 합니다.");
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
       return;
     }
-    setResult(predictByHippocratesWind(month, isNorthernHemisphere));
+    try {
+      const aggregated = aggregateByRange<HippocratesResult>(
+        startIso,
+        endIso,
+        (iso) => {
+          const conceptionMonth = new Date(iso).getMonth() + 1;
+          return predictByHippocratesWind(conceptionMonth, isNorthernHemisphere);
+        },
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null); setError(null);
-    setConceptionMonth(""); setIsNorthernHemisphere(true);
+    setConceptionStart(""); setConceptionEnd(""); setIsNorthernHemisphere(true);
   }
 
-  return { conceptionMonth, isNorthernHemisphere, result, error, setConceptionMonth, setIsNorthernHemisphere, predict, reset };
+  return {
+    conceptionStart, conceptionEnd, isNorthernHemisphere, result, error,
+    setConceptionStart, setConceptionEnd, setIsNorthernHemisphere, predict, reset,
+  };
 }

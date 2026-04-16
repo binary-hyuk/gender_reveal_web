@@ -1,23 +1,26 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 
 const INTUITION_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
 interface Props {
   motherBirthDate: string;
   fatherBirthDate: string;
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   intuition: number;
   error: string | null;
   onMotherBirthDateChange: (v: string) => void;
   onFatherBirthDateChange: (v: string) => void;
-  onConceptionMonthChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onIntuitionChange: (v: number) => void;
   onPredict: () => void;
 }
 
 export function SamwonPredictForm({
-  motherBirthDate, fatherBirthDate, conceptionMonth, intuition, error,
-  onMotherBirthDateChange, onFatherBirthDateChange, onConceptionMonthChange,
+  motherBirthDate, fatherBirthDate, conceptionStart, conceptionEnd, intuition, error,
+  onMotherBirthDateChange, onFatherBirthDateChange, onConceptionStartChange, onConceptionEndChange,
   onIntuitionChange, onPredict,
 }: Props) {
   return (
@@ -41,17 +44,13 @@ export function SamwonPredictForm({
           onChange={onFatherBirthDateChange}
         />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-gray-600">
-            잉태 추정 연월
-          </label>
-          <input
-            type="month"
-            value={conceptionMonth}
-            onChange={(e) => onConceptionMonthChange(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-          />
-        </div>
+        <ConceptionDateRangeInput
+          label="임신(수정)일"
+          startValue={conceptionStart}
+          endValue={conceptionEnd}
+          onStartChange={onConceptionStartChange}
+          onEndChange={onConceptionEndChange}
+        />
 
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-600">

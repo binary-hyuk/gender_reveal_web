@@ -7,12 +7,14 @@ import {
 
 export default function MayanPage() {
   const {
-    momAge,
-    conceptionMonth,
+    motherBirthDate,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
-    setMomAge,
-    setConceptionMonth,
+    setMotherBirthDate,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   } = useMayanPredictor();
@@ -26,11 +28,13 @@ export default function MayanPage() {
         <MayanPredictResult result={result} onReset={reset} />
       ) : (
         <MayanPredictForm
-          momAge={momAge}
-          conceptionMonth={conceptionMonth}
+          motherBirthDate={motherBirthDate}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
-          onMomAgeChange={setMomAge}
-          onConceptionMonthChange={setConceptionMonth}
+          onMotherBirthDateChange={setMotherBirthDate}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

@@ -1,4 +1,11 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+  datesInRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type AyurvedaGender = "Boy" | "Girl";
 export const DIRECTIONS = ["East", "West", "South", "North"] as const;
@@ -37,14 +44,16 @@ export function predictByAyurveda(
 
 export interface AyurvedaState {
   lastPeriodDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   direction: Direction;
   result: AyurvedaResult | null;
   error: string | null;
 }
 export interface AyurvedaActions {
   setLastPeriodDate: (v: string) => void;
-  setConceptionDate: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   setDirection: (v: Direction) => void;
   predict: () => void;
   reset: () => void;
@@ -52,28 +61,51 @@ export interface AyurvedaActions {
 
 export function useAyurvedaPredictor(): AyurvedaState & AyurvedaActions {
   const [lastPeriodDate, setLastPeriodDate] = useState("");
-  const [conceptionDate, setConceptionDate] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [direction, setDirection] = useState<Direction>("East");
   const [result, setResult] = useState<AyurvedaResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   function predict() {
     setError(null); setResult(null);
-    if (!lastPeriodDate || !conceptionDate) {
-      setError("날짜를 모두 입력해주세요.");
+    if (!lastPeriodDate) {
+      setError("마지막 생리 시작일을 입력해주세요.");
       return;
     }
-    if (new Date(lastPeriodDate) >= new Date(conceptionDate)) {
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
+      return;
+    }
+    const days = datesInRange(startIso, endIso);
+    if (new Date(lastPeriodDate) >= new Date(days[0])) {
       setError("수정일은 마지막 생리일 이후여야 합니다.");
       return;
     }
-    setResult(predictByAyurveda(lastPeriodDate, conceptionDate, direction));
+    try {
+      const aggregated = aggregateByRange<AyurvedaResult>(
+        startIso,
+        endIso,
+        (iso) => predictByAyurveda(lastPeriodDate, iso, direction),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setResult(null); setError(null);
-    setLastPeriodDate(""); setConceptionDate(""); setDirection("East");
+    setLastPeriodDate(""); setConceptionStart(""); setConceptionEnd(""); setDirection("East");
   }
 
-  return { lastPeriodDate, conceptionDate, direction, result, error, setLastPeriodDate, setConceptionDate, setDirection, predict, reset };
+  return {
+    lastPeriodDate, conceptionStart, conceptionEnd, direction, result, error,
+    setLastPeriodDate, setConceptionStart, setConceptionEnd, setDirection, predict, reset,
+  };
 }

@@ -1,4 +1,10 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 // ============================================================
 // 삼원공명(三元共鳴) 태아 성별 예측 알고리즘
@@ -122,6 +128,10 @@ function hadoElement(n: number): Element {
 // 순수 예측 함수
 // ============================================================
 
+/**
+ * motherBirth, fatherBirth: "YYYY-MM-DD"
+ * conceptionMonth: "YYYY-MM" (또는 "YYYY-MM-DD" 허용)
+ */
 export function predictBySamwon(
   motherBirth: string,
   fatherBirth: string,
@@ -204,7 +214,8 @@ export function predictBySamwon(
 export interface SamwonState {
   motherBirthDate: string;
   fatherBirthDate: string;
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   intuition: number;
   result: SamwonResult | null;
   error: string | null;
@@ -213,7 +224,8 @@ export interface SamwonState {
 export interface SamwonActions {
   setMotherBirthDate: (v: string) => void;
   setFatherBirthDate: (v: string) => void;
-  setConceptionMonth: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   setIntuition: (v: number) => void;
   predict: () => void;
   reset: () => void;
@@ -222,7 +234,8 @@ export interface SamwonActions {
 export function useSamwonPredictor(): SamwonState & SamwonActions {
   const [motherBirthDate, setMotherBirthDate] = useState("");
   const [fatherBirthDate, setFatherBirthDate] = useState("");
-  const [conceptionMonth, setConceptionMonth] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [intuition, setIntuition] = useState(5);
   const [result, setResult] = useState<SamwonResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -230,8 +243,8 @@ export function useSamwonPredictor(): SamwonState & SamwonActions {
   function predict() {
     setError(null);
 
-    if (!motherBirthDate || !fatherBirthDate || !conceptionMonth) {
-      setError("모든 항목을 입력해주세요.");
+    if (!motherBirthDate || !fatherBirthDate) {
+      setError("엄마·아빠 생년월일을 입력해주세요.");
       return;
     }
 
@@ -240,21 +253,40 @@ export function useSamwonPredictor(): SamwonState & SamwonActions {
       return;
     }
 
-    const res = predictBySamwon(motherBirthDate, fatherBirthDate, conceptionMonth, intuition);
-    setResult(res);
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
+      return;
+    }
+
+    try {
+      const aggregated = aggregateByRange<SamwonResult>(
+        startIso,
+        endIso,
+        (iso) => predictBySamwon(motherBirthDate, fatherBirthDate, iso, intuition),
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
     setMotherBirthDate("");
     setFatherBirthDate("");
-    setConceptionMonth("");
+    setConceptionStart("");
+    setConceptionEnd("");
     setIntuition(5);
     setResult(null);
     setError(null);
   }
 
   return {
-    motherBirthDate, fatherBirthDate, conceptionMonth, intuition, result, error,
-    setMotherBirthDate, setFatherBirthDate, setConceptionMonth, setIntuition, predict, reset,
+    motherBirthDate, fatherBirthDate, conceptionStart, conceptionEnd, intuition, result, error,
+    setMotherBirthDate, setFatherBirthDate, setConceptionStart, setConceptionEnd, setIntuition, predict, reset,
   };
 }

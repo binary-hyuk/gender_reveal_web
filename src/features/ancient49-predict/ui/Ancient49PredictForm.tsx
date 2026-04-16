@@ -1,20 +1,25 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 
 interface Props {
   motherBirthDate: string;
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   error: string | null;
   onMotherBirthDateChange: (v: string) => void;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onPredict: () => void;
 }
 
 export function Ancient49PredictForm({
   motherBirthDate,
-  conceptionDate,
+  conceptionStart,
+  conceptionEnd,
   error,
   onMotherBirthDateChange,
-  onConceptionDateChange,
+  onConceptionStartChange,
+  onConceptionEndChange,
   onPredict,
 }: Props) {
   return (
@@ -26,11 +31,12 @@ export function Ancient49PredictForm({
         onChange={onMotherBirthDateChange}
       />
 
-      <DateTextInput
+      <ConceptionDateRangeInput
         label="임신(수정)일"
-        hint="(양력)"
-        value={conceptionDate}
-        onChange={onConceptionDateChange}
+        startValue={conceptionStart}
+        endValue={conceptionEnd}
+        onStartChange={onConceptionStartChange}
+        onEndChange={onConceptionEndChange}
       />
 
       {error && (

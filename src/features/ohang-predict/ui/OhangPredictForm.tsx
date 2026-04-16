@@ -1,17 +1,21 @@
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+
 interface Props {
   momBirth: string;
   dadBirth: string;
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   error: string | null;
   onMomBirthChange: (v: string) => void;
   onDadBirthChange: (v: string) => void;
-  onConceptionMonthChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onPredict: () => void;
 }
 
 export function OhangPredictForm({
-  momBirth, dadBirth, conceptionMonth, error,
-  onMomBirthChange, onDadBirthChange, onConceptionMonthChange, onPredict,
+  momBirth, dadBirth, conceptionStart, conceptionEnd, error,
+  onMomBirthChange, onDadBirthChange, onConceptionStartChange, onConceptionEndChange, onPredict,
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
@@ -41,15 +45,13 @@ export function OhangPredictForm({
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">임신 월 <span className="font-normal text-gray-400">(1~12)</span></label>
-        <input
-          type="number" min={1} max={12} value={conceptionMonth}
-          onChange={(e) => onConceptionMonthChange(e.target.value)}
-          placeholder="예: 5"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-        />
-      </div>
+      <ConceptionDateRangeInput
+        label="임신(수정)일"
+        startValue={conceptionStart}
+        endValue={conceptionEnd}
+        onStartChange={onConceptionStartChange}
+        onEndChange={onConceptionEndChange}
+      />
 
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>}
 

@@ -9,12 +9,14 @@ export default function NumerologyPage() {
   const {
     momName,
     dadName,
-    conceptionMonth,
+    conceptionStart,
+    conceptionEnd,
     result,
     error,
     setMomName,
     setDadName,
-    setConceptionMonth,
+    setConceptionStart,
+    setConceptionEnd,
     predict,
     reset,
   } = useNumerologyPredictor();
@@ -30,11 +32,13 @@ export default function NumerologyPage() {
         <NumerologyPredictForm
           momName={momName}
           dadName={dadName}
-          conceptionMonth={conceptionMonth}
+          conceptionStart={conceptionStart}
+          conceptionEnd={conceptionEnd}
           error={error}
           onMomNameChange={setMomName}
           onDadNameChange={setDadName}
-          onConceptionMonthChange={setConceptionMonth}
+          onConceptionStartChange={setConceptionStart}
+          onConceptionEndChange={setConceptionEnd}
           onPredict={predict}
         />
       )}

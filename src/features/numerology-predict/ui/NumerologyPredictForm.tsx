@@ -1,22 +1,28 @@
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+
 interface Props {
   momName: string;
   dadName: string;
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   error: string | null;
   onMomNameChange: (v: string) => void;
   onDadNameChange: (v: string) => void;
-  onConceptionMonthChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onPredict: () => void;
 }
 
 export function NumerologyPredictForm({
   momName,
   dadName,
-  conceptionMonth,
+  conceptionStart,
+  conceptionEnd,
   error,
   onMomNameChange,
   onDadNameChange,
-  onConceptionMonthChange,
+  onConceptionStartChange,
+  onConceptionEndChange,
   onPredict,
 }: Props) {
   return (
@@ -52,21 +58,13 @@ export function NumerologyPredictForm({
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-gray-600">
-            임신 월{" "}
-            <span className="text-xs font-normal text-gray-400">(1~12)</span>
-          </label>
-          <input
-            type="number"
-            min={1}
-            max={12}
-            value={conceptionMonth}
-            onChange={(e) => onConceptionMonthChange(e.target.value)}
-            placeholder="예: 3"
-            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
-          />
-        </div>
+        <ConceptionDateRangeInput
+          label="임신(수정)일"
+          startValue={conceptionStart}
+          endValue={conceptionEnd}
+          onStartChange={onConceptionStartChange}
+          onEndChange={onConceptionEndChange}
+        />
       </div>
 
       {error && (

@@ -1,4 +1,10 @@
 import { useState } from "react";
+import {
+  aggregateByRange,
+  fallbackTieBreaker,
+  validateRange,
+  normalizeRange,
+} from "@/shared/lib/dateRangePrediction";
 
 export type NumerologyGender = "Boy" | "Girl";
 
@@ -41,7 +47,8 @@ export function predictByNumerology(
 export interface NumerologyState {
   momName: string;
   dadName: string;
-  conceptionMonth: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   result: NumerologyResult | null;
   error: string | null;
 }
@@ -49,7 +56,8 @@ export interface NumerologyState {
 export interface NumerologyActions {
   setMomName: (v: string) => void;
   setDadName: (v: string) => void;
-  setConceptionMonth: (v: string) => void;
+  setConceptionStart: (v: string) => void;
+  setConceptionEnd: (v: string) => void;
   predict: () => void;
   reset: () => void;
 }
@@ -57,7 +65,8 @@ export interface NumerologyActions {
 export function useNumerologyPredictor(): NumerologyState & NumerologyActions {
   const [momName, setMomName] = useState("");
   const [dadName, setDadName] = useState("");
-  const [conceptionMonth, setConceptionMonth] = useState("");
+  const [conceptionStart, setConceptionStart] = useState("");
+  const [conceptionEnd, setConceptionEnd] = useState("");
   const [result, setResult] = useState<NumerologyResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,17 +74,34 @@ export function useNumerologyPredictor(): NumerologyState & NumerologyActions {
     setError(null);
     setResult(null);
 
-    if (!momName.trim() || !dadName.trim() || !conceptionMonth) {
-      setError("모든 항목을 입력해주세요.");
-      return;
-    }
-    const month = parseInt(conceptionMonth, 10);
-    if (isNaN(month) || month < 1 || month > 12) {
-      setError("임신 월은 1~12 사이여야 합니다.");
+    if (!momName.trim() || !dadName.trim()) {
+      setError("엄마·아빠 이름을 입력해주세요.");
       return;
     }
 
-    setResult(predictByNumerology(momName.trim(), dadName.trim(), month));
+    const [startIso, endIso] = normalizeRange(conceptionStart, conceptionEnd);
+    const rangeErr = validateRange(startIso, endIso);
+    if (rangeErr) {
+      setError(rangeErr);
+      return;
+    }
+
+    try {
+      const aggregated = aggregateByRange<NumerologyResult>(
+        startIso,
+        endIso,
+        (iso) => {
+          const conceptionMonth = new Date(iso).getMonth() + 1;
+          return predictByNumerology(momName.trim(), dadName.trim(), conceptionMonth);
+        },
+        fallbackTieBreaker,
+      );
+      const { rangeInfo: _r, ...rest } = aggregated;
+      void _r;
+      setResult(rest);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   function reset() {
@@ -83,11 +109,12 @@ export function useNumerologyPredictor(): NumerologyState & NumerologyActions {
     setError(null);
     setMomName("");
     setDadName("");
-    setConceptionMonth("");
+    setConceptionStart("");
+    setConceptionEnd("");
   }
 
   return {
-    momName, dadName, conceptionMonth, result, error,
-    setMomName, setDadName, setConceptionMonth, predict, reset,
+    momName, dadName, conceptionStart, conceptionEnd, result, error,
+    setMomName, setDadName, setConceptionStart, setConceptionEnd, predict, reset,
   };
 }

@@ -1,16 +1,20 @@
-import { DateTextInput } from "@/shared/ui/DateTextInput";
+import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
 
 interface Props {
-  conceptionDate: string;
+  conceptionStart: string;
+  conceptionEnd: string;
   error: string | null;
-  onConceptionDateChange: (v: string) => void;
+  onConceptionStartChange: (v: string) => void;
+  onConceptionEndChange: (v: string) => void;
   onPredict: () => void;
 }
 
 export function PlanetaryWeekdayPredictForm({
-  conceptionDate,
+  conceptionStart,
+  conceptionEnd,
   error,
-  onConceptionDateChange,
+  onConceptionStartChange,
+  onConceptionEndChange,
   onPredict,
 }: Props) {
   return (
@@ -23,15 +27,13 @@ export function PlanetaryWeekdayPredictForm({
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
           날짜 정보
         </p>
-        <DateTextInput
+        <ConceptionDateRangeInput
           label="임신(수정)일"
-          hint="(양력)"
-          value={conceptionDate}
-          onChange={onConceptionDateChange}
+          startValue={conceptionStart}
+          endValue={conceptionEnd}
+          onStartChange={onConceptionStartChange}
+          onEndChange={onConceptionEndChange}
         />
-        <p className="text-xs text-gray-400">
-          * 정확한 수정일을 모를 경우 마지막 생리 시작일 + 14일을 입력하세요
-        </p>
       </div>
 
       {error && (
