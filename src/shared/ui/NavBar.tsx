@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: "/lunar-zodiac",  emoji: "🌙", label: "달 별자리" },
   { href: "/blood-renewal", emoji: "🩸", label: "혈액 갱신" },
   { href: "/blood-type",    emoji: "🅰️", label: "혈액형"  },
+  { href: '/ohang', emoji: '☯️', label: '오행천문' },
 ] as const;
 
 export function NavBar() {

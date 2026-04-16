@@ -8,6 +8,7 @@ import { predictByLunarZodiac } from "@/features/lunar-zodiac-predict/model/useL
 import { predictByBloodRenewal } from "@/features/blood-renewal-predict/model/useBloodRenewalPredictor";
 import { predictByBloodType } from "@/features/blood-type-predict/model/bloodTypeMatrix";
 import type { BloodType } from "@/features/blood-type-predict/model/bloodTypeMatrix";
+import { predictByOhang } from '@/features/ohang-predict/model/useOhangPredictor';
 
 export type AiGender = "Boy" | "Girl";
 
@@ -18,6 +19,7 @@ export const METHOD_SCORES: Record<string, number> = {
   bloodRenewal: 60,
   lunarZodiac: 50,
   bloodType: 40,
+  ohang: 45,
 };
 
 export interface MethodResult {
@@ -180,6 +182,20 @@ function runAllMethods(
     gender: btG,
     score: 40,
     detail: `${dadBlood}+${momBlood} → 아들 ${btProb.boy}% / 딸 ${btProb.girl}%`,
+    available: true,
+  });
+
+  // ⑮ 오행천문융합 (45점)
+  const momYYYYMMDD = motherBirth.toISOString().slice(0,10).replace(/-/g,'');
+  const dadYYYYMMDD = fatherBirth.toISOString().slice(0,10).replace(/-/g,'');
+  const ohangResult = predictByOhang(momYYYYMMDD, dadYYYYMMDD, solarConceptionMonth);
+  addMethod({
+    key: 'ohang',
+    name: '오행천문융합',
+    emoji: '☯️',
+    gender: ohangResult.gender,
+    score: 45,
+    detail: `O점수 ${ohangResult.oScore} + I점수 ${ohangResult.iScore} = ${ohangResult.total} (기준 20)`,
     available: true,
   });
 
