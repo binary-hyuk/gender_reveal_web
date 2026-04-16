@@ -8,7 +8,17 @@ import { predictByLunarZodiac } from "@/features/lunar-zodiac-predict/model/useL
 import { predictByBloodRenewal } from "@/features/blood-renewal-predict/model/useBloodRenewalPredictor";
 import { predictByBloodType } from "@/features/blood-type-predict/model/bloodTypeMatrix";
 import type { BloodType } from "@/features/blood-type-predict/model/bloodTypeMatrix";
+import { predictByNumerology } from "@/features/numerology-predict/model/useNumerologyPredictor";
+import { predictByGypsy } from "@/features/gypsy-predict/model/useGypsyPredictor";
+import { predictByPlanetaryWeekday } from "@/features/planetary-weekday-predict/model/usePlanetaryWeekdayPredictor";
+import { predictByEgyptWheat } from "@/features/egypt-wheat-predict/model/useEgyptWheatPredictor";
+import { predictByHippocratesWind } from "@/features/hippocrates-wind-predict/model/useHippocratesWindPredictor";
+import { predictByAyurveda } from "@/features/ayurveda-predict/model/useAyurvedaPredictor";
+import { predictByKFengshui } from "@/features/kfengshui-predict/model/useKFengshuiPredictor";
+import { predictByDigitalDna } from "@/features/digital-dna-predict/model/useDigitalDnaPredictor";
 import { predictByOhang } from '@/features/ohang-predict/model/useOhangPredictor';
+import { predictCBR } from "@/features/cbr-predict/model/useCBRPredictor";
+import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
 export type AiGender = "Boy" | "Girl";
 
@@ -19,7 +29,16 @@ export const METHOD_SCORES: Record<string, number> = {
   bloodRenewal: 60,
   lunarZodiac: 50,
   bloodType: 40,
+  numerology: 35,
+  gypsy: 30,
+  planetaryWeekday: 25,
+  ayurveda: 22,
+  egyptWheat: 20,
+  hippocratesWind: 18,
+  kfengshui: 15,
+  digitalDna: 10,
   ohang: 45,
+  cbr: 70,
 };
 
 export interface MethodResult {
@@ -45,6 +64,18 @@ export interface AiPredictState {
   fatherBirthDate: string;
   momBlood: BloodType;
   dadBlood: BloodType;
+  momName: string;
+  dadName: string;
+  locationString: string;
+  isNorthernHemisphere: boolean;
+  lastPeriodDate: string;
+  direction: string;
+  houseDirection: string;
+  floorNumber: string;
+  momMBTI: string;
+  dadMBTI: string;
+  favEmoji: string;
+  fatherVibe: FatherVibe;
   isLoading: boolean;
   result: AiPredictResult | null;
   error: string | null;
@@ -56,6 +87,18 @@ export interface AiPredictActions {
   setFatherBirthDate: (v: string) => void;
   setMomBlood: (v: BloodType) => void;
   setDadBlood: (v: BloodType) => void;
+  setMomName: (v: string) => void;
+  setDadName: (v: string) => void;
+  setLocationString: (v: string) => void;
+  setIsNorthernHemisphere: (v: boolean) => void;
+  setLastPeriodDate: (v: string) => void;
+  setDirection: (v: string) => void;
+  setHouseDirection: (v: string) => void;
+  setFloorNumber: (v: string) => void;
+  setMomMBTI: (v: string) => void;
+  setDadMBTI: (v: string) => void;
+  setFavEmoji: (v: string) => void;
+  setFatherVibe: (v: FatherVibe) => void;
   predict: () => void;
   reset: () => void;
 }
@@ -65,7 +108,19 @@ function runAllMethods(
   conception: Date,
   fatherBirth: Date,
   momBlood: BloodType,
-  dadBlood: BloodType
+  dadBlood: BloodType,
+  momName: string,
+  dadName: string,
+  locationString: string,
+  isNorthernHemisphere: boolean,
+  lastPeriodDate: string,
+  direction: string,
+  houseDirection: string,
+  floorNumber: string,
+  momMBTI: string,
+  dadMBTI: string,
+  favEmoji: string,
+  fatherVibe: FatherVibe
 ): AiPredictResult {
   const momAge = getAgeAtDate(motherBirth, conception);
   const dadAge = getAgeAtDate(fatherBirth, conception);
@@ -199,6 +254,151 @@ function runAllMethods(
     available: true,
   });
 
+  // ⑯ CBR-Engine (70점)
+  const cbrResult = predictCBR(motherBirth, conception, fatherVibe);
+  addMethod({
+    key: "cbr",
+    name: "CBR-Engine",
+    emoji: "🏛️",
+    gender: cbrResult.gender,
+    score: 70,
+    detail: `달위상 ${cbrResult.lunarCyclePct}% · 총에너지 ${cbrResult.totalEnergy} · 확률 ${cbrResult.probability}% (${cbrResult.energyStrength})`,
+    available: true,
+  });
+
+  // ⑦ 수비학 (35점)
+  if (momName.trim() && dadName.trim()) {
+    const numResult = predictByNumerology(momName.trim(), dadName.trim(), solarConceptionMonth);
+    addMethod({
+      key: "numerology",
+      name: "수비학",
+      emoji: "🔢",
+      gender: numResult.gender,
+      score: 35,
+      detail: `${numResult.momLen}(엄마) + ${numResult.dadLen}(아빠) + ${solarConceptionMonth}(월) = ${numResult.totalSum} (${numResult.isOdd ? "홀수" : "짝수"})`,
+      available: true,
+    });
+  } else {
+    addMethod({
+      key: "numerology",
+      name: "수비학",
+      emoji: "🔢",
+      gender: "Girl",
+      score: 35,
+      detail: "이름 미입력 → 점수 제외",
+      available: false,
+    });
+  }
+
+  // ⑧ 집시 생월법 (30점)
+  const gypsyResult = predictByGypsy(motherBirth.toISOString().slice(0, 10), conception.toISOString().slice(0, 10));
+  addMethod({
+    key: "gypsy",
+    name: "집시 생월법",
+    emoji: "🎴",
+    gender: gypsyResult.gender,
+    score: 30,
+    detail: `엄마 ${gypsyResult.motherAge}세 + ${gypsyResult.conceptionMonth}월 = ${gypsyResult.totalSum} (${gypsyResult.isOdd ? "홀수" : "짝수"})`,
+    available: true,
+  });
+
+  // ⑨ 행성 요일 (25점)
+  const planetResult = predictByPlanetaryWeekday(conception.toISOString().slice(0, 10));
+  addMethod({
+    key: "planetaryWeekday",
+    name: "행성 요일",
+    emoji: "🌍",
+    gender: planetResult.gender,
+    score: 25,
+    detail: `${planetResult.dayName} → ${planetResult.planetEmoji} ${planetResult.planetName} (${planetResult.gender === "Boy" ? "남성 행성" : "여성 행성"})`,
+    available: true,
+  });
+
+  // ⑩ 아유르베다 주기법 (22점)
+  if (lastPeriodDate) {
+    try {
+      const ayurvedaResult = predictByAyurveda(lastPeriodDate, conception.toISOString().slice(0, 10), (direction as "East" | "West" | "South" | "North") || "East");
+      addMethod({
+        key: "ayurveda",
+        name: "아유르베다",
+        emoji: "🪷",
+        gender: ayurvedaResult.gender,
+        score: 22,
+        detail: `주기 ${ayurvedaResult.baseDays.toFixed(0)}일 + 방위보정 ${ayurvedaResult.chiModifier} = ${ayurvedaResult.finalDays} (${ayurvedaResult.isEven ? "짝수" : "홀수"})`,
+        available: true,
+      });
+    } catch {
+      addMethod({ key: "ayurveda", name: "아유르베다", emoji: "🪷", gender: "Girl", score: 22, detail: "생리일 미입력 → 점수 제외", available: false });
+    }
+  } else {
+    addMethod({ key: "ayurveda", name: "아유르베다", emoji: "🪷", gender: "Girl", score: 22, detail: "생리일 미입력 → 점수 제외", available: false });
+  }
+
+  // ⑪ 이집트 밀보리법 (20점)
+  if (momName.trim() && locationString.trim()) {
+    const egyptResult = predictByEgyptWheat(momName.trim(), conception.toISOString().slice(0, 10), locationString.trim());
+    addMethod({
+      key: "egyptWheat",
+      name: "이집트 밀보리",
+      emoji: "🌾",
+      gender: egyptResult.gender,
+      score: 20,
+      detail: `envFactor=${egyptResult.envFactor}, 보리${egyptResult.barleyDays}일 vs 밀${egyptResult.wheatDays}일`,
+      available: true,
+    });
+  } else {
+    addMethod({ key: "egyptWheat", name: "이집트 밀보리", emoji: "🌾", gender: "Girl", score: 20, detail: "이름·지역 미입력 → 점수 제외", available: false });
+  }
+
+  // ⑫ 히포크라테스 바람법 (18점)
+  const hippoResult = predictByHippocratesWind(solarConceptionMonth, isNorthernHemisphere);
+  addMethod({
+    key: "hippocratesWind",
+    name: "히포크라테스",
+    emoji: "🌬️",
+    gender: hippoResult.gender,
+    score: 18,
+    detail: `${solarConceptionMonth}월 ${isNorthernHemisphere ? "북반구" : "남반구"} → ${hippoResult.isNorthWind ? "북풍(건조)" : "남풍(다습)"}`,
+    available: true,
+  });
+
+  // ⑬ K-풍수지리 (15점)
+  if (houseDirection.trim() && floorNumber) {
+    const floor = parseInt(floorNumber, 10);
+    if (!isNaN(floor) && floor > 0) {
+      const fengshuiResult = predictByKFengshui(houseDirection.trim(), floor, locationString.replace(/\s/g, "").length || 1);
+      addMethod({
+        key: "kfengshui",
+        name: "K-풍수지리",
+        emoji: "🏠",
+        gender: fengshuiResult.gender,
+        score: 15,
+        detail: `층(${fengshuiResult.floorScore > 0 ? "+" : ""}${fengshuiResult.floorScore}) + 방향(${fengshuiResult.dirScore > 0 ? "+" : ""}${fengshuiResult.dirScore}) + 주소(${fengshuiResult.locScore > 0 ? "+" : ""}${fengshuiResult.locScore}) = ${fengshuiResult.totalScore}`,
+        available: true,
+      });
+    } else {
+      addMethod({ key: "kfengshui", name: "K-풍수지리", emoji: "🏠", gender: "Girl", score: 15, detail: "층수 오류 → 점수 제외", available: false });
+    }
+  } else {
+    addMethod({ key: "kfengshui", name: "K-풍수지리", emoji: "🏠", gender: "Girl", score: 15, detail: "방향·층수 미입력 → 점수 제외", available: false });
+  }
+
+  // ⑭ 디지털 DNA (10점)
+  if (momMBTI.trim().length === 4 && dadMBTI.trim().length === 4 && favEmoji.trim()) {
+    const dnaResult = predictByDigitalDna(momMBTI.trim(), dadMBTI.trim(), favEmoji.trim());
+    addMethod({
+      key: "digitalDna",
+      name: "디지털 DNA",
+      emoji: "🧬",
+      gender: dnaResult.gender,
+      score: 10,
+      detail: `아들에너지 ${dnaResult.boyEnergy} vs 딸에너지 ${dnaResult.girlEnergy} (이모티콘 ${dnaResult.emojiBonus === "Boy" ? "아들" : "딸"} +2)`,
+      available: true,
+    });
+  } else {
+    addMethod({ key: "digitalDna", name: "디지털 DNA", emoji: "🧬", gender: "Girl", score: 10, detail: "MBTI·이모티콘 미입력 → 점수 제외", available: false });
+  }
+
   return {
     finalGender: boyScore >= girlScore ? "Boy" : "Girl",
     boyScore,
@@ -213,6 +413,18 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   const [fatherBirthDate, setFatherBirthDate] = useState("");
   const [momBlood, setMomBlood] = useState<BloodType>("A");
   const [dadBlood, setDadBlood] = useState<BloodType>("A");
+  const [momName, setMomName] = useState("");
+  const [dadName, setDadName] = useState("");
+  const [locationString, setLocationString] = useState("");
+  const [isNorthernHemisphere, setIsNorthernHemisphere] = useState(true);
+  const [lastPeriodDate, setLastPeriodDate] = useState("");
+  const [direction, setDirection] = useState("East");
+  const [houseDirection, setHouseDirection] = useState("");
+  const [floorNumber, setFloorNumber] = useState("");
+  const [momMBTI, setMomMBTI] = useState("");
+  const [dadMBTI, setDadMBTI] = useState("");
+  const [favEmoji, setFavEmoji] = useState("");
+  const [fatherVibe, setFatherVibe] = useState<FatherVibe>("STABLE");
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AiPredictResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +457,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     const delay = 5500 + Math.random() * 1500;
     setTimeout(() => {
       try {
-        const res = runAllMethods(motherBirth, conception, fatherBirth, momBlood, dadBlood);
+        const res = runAllMethods(motherBirth, conception, fatherBirth, momBlood, dadBlood, momName, dadName, locationString, isNorthernHemisphere, lastPeriodDate, direction, houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe);
         setResult(res);
       } catch {
         setError("예측 중 오류가 발생했습니다.");
@@ -263,12 +475,30 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     setFatherBirthDate("");
     setMomBlood("A");
     setDadBlood("A");
+    setMomName("");
+    setDadName("");
+    setLocationString("");
+    setIsNorthernHemisphere(true);
+    setLastPeriodDate("");
+    setDirection("East");
+    setHouseDirection("");
+    setFloorNumber("");
+    setMomMBTI("");
+    setDadMBTI("");
+    setFavEmoji("");
+    setFatherVibe("STABLE");
   }
 
   return {
     motherBirthDate, conceptionDate, fatherBirthDate,
-    momBlood, dadBlood, isLoading, result, error,
+    momBlood, dadBlood, momName, dadName,
+    locationString, isNorthernHemisphere, lastPeriodDate, direction,
+    houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe,
+    isLoading, result, error,
     setMotherBirthDate, setConceptionDate, setFatherBirthDate,
-    setMomBlood, setDadBlood, predict, reset,
+    setMomBlood, setDadBlood, setMomName, setDadName,
+    setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
+    setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe,
+    predict, reset,
   };
 }

@@ -8,8 +8,17 @@ const NAV_ITEMS = [
   { href: "/ancient49",     emoji: "☯️", label: "주역 49" },
   { href: "/lunar-zodiac",  emoji: "🌙", label: "달 별자리" },
   { href: "/blood-renewal", emoji: "🩸", label: "혈액 갱신" },
-  { href: "/blood-type",    emoji: "🅰️", label: "혈액형"  },
+  { href: "/blood-type",        emoji: "🅰️", label: "혈액형"  },
+  { href: "/numerology",        emoji: "🔢", label: "수비학"   },
+  { href: "/planetary-weekday", emoji: "🌍", label: "행성요일" },
+  { href: "/gypsy",             emoji: "🎴", label: "집시"     },
+  { href: "/egypt-wheat",       emoji: "🌾", label: "이집트"   },
+  { href: "/hippocrates-wind",  emoji: "🌬️", label: "히포크라테스" },
+  { href: "/ayurveda",          emoji: "🪷", label: "아유르베다" },
+  { href: "/kfengshui",         emoji: "🏠", label: "풍수지리" },
+  { href: "/digital-dna",       emoji: "🧬", label: "디지털DNA" },
   { href: '/ohang', emoji: '☯️', label: '오행천문' },
+  { href: '/cbr',   emoji: '🏛️', label: 'CBR엔진' },
 ] as const;
 
 export function NavBar() {
