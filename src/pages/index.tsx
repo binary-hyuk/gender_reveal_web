@@ -12,18 +12,20 @@ export default function AiPredictPage() {
     momBlood, dadBlood, momName, dadName,
     locationString, isNorthernHemisphere, lastPeriodDate, direction,
     houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
+    selectedCategories,
     isLoading, result, error,
     setMotherBirthDate, setConceptionStart, setConceptionEnd, setFatherBirthDate,
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
     setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
+    toggleCategory,
     predict, reset,
   } = useAiPredictor();
 
   return (
     <PageLayout
       title="AI 성별 예측"
-      description="9가지 전통 예측법을 가중치로 종합한 AI 분석"
+      description="필수 정보만 입력하고, 관심있는 예측법을 골라서 추가해보세요"
     >
       {isLoading ? (
         <AiPredictLoading />
@@ -48,6 +50,9 @@ export default function AiPredictPage() {
           momMBTI={momMBTI}
           dadMBTI={dadMBTI}
           favEmoji={favEmoji}
+          fatherVibe={fatherVibe}
+          intuition={intuition}
+          selectedCategories={selectedCategories}
           error={error}
           onMotherBirthDateChange={setMotherBirthDate}
           onConceptionStartChange={setConceptionStart}
@@ -67,9 +72,8 @@ export default function AiPredictPage() {
           onDadMBTIChange={setDadMBTI}
           onFavEmojiChange={setFavEmoji}
           onFatherVibeChange={setFatherVibe}
-          fatherVibe={fatherVibe}
-          intuition={intuition}
           onIntuitionChange={setIntuition}
+          onToggleCategory={toggleCategory}
           onPredict={predict}
         />
       )}

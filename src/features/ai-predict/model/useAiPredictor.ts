@@ -30,6 +30,40 @@ import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
 export type AiGender = "Boy" | "Girl";
 
+/**
+ * 선택 카테고리. 사용자가 해당 카테고리를 선택해야 관련 입력이 노출되고
+ * 해당 알고리즘이 예측에 포함된다. 선택하지 않은 카테고리의 알고리즘은 실행되지 않음.
+ *
+ * - bloodType: 혈액형 조합
+ * - names: 엄마·아빠 이름 → 수비학 (거주지와 함께면 이집트도 활성)
+ * - home: 집 방향 + 층수 + 거주 지역 → K-풍수지리 (이름과 함께면 이집트도 활성)
+ * - ayurveda: 마지막 생리일 + 집 방위 → 아유르베다
+ * - hippocrates: 거주 반구 → 히포크라테스 바람법
+ * - dna: 엄마/아빠 MBTI + 최애 이모티콘 → 디지털 DNA
+ * - cbr: 아빠 기운(fatherVibe) → CBR-Engine (Ge-ai)
+ * - samwon: 직감수 → 삼원공명 (Cl-ai)
+ */
+export type AiCategory =
+  | "bloodType"
+  | "names"
+  | "home"
+  | "ayurveda"
+  | "hippocrates"
+  | "dna"
+  | "cbr"
+  | "samwon";
+
+export const AI_CATEGORIES: { key: AiCategory; emoji: string; label: string; hint: string }[] = [
+  { key: "bloodType",   emoji: "🩸", label: "혈액형",     hint: "엄마·아빠 혈액형" },
+  { key: "names",       emoji: "✍️", label: "이름",       hint: "수비학·이집트" },
+  { key: "home",        emoji: "🏠", label: "거주지",     hint: "풍수지리·이집트" },
+  { key: "ayurveda",    emoji: "🪷", label: "아유르베다", hint: "생리일+방위" },
+  { key: "hippocrates", emoji: "🌬️", label: "반구",       hint: "히포크라테스" },
+  { key: "dna",         emoji: "🧬", label: "MBTI",       hint: "디지털 DNA" },
+  { key: "cbr",         emoji: "✨", label: "Ge-ai",      hint: "아빠 기운 (CBR)" },
+  { key: "samwon",      emoji: "✳️", label: "Cl-ai",      hint: "직감수 (삼원공명)" },
+];
+
 export const METHOD_SCORES: Record<string, number> = {
   chinese: 100,
   mayan: 90,
@@ -87,6 +121,7 @@ export interface AiPredictState {
   favEmoji: string;
   fatherVibe: FatherVibe;
   intuition: number;
+  selectedCategories: Set<AiCategory>;
   isLoading: boolean;
   result: AiPredictResult | null;
   error: string | null;
@@ -112,6 +147,7 @@ export interface AiPredictActions {
   setFavEmoji: (v: string) => void;
   setFatherVibe: (v: FatherVibe) => void;
   setIntuition: (v: number) => void;
+  toggleCategory: (cat: AiCategory) => void;
   predict: () => void;
   reset: () => void;
 }
@@ -134,7 +170,8 @@ function runAllMethods(
   dadMBTI: string,
   favEmoji: string,
   fatherVibe: FatherVibe,
-  intuition: number
+  intuition: number,
+  selectedCategories: Set<AiCategory>
 ): AiPredictResult {
   const momAge = getAgeAtDate(motherBirth, conception);
   const dadAge = getAgeAtDate(fatherBirth, conception);
@@ -241,18 +278,20 @@ function runAllMethods(
     available: true,
   });
 
-  // ⑥ 혈액형 조합 (40점)
-  const btProb = predictByBloodType(dadBlood, momBlood);
-  const btG: AiGender = btProb.boy >= btProb.girl ? "Boy" : "Girl";
-  addMethod({
-    key: "bloodType",
-    name: "혈액형 조합",
-    emoji: "🅰️",
-    gender: btG,
-    score: 40,
-    detail: `${dadBlood}+${momBlood} → 아들 ${btProb.boy}% / 딸 ${btProb.girl}%`,
-    available: true,
-  });
+  // ⑥ 혈액형 조합 (40점) — 카테고리 선택시만
+  if (selectedCategories.has("bloodType")) {
+    const btProb = predictByBloodType(dadBlood, momBlood);
+    const btG: AiGender = btProb.boy >= btProb.girl ? "Boy" : "Girl";
+    addMethod({
+      key: "bloodType",
+      name: "혈액형 조합",
+      emoji: "🅰️",
+      gender: btG,
+      score: 40,
+      detail: `${dadBlood}+${momBlood} → 아들 ${btProb.boy}% / 딸 ${btProb.girl}%`,
+      available: true,
+    });
+  }
 
   // ⑮ 오행천문융합 (Gr-ai, 45점)
   const momYYYYMMDD = motherBirth.toISOString().slice(0,10).replace(/-/g,'');
@@ -268,38 +307,42 @@ function runAllMethods(
     available: true,
   });
 
-  // ⑯ CBR-Engine (Ge-ai, 70점)
-  const cbrResult = predictCBR(motherBirth, conception, fatherVibe);
-  addMethod({
-    key: "cbr",
-    name: "Ge-ai (CBR-Engine)",
-    emoji: "✨",
-    gender: cbrResult.gender,
-    score: 70,
-    detail: `달위상 ${cbrResult.lunarCyclePct}% · 총에너지 ${cbrResult.totalEnergy} · 확률 ${cbrResult.probability}% (${cbrResult.energyStrength})`,
-    available: true,
-  });
+  // ⑯ CBR-Engine (Ge-ai, 70점) — 카테고리 선택시만
+  if (selectedCategories.has("cbr")) {
+    const cbrResult = predictCBR(motherBirth, conception, fatherVibe);
+    addMethod({
+      key: "cbr",
+      name: "Ge-ai (CBR-Engine)",
+      emoji: "✨",
+      gender: cbrResult.gender,
+      score: 70,
+      detail: `달위상 ${cbrResult.lunarCyclePct}% · 총에너지 ${cbrResult.totalEnergy} · 확률 ${cbrResult.probability}% (${cbrResult.energyStrength})`,
+      available: true,
+    });
+  }
 
-  // ⑰ 삼원공명 (Cl-ai, 55점)
-  const samwonConceptionMonth = `${conception.getFullYear()}-${String(conception.getMonth() + 1).padStart(2, "0")}`;
-  const samwonResult = predictBySamwon(
-    motherBirth.toISOString().slice(0, 10),
-    fatherBirth.toISOString().slice(0, 10),
-    samwonConceptionMonth,
-    intuition
-  );
-  addMethod({
-    key: "samwon",
-    name: "Cl-ai (삼원공명)",
-    emoji: "✳️",
-    gender: samwonResult.gender,
-    score: 55,
-    detail: `${samwonResult.stemNames.mother}${samwonResult.stemNames.father}${samwonResult.stemNames.conception} → 정규화 ${samwonResult.scores.normalized}/49 (직감수 ${intuition})`,
-    available: true,
-  });
+  // ⑰ 삼원공명 (Cl-ai, 55점) — 카테고리 선택시만
+  if (selectedCategories.has("samwon")) {
+    const samwonConceptionMonth = `${conception.getFullYear()}-${String(conception.getMonth() + 1).padStart(2, "0")}`;
+    const samwonResult = predictBySamwon(
+      motherBirth.toISOString().slice(0, 10),
+      fatherBirth.toISOString().slice(0, 10),
+      samwonConceptionMonth,
+      intuition
+    );
+    addMethod({
+      key: "samwon",
+      name: "Cl-ai (삼원공명)",
+      emoji: "✳️",
+      gender: samwonResult.gender,
+      score: 55,
+      detail: `${samwonResult.stemNames.mother}${samwonResult.stemNames.father}${samwonResult.stemNames.conception} → 정규화 ${samwonResult.scores.normalized}/49 (직감수 ${intuition})`,
+      available: true,
+    });
+  }
 
-  // ⑦ 수비학 (35점)
-  if (momName.trim() && dadName.trim()) {
+  // ⑦ 수비학 (35점) — 이름 카테고리 선택시만
+  if (selectedCategories.has("names") && momName.trim() && dadName.trim()) {
     const numResult = predictByNumerology(momName.trim(), dadName.trim(), solarConceptionMonth);
     addMethod({
       key: "numerology",
@@ -309,16 +352,6 @@ function runAllMethods(
       score: 35,
       detail: `${numResult.momLen}(엄마) + ${numResult.dadLen}(아빠) + ${solarConceptionMonth}(월) = ${numResult.totalSum} (${numResult.isOdd ? "홀수" : "짝수"})`,
       available: true,
-    });
-  } else {
-    addMethod({
-      key: "numerology",
-      name: "수비학",
-      emoji: "🔢",
-      gender: "Girl",
-      score: 35,
-      detail: "이름 미입력 → 점수 제외",
-      available: false,
     });
   }
 
@@ -346,8 +379,8 @@ function runAllMethods(
     available: true,
   });
 
-  // ⑩ 아유르베다 주기법 (22점)
-  if (lastPeriodDate) {
+  // ⑩ 아유르베다 주기법 (22점) — 아유르베다 카테고리 선택시만
+  if (selectedCategories.has("ayurveda") && lastPeriodDate) {
     try {
       const ayurvedaResult = predictByAyurveda(lastPeriodDate, conception.toISOString().slice(0, 10), (direction as "N"|"NE"|"E"|"SE"|"S"|"SW"|"W"|"NW") || "E");
       addMethod({
@@ -360,14 +393,17 @@ function runAllMethods(
         available: true,
       });
     } catch {
-      addMethod({ key: "ayurveda", name: "아유르베다", emoji: "🪷", gender: "Girl", score: 22, detail: "생리일 미입력 → 점수 제외", available: false });
+      // skip silently on failure
     }
-  } else {
-    addMethod({ key: "ayurveda", name: "아유르베다", emoji: "🪷", gender: "Girl", score: 22, detail: "생리일 미입력 → 점수 제외", available: false });
   }
 
-  // ⑪ 이집트 밀보리법 (20점)
-  if (momName.trim() && locationString.trim()) {
+  // ⑪ 이집트 밀보리법 (20점) — 이름 + 거주지 카테고리 둘 다 선택시만
+  if (
+    selectedCategories.has("names") &&
+    selectedCategories.has("home") &&
+    momName.trim() &&
+    locationString.trim()
+  ) {
     const egyptResult = predictByEgyptWheat(momName.trim(), conception.toISOString().slice(0, 10), locationString.trim());
     addMethod({
       key: "egyptWheat",
@@ -378,24 +414,24 @@ function runAllMethods(
       detail: `envFactor=${egyptResult.envFactor}, 보리${egyptResult.barleyDays}일 vs 밀${egyptResult.wheatDays}일`,
       available: true,
     });
-  } else {
-    addMethod({ key: "egyptWheat", name: "이집트 밀보리", emoji: "🌾", gender: "Girl", score: 20, detail: "이름·지역 미입력 → 점수 제외", available: false });
   }
 
-  // ⑫ 히포크라테스 바람법 (18점)
-  const hippoResult = predictByHippocratesWind(solarConceptionMonth, isNorthernHemisphere);
-  addMethod({
-    key: "hippocratesWind",
-    name: "히포크라테스",
-    emoji: "🌬️",
-    gender: hippoResult.gender,
-    score: 18,
-    detail: `${solarConceptionMonth}월 ${isNorthernHemisphere ? "북반구" : "남반구"} → ${hippoResult.isNorthWind ? "북풍(건조)" : "남풍(다습)"}`,
-    available: true,
-  });
+  // ⑫ 히포크라테스 바람법 (18점) — 반구 카테고리 선택시만
+  if (selectedCategories.has("hippocrates")) {
+    const hippoResult = predictByHippocratesWind(solarConceptionMonth, isNorthernHemisphere);
+    addMethod({
+      key: "hippocratesWind",
+      name: "히포크라테스",
+      emoji: "🌬️",
+      gender: hippoResult.gender,
+      score: 18,
+      detail: `${solarConceptionMonth}월 ${isNorthernHemisphere ? "북반구" : "남반구"} → ${hippoResult.isNorthWind ? "북풍(건조)" : "남풍(다습)"}`,
+      available: true,
+    });
+  }
 
-  // ⑬ K-풍수지리 (15점)
-  if (houseDirection.trim() && floorNumber) {
+  // ⑬ K-풍수지리 (15점) — 거주지 카테고리 선택시만
+  if (selectedCategories.has("home") && houseDirection.trim() && floorNumber) {
     const floor = parseInt(floorNumber, 10);
     if (!isNaN(floor) && floor > 0) {
       const fengshuiResult = predictByKFengshui(houseDirection.trim(), floor, locationString.replace(/\s/g, "").length || 1);
@@ -408,15 +444,16 @@ function runAllMethods(
         detail: `층(${fengshuiResult.floorScore > 0 ? "+" : ""}${fengshuiResult.floorScore}) + 방향(${fengshuiResult.dirScore > 0 ? "+" : ""}${fengshuiResult.dirScore}) + 주소(${fengshuiResult.locScore > 0 ? "+" : ""}${fengshuiResult.locScore}) = ${fengshuiResult.totalScore}`,
         available: true,
       });
-    } else {
-      addMethod({ key: "kfengshui", name: "K-풍수지리", emoji: "🏠", gender: "Girl", score: 15, detail: "층수 오류 → 점수 제외", available: false });
     }
-  } else {
-    addMethod({ key: "kfengshui", name: "K-풍수지리", emoji: "🏠", gender: "Girl", score: 15, detail: "방향·층수 미입력 → 점수 제외", available: false });
   }
 
-  // ⑭ 디지털 DNA (10점)
-  if (momMBTI.trim().length === 4 && dadMBTI.trim().length === 4 && favEmoji.trim()) {
+  // ⑭ 디지털 DNA (10점) — MBTI 카테고리 선택시만
+  if (
+    selectedCategories.has("dna") &&
+    momMBTI.trim().length === 4 &&
+    dadMBTI.trim().length === 4 &&
+    favEmoji.trim()
+  ) {
     const dnaResult = predictByDigitalDna(momMBTI.trim(), dadMBTI.trim(), favEmoji.trim());
     addMethod({
       key: "digitalDna",
@@ -427,8 +464,6 @@ function runAllMethods(
       detail: `아들에너지 ${dnaResult.boyEnergy} vs 딸에너지 ${dnaResult.girlEnergy} (이모티콘 ${dnaResult.emojiBonus === "Boy" ? "아들" : "딸"} +2)`,
       available: true,
     });
-  } else {
-    addMethod({ key: "digitalDna", name: "디지털 DNA", emoji: "🧬", gender: "Girl", score: 10, detail: "MBTI·이모티콘 미입력 → 점수 제외", available: false });
   }
 
   return {
@@ -464,6 +499,7 @@ function runAllMethodsOverRange(
   favEmoji: string,
   fatherVibe: FatherVibe,
   intuition: number,
+  selectedCategories: Set<AiCategory>,
 ): AiPredictResult {
   const days = datesInRange(startIso, endIso);
   const weights = triangularWeights(days.length);
@@ -475,6 +511,7 @@ function runAllMethodsOverRange(
       momBlood, dadBlood, momName, dadName,
       locationString, isNorthernHemisphere, lastPeriodDate, direction,
       houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
+      selectedCategories,
     )
   );
 
@@ -544,7 +581,17 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   const [favEmoji, setFavEmoji] = useState("");
   const [fatherVibe, setFatherVibe] = useState<FatherVibe>("STABLE");
   const [intuition, setIntuition] = useState(5);
+  const [selectedCategories, setSelectedCategories] = useState<Set<AiCategory>>(() => new Set());
   const [isLoading, setIsLoading] = useState(false);
+
+  function toggleCategory(cat: AiCategory) {
+    setSelectedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  }
   const [result, setResult] = useState<AiPredictResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -589,6 +636,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
           momBlood, dadBlood, momName, dadName,
           locationString, isNorthernHemisphere, lastPeriodDate, direction,
           houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
+          selectedCategories,
         );
         setResult(res);
       } catch {
@@ -621,6 +669,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     setFavEmoji("");
     setFatherVibe("STABLE");
     setIntuition(5);
+    setSelectedCategories(new Set());
   }
 
   return {
@@ -628,11 +677,13 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     momBlood, dadBlood, momName, dadName,
     locationString, isNorthernHemisphere, lastPeriodDate, direction,
     houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
+    selectedCategories,
     isLoading, result, error,
     setMotherBirthDate, setConceptionStart, setConceptionEnd, setFatherBirthDate,
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
     setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
+    toggleCategory,
     predict, reset,
   };
 }
