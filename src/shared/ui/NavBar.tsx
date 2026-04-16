@@ -17,8 +17,9 @@ const NAV_ITEMS = [
   { href: "/ayurveda",          emoji: "🪷", label: "아유르베다" },
   { href: "/kfengshui",         emoji: "🏠", label: "풍수지리" },
   { href: "/digital-dna",       emoji: "🧬", label: "디지털DNA" },
-  { href: '/ohang', emoji: '☯️', label: '오행천문' },
-  { href: '/cbr',   emoji: '🏛️', label: 'CBR엔진' },
+  { href: '/ohang', emoji: '✖️', label: 'Gr-ai' },
+  { href: '/cbr',   emoji: '✨', label: 'Ge-ai' },
+  { href: '/samwon', emoji: '✳️', label: 'Cl-ai' },
 ] as const;
 
 export function NavBar() {

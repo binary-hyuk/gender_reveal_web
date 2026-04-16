@@ -14,11 +14,11 @@ export function AyurvedaPredictResult({ result, onReset }: Props) {
     { label: "판정", value: result.isEven ? `${result.finalDays} 짝수 → 아들` : `${result.finalDays} 홀수 → 딸` },
   ];
   return (
-    <div className="flex flex-col items-center gap-6 w-full max-w-sm">
-      <GenderResultCard gender={result.gender} details={details} />
-      <button onClick={onReset} className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50">
-        다시 예측하기
-      </button>
-    </div>
+    <GenderResultCard
+      gender={result.gender}
+      details={details}
+      note="* 아유르베다: 생리→수정 일수 + 방위 기(氣) 보정 → 짝수면 아들, 홀수면 딸"
+      onReset={onReset}
+    />
   );
 }

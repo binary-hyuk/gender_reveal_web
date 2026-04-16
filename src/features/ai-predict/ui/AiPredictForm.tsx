@@ -29,6 +29,7 @@ interface Props {
   dadMBTI: string;
   favEmoji: string;
   fatherVibe: FatherVibe;
+  intuition: number;
   error: string | null;
   onMotherBirthDateChange: (v: string) => void;
   onConceptionDateChange: (v: string) => void;
@@ -47,6 +48,7 @@ interface Props {
   onDadMBTIChange: (v: string) => void;
   onFavEmojiChange: (v: string) => void;
   onFatherVibeChange: (v: FatherVibe) => void;
+  onIntuitionChange: (v: number) => void;
   onPredict: () => void;
 }
 
@@ -88,13 +90,13 @@ export function AiPredictForm({
   motherBirthDate, conceptionDate, fatherBirthDate,
   momBlood, dadBlood, momName, dadName,
   locationString, isNorthernHemisphere, lastPeriodDate, direction,
-  houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji,
-  error,
+  houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe,
+  intuition, error,
   onMotherBirthDateChange, onConceptionDateChange, onFatherBirthDateChange,
   onMomBloodChange, onDadBloodChange, onMomNameChange, onDadNameChange,
   onLocationStringChange, onIsNorthernHemisphereChange, onLastPeriodDateChange, onDirectionChange,
   onHouseDirectionChange, onFloorNumberChange, onMomMBTIChange, onDadMBTIChange, onFavEmojiChange, onFatherVibeChange,
-  onPredict,
+  onIntuitionChange, onPredict,
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-5">
@@ -269,10 +271,10 @@ export function AiPredictForm({
         </div>
       </div>
 
-      {/* CBR-Engine 섹션 */}
+      {/* CBR-Engine (Ge-ai) 섹션 */}
       <div className="rounded-2xl border border-gray-100 bg-white px-5 py-5 shadow-sm space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-          🏛️ CBR-Engine <span className="font-normal normal-case text-gray-300">(아빠 기운 선택)</span>
+          ✨ Ge-ai · CBR-Engine <span className="font-normal normal-case text-gray-300">(아빠 기운 선택)</span>
         </p>
         <div className="grid grid-cols-2 gap-2">
           {VIBES_AI.map((v) => {
@@ -291,6 +293,30 @@ export function AiPredictForm({
               </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* 삼원공명 (Cl-ai) 섹션 */}
+      <div className="rounded-2xl border border-gray-100 bg-white px-5 py-5 shadow-sm space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+          ✳️ Cl-ai · 삼원공명 <span className="font-normal normal-case text-gray-300">(직감수 선택)</span>
+        </p>
+        <p className="text-xs text-gray-400">마음속에 떠오르는 숫자를 골라주세요</p>
+        <div className="grid grid-cols-9 gap-1.5">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+            <button
+              key={n}
+              onClick={() => onIntuitionChange(n)}
+              className={[
+                "rounded-xl py-2.5 text-sm font-bold transition-colors",
+                intuition === n
+                  ? "bg-indigo-500 text-white shadow"
+                  : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+              ].join(" ")}
+            >
+              {n}
+            </button>
+          ))}
         </div>
       </div>
 

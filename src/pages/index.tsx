@@ -11,12 +11,12 @@ export default function AiPredictPage() {
     motherBirthDate, conceptionDate, fatherBirthDate,
     momBlood, dadBlood, momName, dadName,
     locationString, isNorthernHemisphere, lastPeriodDate, direction,
-    houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe,
+    houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
     isLoading, result, error,
     setMotherBirthDate, setConceptionDate, setFatherBirthDate,
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
-    setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe,
+    setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
     predict, reset,
   } = useAiPredictor();
 
@@ -66,6 +66,8 @@ export default function AiPredictPage() {
           onFavEmojiChange={setFavEmoji}
           onFatherVibeChange={setFatherVibe}
           fatherVibe={fatherVibe}
+          intuition={intuition}
+          onIntuitionChange={setIntuition}
           onPredict={predict}
         />
       )}

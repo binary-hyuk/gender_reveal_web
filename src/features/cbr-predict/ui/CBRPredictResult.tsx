@@ -41,7 +41,7 @@ export function CBRPredictResult({ result, onReset }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-5 w-full max-w-sm">
-      <GenderResultCard gender={result.gender} details={details} />
+      <GenderResultCard gender={result.gender} details={details} onReset={onReset} />
 
       {/* 에너지 바 */}
       <div className="w-full rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm space-y-2">
@@ -66,9 +66,6 @@ export function CBRPredictResult({ result, onReset }: Props) {
         </p>
       </div>
 
-      <button onClick={onReset} className="w-full rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50">
-        다시 분석하기
-      </button>
     </div>
   );
 }

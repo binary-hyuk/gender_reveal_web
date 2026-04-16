@@ -9,7 +9,7 @@ interface Props {
   gender: Gender;
   details?: Detail[];
   note?: string;
-  onReset: () => void;
+  onReset?: () => void;
 }
 
 const CONFIG = {
@@ -59,12 +59,14 @@ export function GenderResultCard({ gender, details, note, onReset }: Props) {
         <p className="text-center text-xs text-gray-400">{note}</p>
       )}
 
-      <button
-        onClick={onReset}
-        className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 shadow-sm transition-colors hover:bg-gray-50"
-      >
-        다시 예측하기
-      </button>
+      {onReset && (
+        <button
+          onClick={onReset}
+          className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 shadow-sm transition-colors hover:bg-gray-50"
+        >
+          다시 예측하기
+        </button>
+      )}
     </div>
   );
 }

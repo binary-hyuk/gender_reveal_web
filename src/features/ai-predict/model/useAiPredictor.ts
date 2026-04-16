@@ -18,6 +18,7 @@ import { predictByKFengshui } from "@/features/kfengshui-predict/model/useKFengs
 import { predictByDigitalDna } from "@/features/digital-dna-predict/model/useDigitalDnaPredictor";
 import { predictByOhang } from '@/features/ohang-predict/model/useOhangPredictor';
 import { predictCBR } from "@/features/cbr-predict/model/useCBRPredictor";
+import { predictBySamwon } from "@/features/samwon-predict/model/useSamwonPredictor";
 import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
 export type AiGender = "Boy" | "Girl";
@@ -39,6 +40,7 @@ export const METHOD_SCORES: Record<string, number> = {
   digitalDna: 10,
   ohang: 45,
   cbr: 70,
+  samwon: 55,
 };
 
 export interface MethodResult {
@@ -76,6 +78,7 @@ export interface AiPredictState {
   dadMBTI: string;
   favEmoji: string;
   fatherVibe: FatherVibe;
+  intuition: number;
   isLoading: boolean;
   result: AiPredictResult | null;
   error: string | null;
@@ -99,6 +102,7 @@ export interface AiPredictActions {
   setDadMBTI: (v: string) => void;
   setFavEmoji: (v: string) => void;
   setFatherVibe: (v: FatherVibe) => void;
+  setIntuition: (v: number) => void;
   predict: () => void;
   reset: () => void;
 }
@@ -120,7 +124,8 @@ function runAllMethods(
   momMBTI: string,
   dadMBTI: string,
   favEmoji: string,
-  fatherVibe: FatherVibe
+  fatherVibe: FatherVibe,
+  intuition: number
 ): AiPredictResult {
   const momAge = getAgeAtDate(motherBirth, conception);
   const dadAge = getAgeAtDate(fatherBirth, conception);
@@ -240,29 +245,47 @@ function runAllMethods(
     available: true,
   });
 
-  // ⑮ 오행천문융합 (45점)
+  // ⑮ 오행천문융합 (Gr-ai, 45점)
   const momYYYYMMDD = motherBirth.toISOString().slice(0,10).replace(/-/g,'');
   const dadYYYYMMDD = fatherBirth.toISOString().slice(0,10).replace(/-/g,'');
   const ohangResult = predictByOhang(momYYYYMMDD, dadYYYYMMDD, solarConceptionMonth);
   addMethod({
     key: 'ohang',
-    name: '오행천문융합',
-    emoji: '☯️',
+    name: 'Gr-ai (오행천문융합)',
+    emoji: '✖️',
     gender: ohangResult.gender,
     score: 45,
     detail: `O점수 ${ohangResult.oScore} + I점수 ${ohangResult.iScore} = ${ohangResult.total} (기준 20)`,
     available: true,
   });
 
-  // ⑯ CBR-Engine (70점)
+  // ⑯ CBR-Engine (Ge-ai, 70점)
   const cbrResult = predictCBR(motherBirth, conception, fatherVibe);
   addMethod({
     key: "cbr",
-    name: "CBR-Engine",
-    emoji: "🏛️",
+    name: "Ge-ai (CBR-Engine)",
+    emoji: "✨",
     gender: cbrResult.gender,
     score: 70,
     detail: `달위상 ${cbrResult.lunarCyclePct}% · 총에너지 ${cbrResult.totalEnergy} · 확률 ${cbrResult.probability}% (${cbrResult.energyStrength})`,
+    available: true,
+  });
+
+  // ⑰ 삼원공명 (Cl-ai, 55점)
+  const samwonConceptionMonth = `${conception.getFullYear()}-${String(conception.getMonth() + 1).padStart(2, "0")}`;
+  const samwonResult = predictBySamwon(
+    motherBirth.toISOString().slice(0, 10),
+    fatherBirth.toISOString().slice(0, 10),
+    samwonConceptionMonth,
+    intuition
+  );
+  addMethod({
+    key: "samwon",
+    name: "Cl-ai (삼원공명)",
+    emoji: "✳️",
+    gender: samwonResult.gender,
+    score: 55,
+    detail: `${samwonResult.stemNames.mother}${samwonResult.stemNames.father}${samwonResult.stemNames.conception} → 정규화 ${samwonResult.scores.normalized}/49 (직감수 ${intuition})`,
     available: true,
   });
 
@@ -425,6 +448,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   const [dadMBTI, setDadMBTI] = useState("");
   const [favEmoji, setFavEmoji] = useState("");
   const [fatherVibe, setFatherVibe] = useState<FatherVibe>("STABLE");
+  const [intuition, setIntuition] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AiPredictResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -457,7 +481,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     const delay = 5500 + Math.random() * 1500;
     setTimeout(() => {
       try {
-        const res = runAllMethods(motherBirth, conception, fatherBirth, momBlood, dadBlood, momName, dadName, locationString, isNorthernHemisphere, lastPeriodDate, direction, houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe);
+        const res = runAllMethods(motherBirth, conception, fatherBirth, momBlood, dadBlood, momName, dadName, locationString, isNorthernHemisphere, lastPeriodDate, direction, houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition);
         setResult(res);
       } catch {
         setError("예측 중 오류가 발생했습니다.");
@@ -487,18 +511,19 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     setDadMBTI("");
     setFavEmoji("");
     setFatherVibe("STABLE");
+    setIntuition(5);
   }
 
   return {
     motherBirthDate, conceptionDate, fatherBirthDate,
     momBlood, dadBlood, momName, dadName,
     locationString, isNorthernHemisphere, lastPeriodDate, direction,
-    houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe,
+    houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
     isLoading, result, error,
     setMotherBirthDate, setConceptionDate, setFatherBirthDate,
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
-    setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe,
+    setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
     predict, reset,
   };
 }
