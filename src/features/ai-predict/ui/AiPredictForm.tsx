@@ -17,6 +17,21 @@ const MBTI_TYPES_AI = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","
 const EMOJI_PRESETS_AI = ["🔥","💧","🌿","⚡","🌙","☀️","💎","🌊","🎯","🦋"];
 const INTUITION_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
+/**
+ * 필수 정보만 입력해도 자동으로 실행되는 기본 알고리즘 목록.
+ * 실제 실행 로직은 useAiPredictor.ts의 runAllMethods와 동기화되어야 함.
+ */
+const BASE_ALGORITHMS = [
+  { emoji: "🏮",  label: "중국 황실달력" },
+  { emoji: "🗿",  label: "마야식" },
+  { emoji: "☯️", label: "주역 49법" },
+  { emoji: "🩸",  label: "혈액 갱신법" },
+  { emoji: "🌙",  label: "달 별자리" },
+  { emoji: "✖️", label: "Gr-ai 오행천문" },
+  { emoji: "🎴",  label: "집시 생월법" },
+  { emoji: "🌍",  label: "행성 요일" },
+];
+
 interface Props {
   motherBirthDate: string;
   conceptionStart: string;
@@ -141,16 +156,27 @@ export function AiPredictForm({
           onStartChange={onConceptionStartChange}
           onEndChange={onConceptionEndChange}
         />
+
+        <div className="rounded-xl border border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50 px-3 py-3 space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-purple-700">
+            🤖 자동으로 실행되는 예측 {BASE_ALGORITHMS.length}종
+          </p>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+            {BASE_ALGORITHMS.map((a) => (
+              <div key={a.label} className="flex items-center gap-1.5 text-xs text-gray-700">
+                <span className="text-sm leading-none">{a.emoji}</span>
+                <span className="truncate">{a.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </SectionCard>
 
       {/* 카테고리 선택 안내 + 타일 */}
-      <SectionCard title="관심있는 예측법" hint="(선택 · 다중 가능)">
+      <SectionCard title="관심있는 예측법 추가" hint="(선택 · 다중 가능)">
         <p className="text-xs leading-relaxed text-gray-500">
-          아래에서 관심있는 항목을 선택하면 추가 입력이 나타납니다. 선택한 항목의 알고리즘만 추가로 실행됩니다.
-          <br />
-          <span className="text-gray-400">
-            (기본 8개 알고리즘은 항상 실행됩니다)
-          </span>
+          기본 예측 외에 관심있는 항목을 선택하면 추가 입력이 나타나고,
+          해당 알고리즘이 예측에 포함됩니다.
         </p>
         <div className="grid grid-cols-4 gap-2">
           {AI_CATEGORIES.map((cat) => {
