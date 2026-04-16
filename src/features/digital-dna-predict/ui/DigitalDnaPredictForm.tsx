@@ -49,13 +49,13 @@ export function DigitalDnaPredictForm({
 
       <div className="space-y-2">
         <label className="block text-sm font-semibold text-gray-700">최애 이모티콘</label>
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="grid grid-cols-5 gap-2 mb-2">
           {EMOJI_PRESETS.map((e) => (
             <button
               key={e}
               onClick={() => onFavEmojiChange(e)}
               className={[
-                "rounded-xl px-3 py-2 text-lg transition-colors",
+                "aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors",
                 favEmoji === e ? "bg-purple-500 shadow ring-2 ring-purple-300" : "border border-gray-200 bg-white hover:bg-gray-50",
               ].join(" ")}
             >

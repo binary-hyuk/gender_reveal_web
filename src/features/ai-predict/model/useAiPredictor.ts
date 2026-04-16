@@ -349,7 +349,7 @@ function runAllMethods(
   // ⑩ 아유르베다 주기법 (22점)
   if (lastPeriodDate) {
     try {
-      const ayurvedaResult = predictByAyurveda(lastPeriodDate, conception.toISOString().slice(0, 10), (direction as "East" | "West" | "South" | "North") || "East");
+      const ayurvedaResult = predictByAyurveda(lastPeriodDate, conception.toISOString().slice(0, 10), (direction as "N"|"NE"|"E"|"SE"|"S"|"SW"|"W"|"NW") || "E");
       addMethod({
         key: "ayurveda",
         name: "아유르베다",
@@ -536,7 +536,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   const [locationString, setLocationString] = useState("");
   const [isNorthernHemisphere, setIsNorthernHemisphere] = useState(true);
   const [lastPeriodDate, setLastPeriodDate] = useState("");
-  const [direction, setDirection] = useState("East");
+  const [direction, setDirection] = useState("E");
   const [houseDirection, setHouseDirection] = useState("");
   const [floorNumber, setFloorNumber] = useState("");
   const [momMBTI, setMomMBTI] = useState("");
@@ -613,7 +613,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     setLocationString("");
     setIsNorthernHemisphere(true);
     setLastPeriodDate("");
-    setDirection("East");
+    setDirection("E");
     setHouseDirection("");
     setFloorNumber("");
     setMomMBTI("");

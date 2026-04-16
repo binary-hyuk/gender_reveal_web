@@ -63,12 +63,12 @@ export function KFengshuiPredictForm({
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">거주 주소 <span className="font-normal text-gray-400">(글자수 계산용)</span></label>
+        <label className="block text-sm font-semibold text-gray-700">거주 지역 <span className="font-normal text-gray-400">(시·구까지만 입력해도 됩니다)</span></label>
         <input
           type="text"
           value={locationString}
           onChange={(e) => onLocationStringChange(e.target.value)}
-          placeholder="예: 경기도 김포시 마산동"
+          placeholder="예: 서울시 종로구"
           className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
         />
       </div>

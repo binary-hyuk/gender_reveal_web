@@ -7,8 +7,11 @@ import { VIBE_INFO } from "@/features/cbr-predict/model/useCBRPredictor";
 import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
 const VIBES_AI: FatherVibe[] = ["PASSION", "CALM", "STABLE", "FLEXIBLE"];
-const DIRECTIONS_AI = ["East", "West", "South", "North"] as const;
-const DIR_LABEL_AI: Record<string, string> = { East: "동 🌅", West: "서 🌇", South: "남 ☀️", North: "북 ❄️" };
+const DIRECTIONS_AI = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
+const DIR_LABEL_AI: Record<string, string> = {
+  N: "북 ❄️", NE: "북동 🌨️", E: "동 🌅", SE: "남동 ⛅",
+  S: "남 ☀️", SW: "남서 🌤️", W: "서 🌇", NW: "북서 🌫️",
+};
 const MBTI_TYPES_AI = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"] as const;
 const EMOJI_PRESETS_AI = ["🔥","💧","🌿","⚡","🌙","☀️","💎","🌊","🎯","🦋"];
 
@@ -183,7 +186,7 @@ export function AiPredictForm({
         </p>
         <DateTextInput label="마지막 생리 시작일" hint="(양력)" value={lastPeriodDate} onChange={onLastPeriodDateChange} />
         <div className="space-y-1.5">
-          <label className="block text-sm font-semibold text-gray-700">집 주요 방위</label>
+          <label className="block text-sm font-semibold text-gray-700">집 주요 방위 <span className="font-normal text-gray-400">(8방위)</span></label>
           <div className="grid grid-cols-4 gap-2">
             {DIRECTIONS_AI.map((d) => (
               <button key={d} onClick={() => onDirectionChange(d)}
@@ -201,8 +204,8 @@ export function AiPredictForm({
           🌾 이집트·🏠 풍수지리 <span className="font-normal normal-case text-gray-300">(선택)</span>
         </p>
         <div className="space-y-1.5">
-          <label className="block text-sm font-semibold text-gray-700">거주 지역 / 주소</label>
-          <input type="text" value={locationString} onChange={(e) => onLocationStringChange(e.target.value)} placeholder="예: 경기도 김포시 마산동"
+          <label className="block text-sm font-semibold text-gray-700">거주 지역 <span className="font-normal text-gray-400">(시·구까지만 입력해도 됩니다)</span></label>
+          <input type="text" value={locationString} onChange={(e) => onLocationStringChange(e.target.value)} placeholder="예: 서울시 종로구"
             className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100" />
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -259,10 +262,10 @@ export function AiPredictForm({
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-semibold text-gray-700">최애 이모티콘</label>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {EMOJI_PRESETS_AI.map((e) => (
               <button key={e} onClick={() => onFavEmojiChange(e)}
-                className={["rounded-xl px-2.5 py-1.5 text-lg transition-colors", favEmoji === e ? "bg-purple-500 shadow ring-2 ring-purple-300" : "border border-gray-200 bg-white hover:bg-gray-50"].join(" ")}>
+                className={["aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors", favEmoji === e ? "bg-purple-500 shadow ring-2 ring-purple-300" : "border border-gray-200 bg-white hover:bg-gray-50"].join(" ")}>
                 {e}
               </button>
             ))}

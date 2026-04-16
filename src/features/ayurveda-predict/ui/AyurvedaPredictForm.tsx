@@ -4,10 +4,14 @@ import { DIRECTIONS } from "@/features/ayurveda-predict/model/useAyurvedaPredict
 import type { Direction } from "@/features/ayurveda-predict/model/useAyurvedaPredictor";
 
 const DIR_LABEL: Record<Direction, string> = {
-  East: "동 (East) 🌅",
-  West: "서 (West) 🌇",
-  South: "남 (South) ☀️",
-  North: "북 (North) ❄️",
+  N:  "북 ❄️",
+  NE: "북동 🌨️",
+  E:  "동 🌅",
+  SE: "남동 ⛅",
+  S:  "남 ☀️",
+  SW: "남서 🌤️",
+  W:  "서 🌇",
+  NW: "북서 🌫️",
 };
 
 interface Props {
@@ -30,7 +34,7 @@ export function AyurvedaPredictForm({
   return (
     <div className="w-full max-w-sm space-y-6">
       <div className="rounded-2xl bg-orange-50 px-4 py-3 text-sm text-orange-700">
-        🪷 생리 주기 일수 + 집의 방위 기운으로 성별을 판단합니다.
+        🪷 생리 주기 일수 + 집의 방위 기운(8방위)으로 성별을 판단합니다.
         <br />
         <span className="text-xs text-orange-400">짝수일 → 아들 / 홀수일 → 딸</span>
       </div>
@@ -51,14 +55,14 @@ export function AyurvedaPredictForm({
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">집 주요 방위</label>
-        <div className="grid grid-cols-2 gap-2">
+        <label className="block text-sm font-semibold text-gray-700">집 주요 방위 <span className="font-normal text-gray-400">(8방위)</span></label>
+        <div className="grid grid-cols-4 gap-2">
           {DIRECTIONS.map((d) => (
             <button
               key={d}
               onClick={() => onDirectionChange(d)}
               className={[
-                "rounded-xl py-2.5 text-sm font-medium transition-colors",
+                "rounded-xl py-2.5 text-xs font-medium transition-colors",
                 direction === d
                   ? "bg-orange-500 text-white shadow"
                   : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",

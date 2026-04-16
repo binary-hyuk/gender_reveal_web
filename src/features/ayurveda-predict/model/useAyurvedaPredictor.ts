@@ -8,8 +8,14 @@ import {
 } from "@/shared/lib/dateRangePrediction";
 
 export type AyurvedaGender = "Boy" | "Girl";
-export const DIRECTIONS = ["East", "West", "South", "North"] as const;
+/**
+ * 8방위. 양기(E, SE, S, SW) vs 음기(W, NW, N, NE)
+ */
+export const DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
 export type Direction = typeof DIRECTIONS[number];
+
+/** 양기 방위면 true → chiModifier = 1, 아니면 0 */
+const YANG_DIRECTIONS = new Set<Direction>(["E", "SE", "S", "SW"]);
 
 export interface AyurvedaResult {
   gender: AyurvedaGender;
@@ -23,9 +29,9 @@ export interface AyurvedaResult {
 }
 
 /**
- * 고대 인도 아유르베다 주기법 2.0
+ * 고대 인도 아유르베다 주기법 2.0 (8방위 버전)
  * baseDays = (수정일 - 마지막 생리일) / ms하루
- * chiModifier = East|South → 1 / else → 0
+ * chiModifier = 양기 방위(E·SE·S·SW) → 1 / 음기 방위(W·NW·N·NE) → 0
  * finalDays = floor(baseDays) + chiModifier
  * 짝수 → Boy / 홀수 → Girl
  */
@@ -36,7 +42,7 @@ export function predictByAyurveda(
 ): AyurvedaResult {
   const ms = new Date(conceptionDateIso).getTime() - new Date(lastPeriodDateIso).getTime();
   const baseDays = ms / (1000 * 60 * 60 * 24);
-  const chiModifier = direction === "East" || direction === "South" ? 1 : 0;
+  const chiModifier = YANG_DIRECTIONS.has(direction) ? 1 : 0;
   const finalDays = Math.floor(baseDays) + chiModifier;
   const isEven = finalDays % 2 === 0;
   return { gender: isEven ? "Boy" : "Girl", lastPeriodDate: lastPeriodDateIso, conceptionDate: conceptionDateIso, direction, baseDays, chiModifier, finalDays, isEven };
@@ -63,7 +69,7 @@ export function useAyurvedaPredictor(): AyurvedaState & AyurvedaActions {
   const [lastPeriodDate, setLastPeriodDate] = useState("");
   const [conceptionStart, setConceptionStart] = useState("");
   const [conceptionEnd, setConceptionEnd] = useState("");
-  const [direction, setDirection] = useState<Direction>("East");
+  const [direction, setDirection] = useState<Direction>("E");
   const [result, setResult] = useState<AyurvedaResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,7 +107,7 @@ export function useAyurvedaPredictor(): AyurvedaState & AyurvedaActions {
 
   function reset() {
     setResult(null); setError(null);
-    setLastPeriodDate(""); setConceptionStart(""); setConceptionEnd(""); setDirection("East");
+    setLastPeriodDate(""); setConceptionStart(""); setConceptionEnd(""); setDirection("E");
   }
 
   return {
