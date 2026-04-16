@@ -192,8 +192,8 @@ function runAllMethods(
     }
   };
 
-  // ① 중국 황실 달력 (100점)
-  const chineseRaw = predictGender(chineseAge, lunarMonth);
+  // ① 중국 황실 달력 (100점) — 만나이 × 음력 임신월 기준
+  const chineseRaw = predictGender(momAge, lunarMonth);
   if (chineseRaw !== null) {
     const g: AiGender = chineseRaw === "아들" ? "Boy" : "Girl";
     addMethod({
@@ -202,7 +202,7 @@ function runAllMethods(
       emoji: "🏮",
       gender: g,
       score: 100,
-      detail: `음력 연나이 ${chineseAge}세 × 음력 ${lunarMonth}월`,
+      detail: `엄마 만${momAge}세 × 음력 ${lunarMonth}월`,
       available: true,
     });
   } else {
@@ -212,7 +212,7 @@ function runAllMethods(
       emoji: "🏮",
       gender: "Girl",
       score: 100,
-      detail: `음력 연나이 ${chineseAge}세: 표 범위 초과`,
+      detail: `엄마 만${momAge}세: 표 범위(18~45세) 초과`,
       available: false,
     });
   }

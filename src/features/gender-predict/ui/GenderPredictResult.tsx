@@ -42,9 +42,9 @@ export function GenderPredictResult({ result, onReset }: Props) {
         </h3>
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex justify-between">
-            <span>엄마의 음력 연나이</span>
+            <span>엄마의 만나이</span>
             <span className="font-semibold text-gray-800">
-              {result.chineseAge}세
+              {result.motherAge}세
             </span>
           </div>
           <div className="flex justify-between">

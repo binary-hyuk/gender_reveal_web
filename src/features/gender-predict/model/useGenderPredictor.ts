@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { getChineseAge, solarToLunar } from "@/shared/lib/lunarConverter";
+import { solarToLunar } from "@/shared/lib/lunarConverter";
+import { getAgeAtDate } from "@/shared/lib/ageUtils";
 import { predictGender, AGE_MIN, AGE_MAX } from "./genderTable";
 import {
   datesInRange,
@@ -11,7 +12,8 @@ import {
 
 export interface PredictResult {
   gender: "아들" | "딸";
-  chineseAge: number;
+  /** 임신 당시 엄마의 만나이 */
+  motherAge: number;
   lunarConceptionMonth: number;
 }
 
@@ -70,10 +72,10 @@ export function useGenderPredictor(): GenderPredictorState & GenderPredictorActi
 
     for (let i = 0; i < days.length; i++) {
       const conception = new Date(days[i]);
-      const chineseAge = getChineseAge(birth, conception);
-      if (chineseAge < AGE_MIN || chineseAge > AGE_MAX) continue;
+      const motherAge = getAgeAtDate(birth, conception);
+      if (motherAge < AGE_MIN || motherAge > AGE_MAX) continue;
       const lunar = solarToLunar(conception);
-      const korean = predictGender(chineseAge, lunar.month);
+      const korean = predictGender(motherAge, lunar.month);
       if (!korean) continue;
 
       if (korean === "아들") boyW += weights[i];
@@ -82,7 +84,7 @@ export function useGenderPredictor(): GenderPredictorState & GenderPredictorActi
       if (i === midIdx) {
         midResult = {
           gender: korean,
-          chineseAge,
+          motherAge,
           lunarConceptionMonth: lunar.month,
         };
       }
@@ -92,14 +94,14 @@ export function useGenderPredictor(): GenderPredictorState & GenderPredictorActi
     if (!midResult) {
       for (let i = 0; i < days.length; i++) {
         const conception = new Date(days[i]);
-        const chineseAge = getChineseAge(birth, conception);
-        if (chineseAge < AGE_MIN || chineseAge > AGE_MAX) continue;
+        const motherAge = getAgeAtDate(birth, conception);
+        if (motherAge < AGE_MIN || motherAge > AGE_MAX) continue;
         const lunar = solarToLunar(conception);
-        const korean = predictGender(chineseAge, lunar.month);
+        const korean = predictGender(motherAge, lunar.month);
         if (korean) {
           midResult = {
             gender: korean,
-            chineseAge,
+            motherAge,
             lunarConceptionMonth: lunar.month,
           };
           break;

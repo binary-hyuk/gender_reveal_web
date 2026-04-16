@@ -1,12 +1,14 @@
 /**
  * 중국 황실 달력 성별 예측 데이터 테이블
  *
- * 출처: 중국 황실 달력 이미지 기반
- * - 세로축: 엄마의 음력 연나이 (18~45세)
- * - 가로축: 임신(수정)한 음력 월 (1~12월)
+ * 출처: 중국 황실 달력 (사용자 제공 이미지 기반 검증 완료)
+ * - 세로축: 엄마의 **만나이** (18~45세) — 임신 당시 solar age
+ * - 가로축: 임신(수정)한 **음력 월** (1~12월)
  * - 'B' = 아들, 'G' = 딸
  *
- * GENDER_TABLE[age][month - 1]
+ * 검증 예시: 만27세 × 음력 1월 → 딸 (row 27, col 0 = "G")
+ *
+ * GENDER_TABLE[motherAge][lunarMonth - 1]
  */
 
 export type GenderCode = "B" | "G";
@@ -48,17 +50,19 @@ export const AGE_MIN = 18;
 export const AGE_MAX = 45;
 
 /**
- * 음력 연나이 + 음력 임신월로 성별 예측
+ * 엄마 만나이 + 음력 임신월로 성별 예측
+ * @param motherAge 임신 당시 엄마의 만나이 (solar age)
+ * @param lunarConceptionMonth 임신한 음력 월 (1~12)
  * @returns '아들' | '딸' | null (범위 초과 시 null)
  */
 export function predictGender(
-  chineseAge: number,
+  motherAge: number,
   lunarConceptionMonth: number
 ): "아들" | "딸" | null {
-  if (chineseAge < AGE_MIN || chineseAge > AGE_MAX) return null;
+  if (motherAge < AGE_MIN || motherAge > AGE_MAX) return null;
   if (lunarConceptionMonth < 1 || lunarConceptionMonth > 12) return null;
 
-  const row = GENDER_TABLE[chineseAge];
+  const row = GENDER_TABLE[motherAge];
   if (!row) return null;
 
   return row[lunarConceptionMonth - 1] === "B" ? "아들" : "딸";
