@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 
 const NAV_ITEMS = [
   { href: "/",              emoji: "🤖", label: "AI 예측"   },
+  { href: "/planner",       emoji: "🎯", label: "플래너"    },
   { href: "/chinese",       emoji: "🏮", label: "중국 달력" },
   { href: "/mayan",         emoji: "🗿", label: "마야식"   },
   { href: "/ancient49",     emoji: "☯️", label: "주역 49" },
