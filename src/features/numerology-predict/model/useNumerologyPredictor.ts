@@ -107,10 +107,6 @@ export function useNumerologyPredictor(): NumerologyState & NumerologyActions {
   function reset() {
     setResult(null);
     setError(null);
-    setMomName("");
-    setDadName("");
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {

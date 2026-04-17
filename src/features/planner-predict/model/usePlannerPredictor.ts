@@ -60,11 +60,6 @@ export function usePlannerPredictor(): PlannerState & PlannerActions {
   }
 
   function reset() {
-    setMotherBirthDate("");
-    setFatherBirthDate("");
-    setMomMBTI("");
-    setDadMBTI("");
-    setTarget("Girl");
     setResult(null);
     setError(null);
   }

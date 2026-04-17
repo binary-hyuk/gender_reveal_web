@@ -109,9 +109,6 @@ export function useGypsyPredictor(): GypsyState & GypsyActions {
   function reset() {
     setResult(null);
     setError(null);
-    setMotherBirthDate("");
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {

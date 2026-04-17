@@ -276,11 +276,6 @@ export function useSamwonPredictor(): SamwonState & SamwonActions {
   }
 
   function reset() {
-    setMotherBirthDate("");
-    setFatherBirthDate("");
-    setConceptionStart("");
-    setConceptionEnd("");
-    setIntuition(5);
     setResult(null);
     setError(null);
   }

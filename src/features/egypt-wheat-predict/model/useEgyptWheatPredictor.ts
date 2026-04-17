@@ -93,8 +93,8 @@ export function useEgyptWheatPredictor(): EgyptWheatState & EgyptWheatActions {
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setMomName(""); setConceptionStart(""); setConceptionEnd(""); setLocationString("");
+    setResult(null);
+    setError(null);
   }
 
   return {

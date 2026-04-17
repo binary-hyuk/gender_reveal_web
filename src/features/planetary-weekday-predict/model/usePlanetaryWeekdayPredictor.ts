@@ -91,8 +91,6 @@ export function usePlanetaryWeekdayPredictor(): PlanetaryState & PlanetaryAction
   function reset() {
     setResult(null);
     setError(null);
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {

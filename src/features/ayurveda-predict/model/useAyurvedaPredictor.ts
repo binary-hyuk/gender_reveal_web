@@ -106,8 +106,8 @@ export function useAyurvedaPredictor(): AyurvedaState & AyurvedaActions {
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setLastPeriodDate(""); setConceptionStart(""); setConceptionEnd(""); setDirection("E");
+    setResult(null);
+    setError(null);
   }
 
   return {

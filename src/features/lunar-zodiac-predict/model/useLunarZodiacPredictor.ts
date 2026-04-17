@@ -85,8 +85,6 @@ export function useLunarZodiacPredictor(): LunarZodiacState & LunarZodiacActions
   function reset() {
     setResult(null);
     setError(null);
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {

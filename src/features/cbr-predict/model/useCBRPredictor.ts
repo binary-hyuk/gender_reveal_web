@@ -150,8 +150,8 @@ export function useCBRPredictor(): CBRState & CBRActions {
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setMotherDob(""); setConceptionStart(""); setConceptionEnd(""); setFatherVibe("STABLE");
+    setResult(null);
+    setError(null);
   }
 
   return {

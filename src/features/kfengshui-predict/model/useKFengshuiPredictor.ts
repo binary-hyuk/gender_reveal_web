@@ -71,8 +71,8 @@ export function useKFengshuiPredictor(): KFengshuiState & KFengshuiActions {
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setHouseDirection(""); setFloorNumber(""); setLocationString("");
+    setResult(null);
+    setError(null);
   }
 
   return { houseDirection, floorNumber, locationString, result, error, setHouseDirection, setFloorNumber, setLocationString, predict, reset };

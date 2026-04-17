@@ -76,8 +76,6 @@ export function useBloodRenewalPredictor(): BloodRenewalState & BloodRenewalActi
   function reset() {
     setResult(null);
     setError(null);
-    setDadAge("");
-    setMomAge("");
   }
 
   return { dadAge, momAge, result, error, setDadAge, setMomAge, predict, reset };

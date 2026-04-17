@@ -647,29 +647,11 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   }
 
   function reset() {
+    // 입력값·선택 카테고리는 유지하고 결과/에러/로딩만 초기화
+    // 같은 조건에서 재예측하거나 일부만 수정해서 재시도하기 쉽게 함
     setResult(null);
     setError(null);
     setIsLoading(false);
-    setMotherBirthDate("");
-    setConceptionStart("");
-    setConceptionEnd("");
-    setFatherBirthDate("");
-    setMomBlood("A");
-    setDadBlood("A");
-    setMomName("");
-    setDadName("");
-    setLocationString("");
-    setIsNorthernHemisphere(true);
-    setLastPeriodDate("");
-    setDirection("E");
-    setHouseDirection("");
-    setFloorNumber("");
-    setMomMBTI("");
-    setDadMBTI("");
-    setFavEmoji("");
-    setFatherVibe("STABLE");
-    setIntuition(5);
-    setSelectedCategories(new Set());
   }
 
   return {

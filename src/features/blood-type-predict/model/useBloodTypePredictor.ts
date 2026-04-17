@@ -47,8 +47,6 @@ export function useBloodTypePredictor(): BloodTypeState & BloodTypeActions {
   function reset() {
     setResult(null);
     setError(null);
-    setDadBlood("A");
-    setMomBlood("A");
   }
 
   return { dadBlood, momBlood, result, error, setDadBlood, setMomBlood, predict, reset };

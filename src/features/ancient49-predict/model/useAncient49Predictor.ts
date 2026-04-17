@@ -115,11 +115,9 @@ export function useAncient49Predictor(): Ancient49State & Ancient49Actions {
   }
 
   function reset() {
+    // 입력값은 유지하고 결과/에러만 초기화 — 같은 입력으로 재예측 가능
     setResult(null);
     setError(null);
-    setMotherBirthDate("");
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {

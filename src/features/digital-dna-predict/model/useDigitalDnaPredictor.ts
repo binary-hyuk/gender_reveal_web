@@ -77,8 +77,8 @@ export function useDigitalDnaPredictor(): DigitalDnaState & DigitalDnaActions {
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setMomMBTI(""); setDadMBTI(""); setFavEmoji("");
+    setResult(null);
+    setError(null);
   }
 
   return { momMBTI, dadMBTI, favEmoji, result, error, setMomMBTI, setDadMBTI, setFavEmoji, predict, reset };

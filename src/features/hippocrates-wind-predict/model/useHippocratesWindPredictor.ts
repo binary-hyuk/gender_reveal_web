@@ -87,8 +87,8 @@ export function useHippocratesWindPredictor(): HippocratesState & HippocratesAct
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setConceptionStart(""); setConceptionEnd(""); setIsNorthernHemisphere(true);
+    setResult(null);
+    setError(null);
   }
 
   return {

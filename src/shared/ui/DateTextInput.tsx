@@ -68,10 +68,20 @@ export function DateTextInput({ label, hint, value, onChange }: Props) {
   const [showPicker, setShowPicker] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 부모가 reset()으로 value를 비울 때 내부 상태도 초기화
+  // 입력창/달력으로 내부에서 value를 변경한 경우, 다음 효과에서의
+  // value→rawText 역동기화를 건너뛰기 위한 플래그.
+  // 이것이 없으면 사용자가 8자리 미만을 타이핑(onChange("") 발생) 할 때마다
+  // 부모 value가 ""로 변하고 effect가 rawText도 비워버려 입력이 전부 사라진다.
+  const skipNextSync = useRef(false);
+
+  // 부모가 외부에서 value를 변경한 경우에만 rawText를 동기화
+  // (reset, 초기값 주입, prop 교체 등)
   useEffect(() => {
-    if (!value) setRawText("");
-    else setRawText(value.replace(/-/g, ""));
+    if (skipNextSync.current) {
+      skipNextSync.current = false;
+      return;
+    }
+    setRawText(value ? value.replace(/-/g, "") : "");
   }, [value]);
 
   // 바깥 클릭 시 picker 닫기
@@ -94,6 +104,7 @@ export function DateTextInput({ label, hint, value, onChange }: Props) {
     const raw = e.target.value;
     setRawText(raw);
     const result = parseDateInput(raw);
+    skipNextSync.current = true;
     onChange(result ? result.iso : "");
   }
 
@@ -101,6 +112,7 @@ export function DateTextInput({ label, hint, value, onChange }: Props) {
     if (!date) return;
     const iso = dateToIso(date);
     setRawText(iso.replace(/-/g, ""));
+    skipNextSync.current = true;
     onChange(iso);
     setShowPicker(false);
   }

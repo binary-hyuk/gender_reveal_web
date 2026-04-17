@@ -110,8 +110,8 @@ export function useOhangPredictor(): OhangState & OhangActions {
   }
 
   function reset() {
-    setResult(null); setError(null);
-    setMomBirth(''); setDadBirth(''); setConceptionStart(''); setConceptionEnd('');
+    setResult(null);
+    setError(null);
   }
 
   return {

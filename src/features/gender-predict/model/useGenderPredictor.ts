@@ -128,9 +128,6 @@ export function useGenderPredictor(): GenderPredictorState & GenderPredictorActi
   function reset() {
     setResult(null);
     setError(null);
-    setMotherBirthDate("");
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {

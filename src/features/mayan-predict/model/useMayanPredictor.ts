@@ -106,9 +106,6 @@ export function useMayanPredictor(): MayanState & MayanActions {
   function reset() {
     setResult(null);
     setError(null);
-    setMotherBirthDate("");
-    setConceptionStart("");
-    setConceptionEnd("");
   }
 
   return {
