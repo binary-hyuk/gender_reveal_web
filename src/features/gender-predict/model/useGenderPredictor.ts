@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { solarToLunar } from "@/shared/lib/lunarConverter";
 import { getAgeAtDate } from "@/shared/lib/ageUtils";
+import { usePersistedState } from "@/shared/lib/usePersistedState";
 import { predictGender, AGE_MIN, AGE_MAX } from "./genderTable";
 import {
   datesInRange,
@@ -34,9 +35,9 @@ export interface GenderPredictorActions {
 }
 
 export function useGenderPredictor(): GenderPredictorState & GenderPredictorActions {
-  const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [conceptionStart, setConceptionStart] = useState("");
-  const [conceptionEnd, setConceptionEnd] = useState("");
+  const [motherBirthDate, setMotherBirthDate] = usePersistedState("chinese:motherBirthDate:v1", "");
+  const [conceptionStart, setConceptionStart] = usePersistedState("chinese:conceptionStart:v1", "");
+  const [conceptionEnd, setConceptionEnd] = usePersistedState("chinese:conceptionEnd:v1", "");
   const [result, setResult] = useState<PredictResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 

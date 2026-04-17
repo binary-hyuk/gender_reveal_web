@@ -26,6 +26,8 @@ import {
   validateRange,
   normalizeRange,
 } from "@/shared/lib/dateRangePrediction";
+import { usePersistedState } from "@/shared/lib/usePersistedState";
+import { addHistory } from "@/shared/lib/predictionHistory";
 import type { FatherVibe } from "@/features/cbr-predict/model/useCBRPredictor";
 
 export type AiGender = "Boy" | "Girl";
@@ -148,6 +150,8 @@ export interface AiPredictActions {
   setFatherVibe: (v: FatherVibe) => void;
   setIntuition: (v: number) => void;
   toggleCategory: (cat: AiCategory) => void;
+  /** 저장된 입력값을 지우고 모두 초기값으로 되돌림 (reset과 다르게 입력도 비움) */
+  clearSavedInputs: () => void;
   predict: () => void;
   reset: () => void;
 }
@@ -562,34 +566,35 @@ function runAllMethodsOverRange(
 }
 
 export function useAiPredictor(): AiPredictState & AiPredictActions {
-  const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [conceptionStart, setConceptionStart] = useState("");
-  const [conceptionEnd, setConceptionEnd] = useState("");
-  const [fatherBirthDate, setFatherBirthDate] = useState("");
-  const [momBlood, setMomBlood] = useState<BloodType>("A");
-  const [dadBlood, setDadBlood] = useState<BloodType>("A");
-  const [momName, setMomName] = useState("");
-  const [dadName, setDadName] = useState("");
-  const [locationString, setLocationString] = useState("");
-  const [isNorthernHemisphere, setIsNorthernHemisphere] = useState(true);
-  const [lastPeriodDate, setLastPeriodDate] = useState("");
-  const [direction, setDirection] = useState("E");
-  const [houseDirection, setHouseDirection] = useState("");
-  const [floorNumber, setFloorNumber] = useState("");
-  const [momMBTI, setMomMBTI] = useState("");
-  const [dadMBTI, setDadMBTI] = useState("");
-  const [favEmoji, setFavEmoji] = useState("");
-  const [fatherVibe, setFatherVibe] = useState<FatherVibe>("STABLE");
-  const [intuition, setIntuition] = useState(5);
-  const [selectedCategories, setSelectedCategories] = useState<Set<AiCategory>>(() => new Set());
+  const [motherBirthDate, setMotherBirthDate] = usePersistedState("ai:motherBirthDate:v1", "");
+  const [conceptionStart, setConceptionStart] = usePersistedState("ai:conceptionStart:v1", "");
+  const [conceptionEnd, setConceptionEnd] = usePersistedState("ai:conceptionEnd:v1", "");
+  const [fatherBirthDate, setFatherBirthDate] = usePersistedState("ai:fatherBirthDate:v1", "");
+  const [momBlood, setMomBlood] = usePersistedState<BloodType>("ai:momBlood:v1", "A");
+  const [dadBlood, setDadBlood] = usePersistedState<BloodType>("ai:dadBlood:v1", "A");
+  const [momName, setMomName] = usePersistedState("ai:momName:v1", "");
+  const [dadName, setDadName] = usePersistedState("ai:dadName:v1", "");
+  const [locationString, setLocationString] = usePersistedState("ai:locationString:v1", "");
+  const [isNorthernHemisphere, setIsNorthernHemisphere] = usePersistedState("ai:isNorthernHemisphere:v1", true);
+  const [lastPeriodDate, setLastPeriodDate] = usePersistedState("ai:lastPeriodDate:v1", "");
+  const [direction, setDirection] = usePersistedState("ai:direction:v1", "E");
+  const [houseDirection, setHouseDirection] = usePersistedState("ai:houseDirection:v1", "");
+  const [floorNumber, setFloorNumber] = usePersistedState("ai:floorNumber:v1", "");
+  const [momMBTI, setMomMBTI] = usePersistedState("ai:momMBTI:v1", "");
+  const [dadMBTI, setDadMBTI] = usePersistedState("ai:dadMBTI:v1", "");
+  const [favEmoji, setFavEmoji] = usePersistedState("ai:favEmoji:v1", "");
+  const [fatherVibe, setFatherVibe] = usePersistedState<FatherVibe>("ai:fatherVibe:v1", "STABLE");
+  const [intuition, setIntuition] = usePersistedState("ai:intuition:v1", 5);
+  // Set은 JSON 직렬화 불가 → 내부 배열로 저장 후 Set 변환. 하지만 여기선 Set 인터페이스를 유지하기 위해
+  // 배열로 영속화한 뒤 파생 Set 을 매번 만든다.
+  const [categoriesArray, setCategoriesArray] = usePersistedState<AiCategory[]>("ai:selectedCategories:v1", []);
+  const selectedCategories = new Set(categoriesArray);
   const [isLoading, setIsLoading] = useState(false);
 
   function toggleCategory(cat: AiCategory) {
-    setSelectedCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(cat)) next.delete(cat);
-      else next.add(cat);
-      return next;
+    setCategoriesArray((prev) => {
+      if (prev.includes(cat)) return prev.filter((c) => c !== cat);
+      return [...prev, cat];
     });
   }
   const [result, setResult] = useState<AiPredictResult | null>(null);
@@ -639,6 +644,18 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
           selectedCategories,
         );
         setResult(res);
+        // 히스토리 기록 (실패해도 결과 표시에는 영향 없도록 try-catch)
+        try {
+          addHistory({
+            page: "ai",
+            pageTitle: "AI 성별 예측",
+            resultEmoji: res.finalGender === "Boy" ? "👦" : "👧",
+            resultLabel: res.finalGender === "Boy" ? "아들이에요" : "딸이에요",
+            summary: `아들 ${res.boyScore} · 딸 ${res.girlScore}`,
+          });
+        } catch {
+          // 무시
+        }
       } catch {
         setError("예측 중 오류가 발생했습니다.");
       }
@@ -649,6 +666,33 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
   function reset() {
     // 입력값·선택 카테고리는 유지하고 결과/에러/로딩만 초기화
     // 같은 조건에서 재예측하거나 일부만 수정해서 재시도하기 쉽게 함
+    setResult(null);
+    setError(null);
+    setIsLoading(false);
+  }
+
+  /** 전체 입력값까지 초기화 + localStorage 키 제거 */
+  function clearSavedInputs() {
+    setMotherBirthDate("");
+    setConceptionStart("");
+    setConceptionEnd("");
+    setFatherBirthDate("");
+    setMomBlood("A");
+    setDadBlood("A");
+    setMomName("");
+    setDadName("");
+    setLocationString("");
+    setIsNorthernHemisphere(true);
+    setLastPeriodDate("");
+    setDirection("E");
+    setHouseDirection("");
+    setFloorNumber("");
+    setMomMBTI("");
+    setDadMBTI("");
+    setFavEmoji("");
+    setFatherVibe("STABLE");
+    setIntuition(5);
+    setCategoriesArray([]);
     setResult(null);
     setError(null);
     setIsLoading(false);
@@ -666,6 +710,7 @@ export function useAiPredictor(): AiPredictState & AiPredictActions {
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
     setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
     toggleCategory,
+    clearSavedInputs,
     predict, reset,
   };
 }

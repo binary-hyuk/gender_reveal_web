@@ -54,6 +54,7 @@ interface Props {
   intuition: number;
   selectedCategories: Set<AiCategory>;
   error: string | null;
+  onClearSavedInputs: () => void;
   onMotherBirthDateChange: (v: string) => void;
   onConceptionStartChange: (v: string) => void;
   onConceptionEndChange: (v: string) => void;
@@ -76,6 +77,8 @@ interface Props {
   onToggleCategory: (cat: AiCategory) => void;
   onPredict: () => void;
 }
+
+const CLEAR_CONFIRM = "저장된 모든 입력값이 지워집니다. 계속하시겠어요?";
 
 function BloodTypeSelector({
   label, value, activeColor, onChange,
@@ -128,8 +131,13 @@ export function AiPredictForm({
   onMomBloodChange, onDadBloodChange, onMomNameChange, onDadNameChange,
   onLocationStringChange, onIsNorthernHemisphereChange, onLastPeriodDateChange, onDirectionChange,
   onHouseDirectionChange, onFloorNumberChange, onMomMBTIChange, onDadMBTIChange, onFavEmojiChange, onFatherVibeChange,
-  onIntuitionChange, onToggleCategory, onPredict,
+  onIntuitionChange, onToggleCategory, onClearSavedInputs, onPredict,
 }: Props) {
+  function handleClear() {
+    if (typeof window !== "undefined" && window.confirm(CLEAR_CONFIRM)) {
+      onClearSavedInputs();
+    }
+  }
   const showNames = selectedCategories.has("names");
   const showHome = selectedCategories.has("home");
 
@@ -394,6 +402,14 @@ export function AiPredictForm({
         className="w-full rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-4 text-lg font-bold text-white shadow-lg transition-transform active:scale-95 hover:opacity-90"
       >
         🤖 AI 성별 예측 시작
+      </button>
+
+      <button
+        type="button"
+        onClick={handleClear}
+        className="block w-full text-center text-xs text-gray-400 hover:text-red-500 underline"
+      >
+        🗑️ 저장된 입력값 초기화
       </button>
     </div>
   );

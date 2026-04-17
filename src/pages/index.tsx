@@ -1,4 +1,5 @@
 import { PageLayout } from "@/shared/ui/PageLayout";
+import { PredictionHistoryPanel } from "@/shared/ui/PredictionHistoryPanel";
 import {
   useAiPredictor,
   AiPredictForm,
@@ -18,7 +19,7 @@ export default function AiPredictPage() {
     setMomBlood, setDadBlood, setMomName, setDadName,
     setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
     setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
-    toggleCategory,
+    toggleCategory, clearSavedInputs,
     predict, reset,
   } = useAiPredictor();
 
@@ -32,50 +33,54 @@ export default function AiPredictPage() {
       ) : result ? (
         <AiPredictResult result={result} onReset={reset} />
       ) : (
-        <AiPredictForm
-          motherBirthDate={motherBirthDate}
-          conceptionStart={conceptionStart}
-          conceptionEnd={conceptionEnd}
-          fatherBirthDate={fatherBirthDate}
-          momBlood={momBlood}
-          dadBlood={dadBlood}
-          momName={momName}
-          dadName={dadName}
-          locationString={locationString}
-          isNorthernHemisphere={isNorthernHemisphere}
-          lastPeriodDate={lastPeriodDate}
-          direction={direction}
-          houseDirection={houseDirection}
-          floorNumber={floorNumber}
-          momMBTI={momMBTI}
-          dadMBTI={dadMBTI}
-          favEmoji={favEmoji}
-          fatherVibe={fatherVibe}
-          intuition={intuition}
-          selectedCategories={selectedCategories}
-          error={error}
-          onMotherBirthDateChange={setMotherBirthDate}
-          onConceptionStartChange={setConceptionStart}
-          onConceptionEndChange={setConceptionEnd}
-          onFatherBirthDateChange={setFatherBirthDate}
-          onMomBloodChange={setMomBlood}
-          onDadBloodChange={setDadBlood}
-          onMomNameChange={setMomName}
-          onDadNameChange={setDadName}
-          onLocationStringChange={setLocationString}
-          onIsNorthernHemisphereChange={setIsNorthernHemisphere}
-          onLastPeriodDateChange={setLastPeriodDate}
-          onDirectionChange={setDirection}
-          onHouseDirectionChange={setHouseDirection}
-          onFloorNumberChange={setFloorNumber}
-          onMomMBTIChange={setMomMBTI}
-          onDadMBTIChange={setDadMBTI}
-          onFavEmojiChange={setFavEmoji}
-          onFatherVibeChange={setFatherVibe}
-          onIntuitionChange={setIntuition}
-          onToggleCategory={toggleCategory}
-          onPredict={predict}
-        />
+        <div className="w-full max-w-sm space-y-5">
+          <AiPredictForm
+            motherBirthDate={motherBirthDate}
+            conceptionStart={conceptionStart}
+            conceptionEnd={conceptionEnd}
+            fatherBirthDate={fatherBirthDate}
+            momBlood={momBlood}
+            dadBlood={dadBlood}
+            momName={momName}
+            dadName={dadName}
+            locationString={locationString}
+            isNorthernHemisphere={isNorthernHemisphere}
+            lastPeriodDate={lastPeriodDate}
+            direction={direction}
+            houseDirection={houseDirection}
+            floorNumber={floorNumber}
+            momMBTI={momMBTI}
+            dadMBTI={dadMBTI}
+            favEmoji={favEmoji}
+            fatherVibe={fatherVibe}
+            intuition={intuition}
+            selectedCategories={selectedCategories}
+            error={error}
+            onMotherBirthDateChange={setMotherBirthDate}
+            onConceptionStartChange={setConceptionStart}
+            onConceptionEndChange={setConceptionEnd}
+            onFatherBirthDateChange={setFatherBirthDate}
+            onMomBloodChange={setMomBlood}
+            onDadBloodChange={setDadBlood}
+            onMomNameChange={setMomName}
+            onDadNameChange={setDadName}
+            onLocationStringChange={setLocationString}
+            onIsNorthernHemisphereChange={setIsNorthernHemisphere}
+            onLastPeriodDateChange={setLastPeriodDate}
+            onDirectionChange={setDirection}
+            onHouseDirectionChange={setHouseDirection}
+            onFloorNumberChange={setFloorNumber}
+            onMomMBTIChange={setMomMBTI}
+            onDadMBTIChange={setDadMBTI}
+            onFavEmojiChange={setFavEmoji}
+            onFatherVibeChange={setFatherVibe}
+            onIntuitionChange={setIntuition}
+            onToggleCategory={toggleCategory}
+            onClearSavedInputs={clearSavedInputs}
+            onPredict={predict}
+          />
+          <PredictionHistoryPanel />
+        </div>
       )}
     </PageLayout>
   );

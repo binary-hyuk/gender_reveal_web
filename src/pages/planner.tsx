@@ -1,4 +1,5 @@
 import { PageLayout } from "@/shared/ui/PageLayout";
+import { PredictionHistoryPanel } from "@/shared/ui/PredictionHistoryPanel";
 import {
   usePlannerPredictor,
   PlannerPredictForm,
@@ -20,20 +21,23 @@ export default function PlannerPage() {
       {result ? (
         <PlannerPredictResult result={result} onReset={reset} />
       ) : (
-        <PlannerPredictForm
-          motherBirthDate={motherBirthDate}
-          fatherBirthDate={fatherBirthDate}
-          momMBTI={momMBTI}
-          dadMBTI={dadMBTI}
-          target={target}
-          error={error}
-          onMotherBirthDateChange={setMotherBirthDate}
-          onFatherBirthDateChange={setFatherBirthDate}
-          onMomMBTIChange={setMomMBTI}
-          onDadMBTIChange={setDadMBTI}
-          onTargetChange={setTarget}
-          onPredict={predict}
-        />
+        <div className="w-full max-w-sm space-y-5">
+          <PlannerPredictForm
+            motherBirthDate={motherBirthDate}
+            fatherBirthDate={fatherBirthDate}
+            momMBTI={momMBTI}
+            dadMBTI={dadMBTI}
+            target={target}
+            error={error}
+            onMotherBirthDateChange={setMotherBirthDate}
+            onFatherBirthDateChange={setFatherBirthDate}
+            onMomMBTIChange={setMomMBTI}
+            onDadMBTIChange={setDadMBTI}
+            onTargetChange={setTarget}
+            onPredict={predict}
+          />
+          <PredictionHistoryPanel />
+        </div>
       )}
     </PageLayout>
   );

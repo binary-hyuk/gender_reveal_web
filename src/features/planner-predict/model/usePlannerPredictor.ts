@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { usePersistedState } from "@/shared/lib/usePersistedState";
+import { addHistory } from "@/shared/lib/predictionHistory";
 import {
   buildRecommendations,
   type PlannerRecommendations,
@@ -29,11 +31,11 @@ export interface PlannerActions {
 }
 
 export function usePlannerPredictor(): PlannerState & PlannerActions {
-  const [motherBirthDate, setMotherBirthDate] = useState("");
-  const [fatherBirthDate, setFatherBirthDate] = useState("");
-  const [momMBTI, setMomMBTI] = useState("");
-  const [dadMBTI, setDadMBTI] = useState("");
-  const [target, setTarget] = useState<PlannerTarget>("Girl");
+  const [motherBirthDate, setMotherBirthDate] = usePersistedState("planner:motherBirthDate:v1", "");
+  const [fatherBirthDate, setFatherBirthDate] = usePersistedState("planner:fatherBirthDate:v1", "");
+  const [momMBTI, setMomMBTI] = usePersistedState("planner:momMBTI:v1", "");
+  const [dadMBTI, setDadMBTI] = usePersistedState("planner:dadMBTI:v1", "");
+  const [target, setTarget] = usePersistedState<PlannerTarget>("planner:target:v1", "Girl");
   const [result, setResult] = useState<PlannerRecommendations | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +57,18 @@ export function usePlannerPredictor(): PlannerState & PlannerActions {
     try {
       const r = buildRecommendations(motherBirth, target);
       setResult(r);
+      try {
+        const topLabel = r.topMonths[0]?.label ?? "";
+        addHistory({
+          page: "planner",
+          pageTitle: "성별 플래너",
+          resultEmoji: target === "Boy" ? "👦" : "👧",
+          resultLabel: `${target === "Boy" ? "아들" : "딸"} 맞춤 가이드`,
+          summary: topLabel ? `추천 Top: ${topLabel}` : undefined,
+        });
+      } catch {
+        // 무시
+      }
     } catch (e) {
       setError(toErrorMessage(e));
     }
