@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import type { AiPredictResult, AiGender, MethodResult } from "../model/useAiPredictor";
+import { ShareButton } from "@/shared/ui/ShareButton";
 
 interface Props {
   result: AiPredictResult;
@@ -68,33 +70,44 @@ function MethodRow({ method, finalGender }: { method: MethodResult; finalGender:
 
 export function AiPredictResult({ result, onReset }: Props) {
   const cfg = GENDER_CFG[result.finalGender];
+  const captureRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="w-full max-w-sm space-y-4">
-      {/* ① 최종 예측 히어로 카드 */}
-      <div className={`rounded-2xl bg-gradient-to-br ${cfg.gradient} p-8 text-center text-white shadow-xl`}>
-        <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-3">
-          🤖 AI 최종 예측
-        </p>
-        <div className="text-7xl mb-3">{cfg.emoji}</div>
-        <h2 className="text-3xl font-extrabold">{cfg.label}</h2>
-      </div>
-
-      {/* ② 방법별 예측 결과 */}
-      <div className="rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
-          방법별 예측
-        </p>
-        <div className="space-y-2">
-          {result.methods.map((m) => (
-            <MethodRow key={m.key} method={m} finalGender={result.finalGender} />
-          ))}
+      {/* 공유 캡처 대상 영역 */}
+      <div ref={captureRef} className="space-y-4">
+        {/* ① 최종 예측 히어로 카드 */}
+        <div className={`rounded-2xl bg-gradient-to-br ${cfg.gradient} p-8 text-center text-white shadow-xl`}>
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-3">
+            🤖 AI 최종 예측
+          </p>
+          <div className="text-7xl mb-3">{cfg.emoji}</div>
+          <h2 className="text-3xl font-extrabold">{cfg.label}</h2>
         </div>
+
+        {/* ② 방법별 예측 결과 */}
+        <div className="rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+            방법별 예측
+          </p>
+          <div className="space-y-2">
+            {result.methods.map((m) => (
+              <MethodRow key={m.key} method={m} finalGender={result.finalGender} />
+            ))}
+          </div>
+        </div>
+
+        <p className="text-center text-xs text-gray-400">
+          * 전통 예측법의 가중치 합산 결과입니다. 재미로만 참고하세요 😊
+        </p>
       </div>
 
-      <p className="text-center text-xs text-gray-400">
-        * 6가지 전통 예측법의 가중치 합산 결과입니다. 재미로만 참고하세요 😊
-      </p>
+      <ShareButton
+        targetRef={captureRef}
+        title="AI 성별 예측"
+        text={`AI 예측 결과: ${cfg.label} (아들 ${result.boyScore} · 딸 ${result.girlScore})`}
+        filenamePrefix="ai-prediction"
+      />
 
       <button
         onClick={onReset}

@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import type { PlannerRecommendations } from "../model/recommender";
+import { ShareButton } from "@/shared/ui/ShareButton";
 
 interface Props {
   result: PlannerRecommendations;
@@ -35,9 +37,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function PlannerPredictResult({ result, onReset }: Props) {
   const info = TARGET_INFO[result.target];
+  const captureRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="w-full max-w-sm space-y-4">
+      <div ref={captureRef} className="space-y-4">
       {/* Hero */}
       <div className={`rounded-2xl bg-gradient-to-br ${info.bg} p-6 text-center shadow-md`}>
         <div className="text-6xl">{info.emoji}</div>
@@ -181,6 +185,14 @@ export function PlannerPredictResult({ result, onReset }: Props) {
       <p className="text-center text-[11px] text-gray-400">
         * 의학적 근거는 없으며, 전통 알고리즘의 역산 결과입니다.
       </p>
+      </div>
+
+      <ShareButton
+        targetRef={captureRef}
+        title={`${info.label} 맞춤 가이드`}
+        text={`${info.label} 맞춤 가이드 — 성별 플래너로 받은 추천`}
+        filenamePrefix={`planner-${result.target.toLowerCase()}`}
+      />
 
       <button
         onClick={onReset}
