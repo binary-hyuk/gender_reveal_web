@@ -5,6 +5,7 @@ import {
   validateRange,
   normalizeRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 // ============================================================
 // 삼원공명(三元共鳴) 태아 성별 예측 알고리즘
@@ -267,11 +268,10 @@ export function useSamwonPredictor(): SamwonState & SamwonActions {
         (iso) => predictBySamwon(motherBirthDate, fatherBirthDate, iso, intuition),
         fallbackTieBreaker,
       );
-      const { rangeInfo: _r, ...rest } = aggregated;
-      void _r;
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

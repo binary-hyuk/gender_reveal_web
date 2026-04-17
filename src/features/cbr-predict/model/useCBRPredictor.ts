@@ -6,6 +6,7 @@ import {
   normalizeRange,
   datesInRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type FatherVibe = "PASSION" | "CALM" | "STABLE" | "FLEXIBLE";
 export type CBRGender = "Boy" | "Girl";
@@ -141,11 +142,10 @@ export function useCBRPredictor(): CBRState & CBRActions {
         (iso) => predictCBR(mom, new Date(iso), fatherVibe),
         fallbackTieBreaker,
       );
-      const { rangeInfo: _r, ...rest } = aggregated;
-      void _r;
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

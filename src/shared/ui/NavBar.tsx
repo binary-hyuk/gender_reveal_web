@@ -27,7 +27,10 @@ export function NavBar() {
   const { pathname } = useRouter();
 
   return (
-    <nav className="sticky top-0 z-10 w-full border-b border-gray-100 bg-white/90 backdrop-blur">
+    <nav
+      aria-label="예측 방법 네비게이션"
+      className="sticky top-0 z-10 w-full border-b border-gray-100 bg-white/90 backdrop-blur"
+    >
       <ul className="flex overflow-x-auto">
         {NAV_ITEMS.map(({ href, emoji, label }) => {
           const isActive = pathname === href;
@@ -35,8 +38,10 @@ export function NavBar() {
             <li key={href} className="flex-shrink-0">
               <Link
                 href={href}
+                aria-label={`${label} 페이지로 이동`}
+                aria-current={isActive ? "page" : undefined}
                 className={[
-                  "flex flex-col items-center gap-0.5 px-4 py-2.5 text-xs font-medium transition-colors",
+                  "flex min-h-[44px] flex-col items-center justify-center gap-0.5 px-4 py-2.5 text-xs font-medium transition-colors",
                   isActive
                     ? href === "/"
                       ? "border-b-2 border-purple-500 text-purple-600"
@@ -44,7 +49,7 @@ export function NavBar() {
                     : "text-gray-500 hover:text-gray-700",
                 ].join(" ")}
               >
-                <span className="text-base">{emoji}</span>
+                <span className="text-base" aria-hidden="true">{emoji}</span>
                 <span>{label}</span>
               </Link>
             </li>

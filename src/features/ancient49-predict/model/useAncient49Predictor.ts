@@ -8,6 +8,7 @@ import {
   normalizeRange,
   datesInRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type Ancient49Gender = "Boy" | "Girl";
 
@@ -107,10 +108,9 @@ export function useAncient49Predictor(): Ancient49State & Ancient49Actions {
         fallbackTieBreaker,
       );
       const { rangeInfo: _rangeInfo, ...rest } = aggregated;
-      void _rangeInfo;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

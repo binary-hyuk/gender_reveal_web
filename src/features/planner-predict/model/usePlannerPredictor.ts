@@ -4,6 +4,7 @@ import {
   type PlannerRecommendations,
   type Target,
 } from "./recommender";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type PlannerTarget = Target;
 
@@ -55,7 +56,7 @@ export function usePlannerPredictor(): PlannerState & PlannerActions {
       const r = buildRecommendations(motherBirth, target);
       setResult(r);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

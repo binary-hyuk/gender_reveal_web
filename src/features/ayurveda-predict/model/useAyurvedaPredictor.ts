@@ -6,6 +6,7 @@ import {
   normalizeRange,
   datesInRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type AyurvedaGender = "Boy" | "Girl";
 /**
@@ -97,11 +98,10 @@ export function useAyurvedaPredictor(): AyurvedaState & AyurvedaActions {
         (iso) => predictByAyurveda(lastPeriodDate, iso, direction),
         fallbackTieBreaker,
       );
-      const { rangeInfo: _r, ...rest } = aggregated;
-      void _r;
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

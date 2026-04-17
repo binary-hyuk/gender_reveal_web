@@ -7,6 +7,7 @@ import {
   normalizeRange,
   datesInRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type GypsyGender = "Boy" | "Girl";
 
@@ -98,11 +99,10 @@ export function useGypsyPredictor(): GypsyState & GypsyActions {
         (iso) => predictByGypsy(motherBirthDate, iso),
         fallbackTieBreaker,
       );
-      const { rangeInfo: _r, ...rest } = aggregated;
-      void _r;
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

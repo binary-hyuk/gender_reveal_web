@@ -5,6 +5,7 @@ import {
   validateRange,
   normalizeRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type PlanetaryGender = "Boy" | "Girl";
 
@@ -80,11 +81,10 @@ export function usePlanetaryWeekdayPredictor(): PlanetaryState & PlanetaryAction
         (iso) => predictByPlanetaryWeekday(iso),
         fallbackTieBreaker,
       );
-      const { rangeInfo: _r, ...rest } = aggregated;
-      void _r;
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

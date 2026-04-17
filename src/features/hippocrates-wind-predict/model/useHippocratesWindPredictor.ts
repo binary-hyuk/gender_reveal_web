@@ -5,6 +5,7 @@ import {
   validateRange,
   normalizeRange,
 } from "@/shared/lib/dateRangePrediction";
+import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type HippocratesGender = "Boy" | "Girl";
 
@@ -78,11 +79,10 @@ export function useHippocratesWindPredictor(): HippocratesState & HippocratesAct
         },
         fallbackTieBreaker,
       );
-      const { rangeInfo: _r, ...rest } = aggregated;
-      void _r;
+      const { rangeInfo: _rangeInfo, ...rest } = aggregated;
       setResult(rest);
     } catch (e) {
-      setError((e as Error).message);
+      setError(toErrorMessage(e));
     }
   }
 

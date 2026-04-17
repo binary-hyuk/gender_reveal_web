@@ -84,7 +84,7 @@ export function DateTextInput({ label, hint, value, onChange }: Props) {
     setRawText(value ? value.replace(/-/g, "") : "");
   }, [value]);
 
-  // 바깥 클릭 시 picker 닫기
+  // 바깥 클릭 또는 ESC 키로 picker 닫기
   useEffect(() => {
     if (!showPicker) return;
     function onClick(e: MouseEvent) {
@@ -92,8 +92,15 @@ export function DateTextInput({ label, hint, value, onChange }: Props) {
         setShowPicker(false);
       }
     }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowPicker(false);
+    }
     document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
   }, [showPicker]);
 
   const parsed = parseDateInput(rawText);
