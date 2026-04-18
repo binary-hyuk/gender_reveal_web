@@ -10,12 +10,12 @@ import { toErrorMessage } from "@/shared/lib/errorMessage";
 
 export type AyurvedaGender = "Boy" | "Girl";
 /**
- * 8방위. 양기(E, SE, S, SW) vs 음기(W, NW, N, NE)
+ * 8방위. 아들의 기운(E, SE, S, SW) vs 딸의 기운(W, NW, N, NE)
  */
 export const DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
 export type Direction = typeof DIRECTIONS[number];
 
-/** 양기 방위면 true → chiModifier = 1, 아니면 0 */
+/** 아들의 기운 방위면 true → chiModifier = 1, 아니면 0 */
 const YANG_DIRECTIONS = new Set<Direction>(["E", "SE", "S", "SW"]);
 
 export interface AyurvedaResult {
@@ -32,7 +32,7 @@ export interface AyurvedaResult {
 /**
  * 고대 인도 아유르베다 주기법 2.0 (8방위 버전)
  * baseDays = (수정일 - 마지막 생리일) / ms하루
- * chiModifier = 양기 방위(E·SE·S·SW) → 1 / 음기 방위(W·NW·N·NE) → 0
+ * chiModifier = 아들의 기운 방위(E·SE·S·SW) → 1 / 딸의 기운 방위(W·NW·N·NE) → 0
  * finalDays = floor(baseDays) + chiModifier
  * 짝수 → Boy / 홀수 → Girl
  */

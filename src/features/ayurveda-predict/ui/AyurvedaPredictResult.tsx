@@ -16,7 +16,7 @@ export function AyurvedaPredictResult({ result, onReset }: Props) {
     { label: "수정일", value: result.conceptionDate },
     { label: "기본 일수", value: `${result.baseDays.toFixed(1)}일` },
     { label: "집 방위", value: DIR_FULL[result.direction] },
-    { label: "기(氣) 보정", value: `+${result.chiModifier} (${isYang ? "양기(E·SE·S·SW)" : "음기(W·NW·N·NE)"})` },
+    { label: "기(氣) 보정", value: `+${result.chiModifier} (${isYang ? "아들의 기운(E·SE·S·SW)" : "딸의 기운(W·NW·N·NE)"})` },
     { label: "최종 일수", value: `${result.finalDays}일` },
     { label: "판정", value: result.isEven ? `${result.finalDays} 짝수 → 아들` : `${result.finalDays} 홀수 → 딸` },
   ];
@@ -24,7 +24,7 @@ export function AyurvedaPredictResult({ result, onReset }: Props) {
     <GenderResultCard
       gender={result.gender}
       details={details}
-      note="* 아유르베다(8방위): 생리→수정 일수 + 양기 방위 보정 → 짝수면 아들, 홀수면 딸"
+      note="* 아유르베다(8방위): 생리→수정 일수 + 아들의 기운 방위 보정 → 짝수면 아들, 홀수면 딸"
       onReset={onReset}
     />
   );

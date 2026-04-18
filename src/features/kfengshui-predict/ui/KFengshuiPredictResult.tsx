@@ -11,7 +11,7 @@ export function KFengshuiPredictResult({ result, onReset }: Props) {
     { label: "층수 점수", value: `${result.floorScore > 0 ? "+" : ""}${result.floorScore} (${result.floorNumber % 2 !== 0 ? "홀수층" : "짝수층"})` },
     { label: "방향 점수", value: `${result.dirScore > 0 ? "+" : ""}${result.dirScore}` },
     { label: "주소 점수", value: `${result.locScore > 0 ? "+" : ""}${result.locScore} (${result.locationLen % 2 !== 0 ? "홀수" : "짝수"})` },
-    { label: "합계", value: `${result.totalScore > 0 ? "+" : ""}${result.totalScore} → ${result.totalScore > 0 ? "양기" : "음기"}` },
+    { label: "합계", value: `${result.totalScore > 0 ? "+" : ""}${result.totalScore} → ${result.totalScore > 0 ? "아들의 기운" : "딸의 기운"}` },
   ];
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm">

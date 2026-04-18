@@ -160,22 +160,22 @@ export function recommendWeekdays(target: Target): WeekdayRecommendation[] {
 }
 
 /**
- * 아유르베다 8방위 역산 - 양기 방위(E·SE·S·SW)→Boy, 음기(W·NW·N·NE)→Girl.
+ * 아유르베다 8방위 역산 - 아들의 기운 방위(E·SE·S·SW)→Boy, 딸의 기운(W·NW·N·NE)→Girl.
  */
 export function recommendAyurvedaDirections(target: Target): PlannerRecommendations["ayurvedaDirections"] {
   if (target === "Boy") {
     return [
-      { code: "E",  label: "동(E) 🌅",   reason: "해 뜨는 양기 방위" },
-      { code: "SE", label: "남동(SE) ⛅", reason: "따뜻한 양기" },
-      { code: "S",  label: "남(S) ☀️",   reason: "최대 양기" },
-      { code: "SW", label: "남서(SW) 🌤️", reason: "오후의 양기" },
+      { code: "E",  label: "동(E) 🌅",   reason: "해 뜨는 아들의 기운 방위" },
+      { code: "SE", label: "남동(SE) ⛅", reason: "따뜻한 아들의 기운" },
+      { code: "S",  label: "남(S) ☀️",   reason: "최대 아들의 기운" },
+      { code: "SW", label: "남서(SW) 🌤️", reason: "오후의 아들의 기운" },
     ];
   }
   return [
-    { code: "W",  label: "서(W) 🌇",    reason: "해 지는 음기 방위" },
-    { code: "NW", label: "북서(NW) 🌫️", reason: "저녁의 음기" },
-    { code: "N",  label: "북(N) ❄️",    reason: "최대 음기" },
-    { code: "NE", label: "북동(NE) 🌨️", reason: "새벽의 음기" },
+    { code: "W",  label: "서(W) 🌇",    reason: "해 지는 딸의 기운 방위" },
+    { code: "NW", label: "북서(NW) 🌫️", reason: "저녁의 딸의 기운" },
+    { code: "N",  label: "북(N) ❄️",    reason: "최대 딸의 기운" },
+    { code: "NE", label: "북동(NE) 🌨️", reason: "새벽의 딸의 기운" },
   ];
 }
 
@@ -193,8 +193,8 @@ export function recommendFengshuiDirections(target: Target): string[] {
  */
 export function recommendFloorAdvice(target: Target): string {
   return target === "Boy"
-    ? "홀수 층 (1·3·5·7·9·11·15층 등) — 양기가 강한 고층 추천"
-    : "짝수 층 (2·4·6·8·10·12층 등) — 음기가 안정된 중저층 추천";
+    ? "홀수 층 (1·3·5·7·9·11·15층 등) — 아들의 기운이 강한 고층 추천"
+    : "짝수 층 (2·4·6·8·10·12층 등) — 딸의 기운이 안정된 중저층 추천";
 }
 
 /**
@@ -202,9 +202,9 @@ export function recommendFloorAdvice(target: Target): string {
  */
 export function recommendHemisphereTip(target: Target): string {
   if (target === "Boy") {
-    return "북반구 거주 시 겨울~초봄(11~4월)의 북풍 계절이 건조한 양기를 제공합니다. 남반구는 5~10월 추천.";
+    return "북반구 거주 시 겨울~초봄(11~4월)의 북풍 계절이 건조한 아들의 기운을 제공합니다. 남반구는 5~10월 추천.";
   }
-  return "북반구 거주 시 여름~가을(5~10월)의 남풍 계절이 다습한 음기를 제공합니다. 남반구는 11~4월 추천.";
+  return "북반구 거주 시 여름~가을(5~10월)의 남풍 계절이 다습한 딸의 기운을 제공합니다. 남반구는 11~4월 추천.";
 }
 
 /**
@@ -265,14 +265,14 @@ export function recommendLifestyleTips(target: Target): string[] {
   if (target === "Boy") {
     return [
       "☕ 남성은 임신 전 카페인·고단백 섭취 ↑, 여성은 염분 적당히",
-      "🌞 아침 햇살을 충분히 받기 — 양기 축적",
+      "🌞 아침 햇살을 충분히 받기 — 아들의 기운 축적",
       "💪 가벼운 유산소로 체온 유지 (火 강화)",
       "🥩 붉은 고기·견과류 등 따뜻한 성질 음식",
     ];
   }
   return [
     "🥛 여성은 칼슘·마그네슘 섭취 ↑, 남성은 채식 비율 ↑",
-    "🌙 저녁의 조용한 시간 보내기 — 음기 축적",
+    "🌙 저녁의 조용한 시간 보내기 — 딸의 기운 축적",
     "🧘 스트레칭·요가로 유연성 유지 (水 강화)",
     "🥗 녹색 채소·해산물 등 서늘한 성질 음식",
   ];

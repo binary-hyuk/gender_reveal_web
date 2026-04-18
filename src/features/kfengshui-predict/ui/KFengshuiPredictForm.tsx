@@ -24,7 +24,7 @@ export function KFengshuiPredictForm({
       <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         🏠 층수 홀짝 + 창문 방향 음양 + 주소 글자수로 기운을 합산합니다.
         <br />
-        <span className="text-xs text-brand-700">양기(+) → 아들 / 음기(−) → 딸</span>
+        <span className="text-xs text-brand-700">아들의 기운(+) → 아들 / 딸의 기운(−) → 딸</span>
       </GlassCard>
 
       <div className="space-y-2">
