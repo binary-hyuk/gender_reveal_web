@@ -11,6 +11,8 @@ export function useBodyGenderTheme(gender: "Boy" | "Girl" | null | undefined) {
   useEffect(() => {
     if (gender === "Girl") {
       document.body.dataset.theme = "girl";
+    } else if (gender === "Boy") {
+      document.body.dataset.theme = "boy";
     } else {
       delete document.body.dataset.theme;
     }
