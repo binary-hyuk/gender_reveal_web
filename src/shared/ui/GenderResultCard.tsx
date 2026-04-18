@@ -1,3 +1,6 @@
+import { Baby, RotateCcw } from "lucide-react";
+import { GlassCard } from "./GlassCard";
+
 type Gender = "Boy" | "Girl";
 
 interface Detail {
@@ -14,16 +17,16 @@ interface Props {
 
 const CONFIG = {
   Boy: {
-    emoji: "👦",
     label: "아들이에요!",
-    bg: "from-blue-100 to-blue-200",
-    text: "text-blue-700",
+    accent: "text-sky-600",
+    ring: "ring-sky-200/60",
+    glow: "from-sky-200/60",
   },
   Girl: {
-    emoji: "👧",
     label: "딸이에요!",
-    bg: "from-pink-100 to-pink-200",
-    text: "text-pink-700",
+    accent: "text-pink-600",
+    ring: "ring-pink-200/60",
+    glow: "from-pink-200/60",
   },
 } as const;
 
@@ -32,38 +35,49 @@ export function GenderResultCard({ gender, details, note, onReset }: Props) {
 
   return (
     <div className="w-full max-w-sm space-y-4">
-      <div
-        className={`rounded-2xl bg-gradient-to-br ${cfg.bg} p-8 text-center shadow-lg`}
-      >
-        <div className="mb-3 text-7xl">{cfg.emoji}</div>
-        <h2 className={`text-3xl font-extrabold ${cfg.text}`}>{cfg.label}</h2>
-      </div>
+      <GlassCard variant="strong" className={`relative overflow-hidden p-8 text-center ring-1 ${cfg.ring}`}>
+        <div
+          aria-hidden
+          className={`absolute -top-10 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-gradient-to-b ${cfg.glow} to-transparent blur-2xl`}
+        />
+        <div className="relative">
+          <div
+            className={`mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/80 shadow-sm ring-1 ring-white/60 ${cfg.accent}`}
+          >
+            <Baby size={30} strokeWidth={2.25} aria-hidden />
+          </div>
+          <h2 className={`text-2xl font-bold tracking-tight ${cfg.accent}`}>
+            {cfg.label}
+          </h2>
+        </div>
+      </GlassCard>
 
       {details && details.length > 0 && (
-        <div className="rounded-2xl border border-gray-100 bg-white px-6 py-4 shadow-sm">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <GlassCard variant="soft" className="px-5 py-4">
+          <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-fg-subtle">
             계산 근거
           </h3>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-fg-muted">
             {details.map(({ label, value }) => (
-              <div key={label} className="flex justify-between">
-                <span>{label}</span>
-                <span className="font-semibold text-gray-800">{value}</span>
+              <div key={label} className="flex justify-between gap-4">
+                <span className="truncate">{label}</span>
+                <span className="font-semibold text-fg">{value}</span>
               </div>
             ))}
           </div>
-        </div>
+        </GlassCard>
       )}
 
       {note && (
-        <p className="text-center text-xs text-gray-400">{note}</p>
+        <p className="text-center text-xs text-fg-subtle">{note}</p>
       )}
 
       {onReset && (
         <button
           onClick={onReset}
-          className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 shadow-sm transition-colors hover:bg-gray-50"
+          className="glass flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-fg-muted transition hover:bg-white/70 active:scale-[0.98]"
         >
+          <RotateCcw size={16} strokeWidth={2.25} aria-hidden />
           다시 예측하기
         </button>
       )}

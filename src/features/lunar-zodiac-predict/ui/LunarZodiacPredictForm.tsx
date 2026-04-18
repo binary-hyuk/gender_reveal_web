@@ -1,4 +1,7 @@
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   conceptionStart: string;
@@ -19,13 +22,13 @@ export function LunarZodiacPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-indigo-50 px-4 py-3 text-sm text-indigo-600">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         임신일 기준으로 달(Moon)이 위치한 황도 별자리를 계산합니다.
         <br />
-        <span className="text-xs text-indigo-400">
+        <span className="text-xs text-fg-subtle">
           남성 별자리: 양·쌍둥이·사자·천칭·사수·물병자리
         </span>
-      </div>
+      </GlassCard>
 
       <ConceptionDateRangeInput
         label="임신(수정)일"
@@ -35,18 +38,9 @@ export function LunarZodiacPredictForm({
         onEndChange={onConceptionEndChange}
       />
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-pink-400 to-blue-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

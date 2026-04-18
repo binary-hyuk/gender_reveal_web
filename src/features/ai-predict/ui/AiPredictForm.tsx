@@ -1,5 +1,8 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 import { BLOOD_TYPES } from "@/features/blood-type-predict/model/useBloodTypePredictor";
 import type { BloodType } from "@/features/blood-type-predict/model/bloodTypeMatrix";
 import { VIBE_INFO } from "@/features/cbr-predict/model/useCBRPredictor";
@@ -81,16 +84,15 @@ interface Props {
 const CLEAR_CONFIRM = "저장된 모든 입력값이 지워집니다. 계속하시겠어요?";
 
 function BloodTypeSelector({
-  label, value, activeColor, onChange,
+  label, value, onChange,
 }: {
   label: string;
   value: BloodType;
-  activeColor: string;
   onChange: (v: BloodType) => void;
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-semibold text-gray-700">{label}</label>
+      <label className="block text-sm font-semibold text-fg">{label}</label>
       <div className="grid grid-cols-4 gap-2">
         {BLOOD_TYPES.map((bt) => (
           <button
@@ -98,7 +100,7 @@ function BloodTypeSelector({
             onClick={() => onChange(bt)}
             className={[
               "rounded-xl py-2.5 text-sm font-bold transition-colors",
-              value === bt ? `${activeColor} text-white shadow` : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+              value === bt ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70",
             ].join(" ")}
           >
             {bt}
@@ -111,13 +113,13 @@ function BloodTypeSelector({
 
 function SectionCard({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white px-5 py-5 shadow-sm space-y-4">
-      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+    <GlassCard className="px-5 py-5 space-y-4">
+      <p className="text-xs font-semibold uppercase tracking-wider text-fg-subtle">
         {title}
-        {hint && <span className="ml-1 font-normal normal-case text-gray-300">{hint}</span>}
+        {hint && <span className="ml-1 font-normal normal-case text-fg-subtle">{hint}</span>}
       </p>
       {children}
-    </div>
+    </GlassCard>
   );
 }
 
@@ -165,24 +167,24 @@ export function AiPredictForm({
           onEndChange={onConceptionEndChange}
         />
 
-        <div className="rounded-xl border border-purple-100 bg-gradient-to-br from-purple-50 to-pink-50 px-3 py-3 space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-purple-700">
+        <GlassCard variant="soft" className="px-3 py-3 space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
             🤖 자동으로 실행되는 예측 {BASE_ALGORITHMS.length}종
           </p>
           <div className="grid grid-cols-2 gap-x-2 gap-y-1">
             {BASE_ALGORITHMS.map((a) => (
-              <div key={a.label} className="flex items-center gap-1.5 text-xs text-gray-700">
+              <div key={a.label} className="flex items-center gap-1.5 text-xs text-fg">
                 <span className="text-sm leading-none">{a.emoji}</span>
                 <span className="truncate">{a.label}</span>
               </div>
             ))}
           </div>
-        </div>
+        </GlassCard>
       </SectionCard>
 
       {/* 카테고리 선택 안내 + 타일 */}
       <SectionCard title="관심있는 예측법 추가" hint="(선택 · 다중 가능)">
-        <p className="text-xs leading-relaxed text-gray-500">
+        <p className="text-xs leading-relaxed text-fg-muted">
           기본 예측 외에 관심있는 항목을 선택하면 추가 입력이 나타나고,
           해당 알고리즘이 예측에 포함됩니다.
         </p>
@@ -194,20 +196,23 @@ export function AiPredictForm({
                 key={cat.key}
                 onClick={() => onToggleCategory(cat.key)}
                 className={[
-                  "rounded-xl border p-2 text-center transition-colors",
+                  "rounded-xl p-2 text-center transition-colors",
                   active
-                    ? "border-purple-500 bg-purple-50 shadow ring-2 ring-purple-200"
-                    : "border-gray-200 bg-white hover:bg-gray-50",
+                    ? "bg-brand-600 text-white shadow ring-2 ring-brand-200"
+                    : "glass text-fg-muted hover:bg-white/70",
                 ].join(" ")}
               >
                 <div className="text-2xl">{cat.emoji}</div>
                 <div className={[
                   "mt-1 text-xs font-semibold",
-                  active ? "text-purple-700" : "text-gray-600",
+                  active ? "text-white" : "text-fg",
                 ].join(" ")}>
                   {cat.label}
                 </div>
-                <div className="text-[10px] text-gray-400 leading-tight">{cat.hint}</div>
+                <div className={[
+                  "text-[10px] leading-tight",
+                  active ? "text-white/80" : "text-fg-subtle",
+                ].join(" ")}>{cat.hint}</div>
               </button>
             );
           })}
@@ -217,8 +222,8 @@ export function AiPredictForm({
       {/* 혈액형 */}
       {selectedCategories.has("bloodType") && (
         <SectionCard title="🩸 혈액형">
-          <BloodTypeSelector label="아빠 혈액형" value={dadBlood} activeColor="bg-blue-500" onChange={onDadBloodChange} />
-          <BloodTypeSelector label="엄마 혈액형" value={momBlood} activeColor="bg-pink-500" onChange={onMomBloodChange} />
+          <BloodTypeSelector label="아빠 혈액형" value={dadBlood} onChange={onDadBloodChange} />
+          <BloodTypeSelector label="엄마 혈액형" value={momBlood} onChange={onMomBloodChange} />
         </SectionCard>
       )}
 
@@ -226,17 +231,17 @@ export function AiPredictForm({
       {showNames && (
         <SectionCard title="✍️ 이름" hint="(수비학 · 이집트)">
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">엄마 이름</label>
+            <label className="block text-sm font-semibold text-fg">엄마 이름</label>
             <input
               type="text" value={momName} onChange={(e) => onMomNameChange(e.target.value)} placeholder="예: 김민지"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
+              className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">아빠 이름</label>
+            <label className="block text-sm font-semibold text-fg">아빠 이름</label>
             <input
               type="text" value={dadName} onChange={(e) => onDadNameChange(e.target.value)} placeholder="예: 이준호"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
         </SectionCard>
@@ -246,27 +251,27 @@ export function AiPredictForm({
       {showHome && (
         <SectionCard title="🏠 거주지" hint="(풍수지리 · 이집트)">
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">
-              거주 지역 <span className="font-normal text-gray-400">(시·구까지만)</span>
+            <label className="block text-sm font-semibold text-fg">
+              거주 지역 <span className="font-normal text-fg-subtle">(시·구까지만)</span>
             </label>
             <input
               type="text" value={locationString} onChange={(e) => onLocationStringChange(e.target.value)} placeholder="예: 서울시 종로구"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+              className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-gray-700">집 방향</label>
+              <label className="block text-sm font-semibold text-fg">집 방향</label>
               <input
                 type="text" value={houseDirection} onChange={(e) => onHouseDirectionChange(e.target.value)} placeholder="예: 남동향"
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-3 text-gray-800 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-full rounded-xl glass px-3 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-gray-700">층수</label>
+              <label className="block text-sm font-semibold text-fg">층수</label>
               <input
                 type="number" min={1} value={floorNumber} onChange={(e) => onFloorNumberChange(e.target.value)} placeholder="예: 15"
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-3 text-gray-800 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                className="w-full rounded-xl glass px-3 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
               />
             </div>
           </div>
@@ -278,11 +283,11 @@ export function AiPredictForm({
         <SectionCard title="🪷 아유르베다" hint="(생리일 + 방위)">
           <DateTextInput label="마지막 생리 시작일" hint="(양력)" value={lastPeriodDate} onChange={onLastPeriodDateChange} />
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">집 주요 방위 <span className="font-normal text-gray-400">(8방위)</span></label>
+            <label className="block text-sm font-semibold text-fg">집 주요 방위 <span className="font-normal text-fg-subtle">(8방위)</span></label>
             <div className="grid grid-cols-4 gap-2">
               {DIRECTIONS_AI.map((d) => (
                 <button key={d} onClick={() => onDirectionChange(d)}
-                  className={["rounded-xl py-2.5 text-xs font-bold transition-colors", direction === d ? "bg-orange-500 text-white shadow" : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"].join(" ")}>
+                  className={["rounded-xl py-2.5 text-xs font-bold transition-colors", direction === d ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70"].join(" ")}>
                   {DIR_LABEL_AI[d]}
                 </button>
               ))}
@@ -297,7 +302,7 @@ export function AiPredictForm({
           <div className="grid grid-cols-2 gap-2">
             {[{ v: true, l: "🌏 북반구" }, { v: false, l: "🌎 남반구" }].map(({ v, l }) => (
               <button key={String(v)} onClick={() => onIsNorthernHemisphereChange(v)}
-                className={["rounded-xl py-2.5 text-sm font-medium transition-colors", isNorthernHemisphere === v ? "bg-sky-500 text-white shadow" : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"].join(" ")}>
+                className={["rounded-xl py-2.5 text-sm font-medium transition-colors", isNorthernHemisphere === v ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70"].join(" ")}>
                 {l}
               </button>
             ))}
@@ -309,39 +314,39 @@ export function AiPredictForm({
       {selectedCategories.has("dna") && (
         <SectionCard title="🧬 디지털 DNA" hint="(MBTI + 이모티콘)">
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">엄마 MBTI</label>
+            <label className="block text-sm font-semibold text-fg">엄마 MBTI</label>
             <div className="grid grid-cols-4 gap-1.5">
               {MBTI_TYPES_AI.map((t) => (
                 <button key={t} onClick={() => onMomMBTIChange(t)}
-                  className={["rounded-lg py-1.5 text-xs font-bold transition-colors", momMBTI === t ? "bg-pink-500 text-white shadow" : "border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"].join(" ")}>
+                  className={["rounded-lg py-1.5 text-xs font-bold transition-colors", momMBTI === t ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70"].join(" ")}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">아빠 MBTI</label>
+            <label className="block text-sm font-semibold text-fg">아빠 MBTI</label>
             <div className="grid grid-cols-4 gap-1.5">
               {MBTI_TYPES_AI.map((t) => (
                 <button key={t} onClick={() => onDadMBTIChange(t)}
-                  className={["rounded-lg py-1.5 text-xs font-bold transition-colors", dadMBTI === t ? "bg-blue-500 text-white shadow" : "border border-gray-200 bg-white text-gray-500 hover:bg-gray-50"].join(" ")}>
+                  className={["rounded-lg py-1.5 text-xs font-bold transition-colors", dadMBTI === t ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70"].join(" ")}>
                   {t}
                 </button>
               ))}
             </div>
           </div>
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700">최애 이모티콘</label>
+            <label className="block text-sm font-semibold text-fg">최애 이모티콘</label>
             <div className="grid grid-cols-5 gap-2">
               {EMOJI_PRESETS_AI.map((e) => (
                 <button key={e} onClick={() => onFavEmojiChange(e)}
-                  className={["aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors", favEmoji === e ? "bg-purple-500 shadow ring-2 ring-purple-300" : "border border-gray-200 bg-white hover:bg-gray-50"].join(" ")}>
+                  className={["aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors", favEmoji === e ? "bg-brand-600 shadow ring-2 ring-brand-200" : "glass hover:bg-white/70"].join(" ")}>
                   {e}
                 </button>
               ))}
             </div>
             <input type="text" value={favEmoji} onChange={(e) => onFavEmojiChange(e.target.value)} placeholder="직접 입력"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-800 shadow-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100" />
+              className="w-full rounded-xl glass px-4 py-2.5 text-fg outline-none focus:ring-2 focus:ring-brand-200" />
           </div>
         </SectionCard>
       )}
@@ -358,11 +363,11 @@ export function AiPredictForm({
                   onClick={() => onFatherVibeChange(v)}
                   className={[
                     "rounded-xl px-3 py-2.5 text-sm font-medium transition-colors text-left",
-                    fatherVibe === v ? "bg-indigo-600 text-white shadow" : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+                    fatherVibe === v ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70",
                   ].join(" ")}
                 >
                   {info.emoji} {info.label}
-                  <span className={`block text-xs ${fatherVibe === v ? "text-indigo-200" : "text-gray-400"}`}>{info.element}</span>
+                  <span className={`block text-xs ${fatherVibe === v ? "text-white/80" : "text-fg-subtle"}`}>{info.element}</span>
                 </button>
               );
             })}
@@ -373,7 +378,7 @@ export function AiPredictForm({
       {/* Cl-ai (삼원공명) */}
       {selectedCategories.has("samwon") && (
         <SectionCard title="✳️ Cl-ai · 삼원공명" hint="(직감수)">
-          <p className="text-xs text-gray-400">마음속에 떠오르는 숫자를 골라주세요</p>
+          <p className="text-xs text-fg-subtle">마음속에 떠오르는 숫자를 골라주세요</p>
           <div className="grid grid-cols-9 gap-1.5">
             {INTUITION_NUMBERS.map((n) => (
               <button
@@ -381,7 +386,7 @@ export function AiPredictForm({
                 onClick={() => onIntuitionChange(n)}
                 className={[
                   "rounded-xl py-2.5 text-sm font-bold transition-colors",
-                  intuition === n ? "bg-indigo-500 text-white shadow" : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+                  intuition === n ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70",
                 ].join(" ")}
               >
                 {n}
@@ -391,23 +396,14 @@ export function AiPredictForm({
         </SectionCard>
       )}
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 py-4 text-lg font-bold text-white shadow-lg transition-transform active:scale-95 hover:opacity-90"
-      >
-        🤖 AI 성별 예측 시작
-      </button>
+      <PredictButton onClick={onPredict}>🤖 AI 성별 예측 시작</PredictButton>
 
       <button
         type="button"
         onClick={handleClear}
-        className="block w-full text-center text-xs text-gray-400 hover:text-red-500 underline"
+        className="block w-full text-center text-xs text-fg-subtle hover:text-red-500 underline"
       >
         🗑️ 저장된 입력값 초기화
       </button>

@@ -1,4 +1,7 @@
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   conceptionStart: string;
@@ -17,11 +20,11 @@ export function HippocratesWindPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-sky-50 px-4 py-3 text-sm text-sky-700">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         🌬️ 임신 월의 지배 바람(북풍/남풍)으로 성별을 판단합니다.
         <br />
-        <span className="text-xs text-sky-400">북풍(건조) → 아들 / 남풍(다습) → 딸</span>
-      </div>
+        <span className="text-xs text-brand-700">북풍(건조) → 아들 / 남풍(다습) → 딸</span>
+      </GlassCard>
 
       <ConceptionDateRangeInput
         label="임신(수정)일"
@@ -32,7 +35,7 @@ export function HippocratesWindPredictForm({
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">거주 반구</label>
+        <label className="block text-sm font-semibold text-fg">거주 반구</label>
         <div className="grid grid-cols-2 gap-3">
           {[
             { value: true, label: "🌏 북반구 (한국·아시아 등)" },
@@ -44,8 +47,8 @@ export function HippocratesWindPredictForm({
               className={[
                 "rounded-xl py-3 px-2 text-sm font-medium transition-colors",
                 isNorthernHemisphere === value
-                  ? "bg-sky-500 text-white shadow"
-                  : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+                  ? "bg-brand-600 text-white shadow"
+                  : "glass text-fg-muted hover:bg-white/70",
               ].join(" ")}
             >
               {label}
@@ -54,16 +57,9 @@ export function HippocratesWindPredictForm({
         </div>
       </div>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-sky-400 to-cyan-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

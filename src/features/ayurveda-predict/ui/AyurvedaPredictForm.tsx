@@ -1,5 +1,8 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 import { DIRECTIONS } from "@/features/ayurveda-predict/model/useAyurvedaPredictor";
 import type { Direction } from "@/features/ayurveda-predict/model/useAyurvedaPredictor";
 
@@ -33,11 +36,11 @@ export function AyurvedaPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-orange-50 px-4 py-3 text-sm text-orange-700">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         🪷 생리 주기 일수 + 집의 방위 기운(8방위)으로 성별을 판단합니다.
         <br />
-        <span className="text-xs text-orange-400">짝수일 → 아들 / 홀수일 → 딸</span>
-      </div>
+        <span className="text-xs text-brand-700">짝수일 → 아들 / 홀수일 → 딸</span>
+      </GlassCard>
 
       <DateTextInput
         label="마지막 생리 시작일"
@@ -55,7 +58,7 @@ export function AyurvedaPredictForm({
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">집 주요 방위 <span className="font-normal text-gray-400">(8방위)</span></label>
+        <label className="block text-sm font-semibold text-fg">집 주요 방위 <span className="font-normal text-fg-subtle">(8방위)</span></label>
         <div className="grid grid-cols-4 gap-2">
           {DIRECTIONS.map((d) => (
             <button
@@ -64,8 +67,8 @@ export function AyurvedaPredictForm({
               className={[
                 "rounded-xl py-2.5 text-xs font-medium transition-colors",
                 direction === d
-                  ? "bg-orange-500 text-white shadow"
-                  : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+                  ? "bg-brand-600 text-white shadow"
+                  : "glass text-fg-muted hover:bg-white/70",
               ].join(" ")}
             >
               {DIR_LABEL[d]}
@@ -74,16 +77,9 @@ export function AyurvedaPredictForm({
         </div>
       </div>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-orange-400 to-amber-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

@@ -32,7 +32,7 @@ interface NavItem {
 
 const PRIMARY: NavItem[] = [
   { href: "/",        icon: Home,     label: "홈" },
-  { href: "/ai",      icon: Sparkles, label: "AI 예측" },
+  { href: "/ai",      icon: Sparkles, label: "AI" },
   { href: "/planner", icon: Target,   label: "플래너" },
 ];
 
@@ -41,10 +41,10 @@ const GROUPS: { title: string; items: NavItem[] }[] = [
     title: "동양",
     items: [
       { href: "/chinese",   icon: Landmark, label: "중국 황실 달력" },
-      { href: "/ancient49", icon: Scale,   label: "주역 49" },
-      { href: "/kfengshui", icon: House,   label: "풍수지리" },
-      { href: "/ohang",     icon: Flame,   label: "오행 (Gr-ai)" },
-      { href: "/samwon",    icon: Wand2,   label: "삼원 (Cl-ai)" },
+      { href: "/ancient49", icon: Scale,    label: "주역 49" },
+      { href: "/kfengshui", icon: House,    label: "풍수지리" },
+      { href: "/ohang",     icon: Flame,    label: "오행 (Gr-ai)" },
+      { href: "/samwon",    icon: Wand2,    label: "삼원 (Cl-ai)" },
     ],
   },
   {
@@ -107,9 +107,9 @@ export function NavBar() {
   return (
     <nav
       aria-label="주요 네비게이션"
-      className="sticky top-0 z-20 w-full border-b border-neutral-200 bg-white/95 backdrop-blur"
+      className="glass sticky top-3 z-20 mx-3 mt-3 rounded-2xl"
     >
-      <div className="mx-auto flex h-14 w-full max-w-xl items-center justify-between px-4">
+      <div className="flex h-12 items-center justify-between px-2">
         <div className="flex items-center gap-1">
           {PRIMARY.map(({ href, icon: Icon, label }) => {
             const active = pathname === href;
@@ -121,8 +121,8 @@ export function NavBar() {
                 className={[
                   "flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors",
                   active
-                    ? "bg-neutral-900 text-white"
-                    : "text-neutral-600 hover:bg-neutral-100",
+                    ? "bg-brand-600 text-white shadow-sm"
+                    : "text-fg-muted hover:bg-white/40",
                 ].join(" ")}
               >
                 <Icon size={16} strokeWidth={2.25} aria-hidden />
@@ -141,15 +141,17 @@ export function NavBar() {
             className={[
               "flex h-9 items-center gap-1 rounded-full px-3 text-sm font-medium transition-colors",
               isSecondaryActive
-                ? "bg-neutral-900 text-white"
-                : "text-neutral-600 hover:bg-neutral-100",
+                ? "bg-brand-600 text-white shadow-sm"
+                : "text-fg-muted hover:bg-white/40",
             ].join(" ")}
           >
             전체
             <ChevronDown
               size={14}
               strokeWidth={2.5}
-              className={open ? "rotate-180 transition-transform" : "transition-transform"}
+              className={
+                open ? "rotate-180 transition-transform" : "transition-transform"
+              }
               aria-hidden
             />
           </button>
@@ -157,12 +159,12 @@ export function NavBar() {
           {open && (
             <div
               role="menu"
-              className="absolute right-0 top-11 w-72 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xl"
+              className="glass-strong absolute right-0 top-12 w-72 overflow-hidden rounded-2xl"
             >
               <div className="max-h-[70vh] overflow-y-auto p-2">
                 {GROUPS.map((group) => (
                   <div key={group.title} className="py-1">
-                    <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
+                    <div className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-fg-subtle">
                       {group.title}
                     </div>
                     {group.items.map(({ href, icon: Icon, label }) => {
@@ -176,14 +178,14 @@ export function NavBar() {
                           className={[
                             "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
                             active
-                              ? "bg-neutral-100 font-semibold text-neutral-900"
-                              : "text-neutral-700 hover:bg-neutral-50",
+                              ? "bg-brand-500/15 font-semibold text-brand-700"
+                              : "text-fg-muted hover:bg-white/50",
                           ].join(" ")}
                         >
                           <Icon
                             size={16}
                             strokeWidth={2}
-                            className="text-neutral-500"
+                            className={active ? "text-brand-600" : "text-fg-subtle"}
                             aria-hidden
                           />
                           <span className="truncate">{label}</span>

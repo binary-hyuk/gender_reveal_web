@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import type { AiPredictResult, AiGender, MethodResult } from "../model/useAiPredictor";
 import { ShareButton } from "@/shared/ui/ShareButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   result: AiPredictResult;
@@ -42,27 +43,27 @@ function MethodRow({ method, finalGender }: { method: MethodResult; finalGender:
   return (
     <div
       className={[
-        "flex items-start gap-3 rounded-xl px-4 py-3 transition-colors",
+        "flex items-start gap-3 rounded-xl px-4 py-3 transition-colors glass-soft",
         method.available
           ? matches
-            ? "bg-gray-50"
-            : "bg-gray-50 opacity-60"
-          : "bg-gray-50 opacity-40",
+            ? ""
+            : "opacity-60"
+          : "opacity-40",
       ].join(" ")}
     >
       <span className="text-xl flex-shrink-0">{method.emoji}</span>
       <div className="flex-1 min-w-0">
-        <span className="text-sm font-semibold text-gray-700">
+        <span className="text-sm font-semibold text-fg">
           {method.name}
         </span>
         <div className="mt-1 flex items-center gap-2">
           {method.available ? (
             <GenderBadge gender={method.gender} />
           ) : (
-            <span className="text-xs text-gray-400">판정 불가</span>
+            <span className="text-xs text-fg-subtle">판정 불가</span>
           )}
         </div>
-        <p className="mt-0.5 text-xs text-gray-400 leading-relaxed">{method.detail}</p>
+        <p className="mt-0.5 text-xs text-fg-subtle leading-relaxed">{method.detail}</p>
       </div>
     </div>
   );
@@ -77,17 +78,17 @@ export function AiPredictResult({ result, onReset }: Props) {
       {/* 공유 캡처 대상 영역 */}
       <div ref={captureRef} className="space-y-4">
         {/* ① 최종 예측 히어로 카드 */}
-        <div className={`rounded-2xl bg-gradient-to-br ${cfg.gradient} p-8 text-center text-white shadow-xl`}>
-          <p className="text-xs font-semibold uppercase tracking-widest opacity-80 mb-3">
+        <GlassCard variant="strong" className="p-8 text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-fg-muted mb-3">
             🤖 AI 최종 예측
           </p>
           <div className="text-7xl mb-3">{cfg.emoji}</div>
-          <h2 className="text-3xl font-extrabold">{cfg.label}</h2>
-        </div>
+          <h2 className="text-3xl font-extrabold text-fg">{cfg.label}</h2>
+        </GlassCard>
 
         {/* ② 방법별 예측 결과 */}
-        <div className="rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+        <GlassCard className="px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-fg-subtle mb-3">
             방법별 예측
           </p>
           <div className="space-y-2">
@@ -95,9 +96,9 @@ export function AiPredictResult({ result, onReset }: Props) {
               <MethodRow key={m.key} method={m} finalGender={result.finalGender} />
             ))}
           </div>
-        </div>
+        </GlassCard>
 
-        <p className="text-center text-xs text-gray-400">
+        <p className="text-center text-xs text-fg-subtle">
           * 전통 예측법의 가중치 합산 결과입니다. 재미로만 참고하세요 😊
         </p>
       </div>
@@ -111,7 +112,7 @@ export function AiPredictResult({ result, onReset }: Props) {
 
       <button
         onClick={onReset}
-        className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 shadow-sm hover:bg-gray-50"
+        className="w-full rounded-xl glass py-3 text-sm font-semibold text-fg hover:bg-white/70"
       >
         다시 예측하기
       </button>

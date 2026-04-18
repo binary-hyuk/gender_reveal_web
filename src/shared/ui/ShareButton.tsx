@@ -1,27 +1,17 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { toPng } from "html-to-image";
+import { Share2, Image as ImageIcon, Link as LinkIcon, Send } from "lucide-react";
 
 interface Props {
-  /** 캡처할 DOM 영역 ref. 이미지 저장에 사용. */
   targetRef: RefObject<HTMLElement | null>;
-  /** Web Share API 에 넘길 title */
   title: string;
-  /** Web Share API 에 넘길 text */
   text: string;
-  /** 복사·공유할 URL (선택). 기본값은 현재 location.href */
   url?: string;
-  /** 다운로드 파일명 prefix. 기본값은 'gender-prediction' */
   filenamePrefix?: string;
 }
 
 type Feedback = { type: "success" | "error"; message: string } | null;
 
-/**
- * 결과 카드 영역을 PNG 로 캡처해서 저장하거나, URL 을 복사하거나,
- * 시스템 공유(지원 시) 할 수 있는 공용 버튼 컴포넌트.
- *
- * TODO: Kakao SDK 공유는 후속 작업 — NEXT_PUBLIC_KAKAO_APP_KEY 설정 후 추가 예정.
- */
 export function ShareButton({
   targetRef,
   title,
@@ -39,7 +29,6 @@ export function ShareButton({
     setCanNativeShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
   }, []);
 
-  // 외부 클릭 / ESC 로 메뉴 닫기
   useEffect(() => {
     if (!open) return;
     function onClick(e: MouseEvent) {
@@ -56,7 +45,6 @@ export function ShareButton({
     };
   }, [open]);
 
-  // feedback 자동 소멸
   useEffect(() => {
     if (!feedback) return;
     const t = setTimeout(() => setFeedback(null), 2500);
@@ -86,7 +74,7 @@ export function ShareButton({
       link.download = `${filenamePrefix}-${today}.png`;
       link.href = dataUrl;
       link.click();
-      setFeedback({ type: "success", message: "이미지를 저장했어요 📥" });
+      setFeedback({ type: "success", message: "이미지를 저장했어요" });
       setOpen(false);
     } catch {
       setFeedback({ type: "error", message: "이미지 생성에 실패했어요." });
@@ -98,7 +86,7 @@ export function ShareButton({
   async function handleCopyUrl() {
     try {
       await navigator.clipboard.writeText(resolvedUrl());
-      setFeedback({ type: "success", message: "링크를 복사했어요 🔗" });
+      setFeedback({ type: "success", message: "링크를 복사했어요" });
       setOpen(false);
     } catch {
       setFeedback({ type: "error", message: "링크 복사에 실패했어요." });
@@ -111,7 +99,7 @@ export function ShareButton({
       await navigator.share({ title, text, url: resolvedUrl() });
       setOpen(false);
     } catch {
-      // 사용자가 취소한 경우 등은 조용히 무시
+      // 사용자 취소는 무시
     }
   }
 
@@ -122,22 +110,22 @@ export function ShareButton({
         onClick={() => setOpen((v) => !v)}
         aria-label="결과 공유"
         aria-expanded={open}
-        className="w-full rounded-xl border border-purple-200 bg-purple-50 py-3 text-sm font-semibold text-purple-700 transition-colors hover:bg-purple-100"
+        className="glass flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-fg transition hover:bg-white/70"
       >
-        📤 공유하기
+        <Share2 size={16} strokeWidth={2.25} aria-hidden />
+        공유하기
       </button>
 
       {open && (
         <div
           role="menu"
-          className="absolute bottom-full left-0 right-0 mb-2 z-20 space-y-1 rounded-2xl border border-gray-100 bg-white p-2 shadow-lg"
+          className="glass-strong absolute bottom-full left-0 right-0 z-20 mb-2 space-y-1 rounded-2xl p-2"
         >
-          <MenuItem emoji="🖼️" label="이미지 저장" onClick={handleSaveImage} disabled={busy} />
-          <MenuItem emoji="🔗" label="링크 복사" onClick={handleCopyUrl} disabled={busy} />
+          <MenuItem icon={ImageIcon} label="이미지 저장" onClick={handleSaveImage} disabled={busy} />
+          <MenuItem icon={LinkIcon} label="링크 복사" onClick={handleCopyUrl} disabled={busy} />
           {canNativeShare && (
-            <MenuItem emoji="📤" label="다른 앱으로 공유" onClick={handleNativeShare} disabled={busy} />
+            <MenuItem icon={Send} label="다른 앱으로 공유" onClick={handleNativeShare} disabled={busy} />
           )}
-          {/* TODO: Kakao SDK 공유는 후속 작업 — NEXT_PUBLIC_KAKAO_APP_KEY 설정 후 추가 */}
         </div>
       )}
 
@@ -145,10 +133,10 @@ export function ShareButton({
         <p
           role="status"
           className={[
-            "mt-2 rounded-lg px-3 py-2 text-center text-xs",
+            "mt-2 rounded-xl px-3 py-2 text-center text-xs backdrop-blur",
             feedback.type === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-600",
+              ? "border border-emerald-200/60 bg-emerald-50/70 text-emerald-700"
+              : "border border-red-200/60 bg-red-50/70 text-red-600",
           ].join(" ")}
         >
           {feedback.message}
@@ -159,12 +147,12 @@ export function ShareButton({
 }
 
 function MenuItem({
-  emoji,
+  icon: Icon,
   label,
   onClick,
   disabled,
 }: {
-  emoji: string;
+  icon: typeof Share2;
   label: string;
   onClick: () => void;
   disabled?: boolean;
@@ -175,9 +163,9 @@ function MenuItem({
       role="menuitem"
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-fg transition hover:bg-white/60 disabled:opacity-50"
     >
-      <span className="text-base" aria-hidden="true">{emoji}</span>
+      <Icon size={16} strokeWidth={2.25} className="text-brand-600" aria-hidden />
       <span className="flex-1">{label}</span>
     </button>
   );

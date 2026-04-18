@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import type { PlannerRecommendations } from "../model/recommender";
 import { ShareButton } from "@/shared/ui/ShareButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   result: PlannerRecommendations;
@@ -28,10 +29,10 @@ const TARGET_INFO = {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm space-y-3">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400">{title}</h3>
+    <GlassCard className="px-5 py-4 space-y-3">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-subtle">{title}</h3>
       {children}
-    </div>
+    </GlassCard>
   );
 }
 
@@ -43,32 +44,32 @@ export function PlannerPredictResult({ result, onReset }: Props) {
     <div className="w-full max-w-sm space-y-4">
       <div ref={captureRef} className="space-y-4">
       {/* Hero */}
-      <div className={`rounded-2xl bg-gradient-to-br ${info.bg} p-6 text-center shadow-md`}>
+      <GlassCard variant="strong" className="p-6 text-center">
         <div className="text-6xl">{info.emoji}</div>
-        <h2 className={`mt-2 text-xl font-extrabold ${info.accent}`}>
+        <h2 className="mt-2 text-xl font-extrabold text-fg">
           {info.label} 맞춤 가이드
         </h2>
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-fg-muted">
           17가지 알고리즘을 역산한 추천입니다 · 재미로만 참고하세요
         </p>
-      </div>
+      </GlassCard>
 
       {/* 1. 추천 시기 */}
       <Section title="📅 추천 거사 시기 (Top 3)">
-        <p className="text-xs text-gray-500">
-          다음 12개월 중 <strong>{info.label}</strong>에 가장 유리한 달입니다.
+        <p className="text-xs text-fg-muted">
+          다음 12개월 중 <strong className="text-fg">{info.label}</strong>에 가장 유리한 달입니다.
         </p>
         <div className="space-y-2">
           {result.topMonths.map((m, idx) => (
-            <div key={m.yearMonth} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5">
+            <GlassCard key={m.yearMonth} variant="soft" className="px-3 py-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-bold text-white ${info.pill}`}>
                     #{idx + 1}
                   </span>
-                  <span className="font-semibold text-gray-800">{m.label}</span>
+                  <span className="font-semibold text-fg">{m.label}</span>
                 </div>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-fg-muted">
                   {m.targetScore}/{m.maxScore}점
                 </span>
               </div>
@@ -81,7 +82,7 @@ export function PlannerPredictResult({ result, onReset }: Props) {
                   ))}
                 </div>
               )}
-            </div>
+            </GlassCard>
           ))}
         </div>
       </Section>
@@ -90,10 +91,10 @@ export function PlannerPredictResult({ result, onReset }: Props) {
       <Section title="📆 추천 요일 (행성 요일법)">
         <div className="flex flex-wrap gap-2">
           {result.weekdays.map((d) => (
-            <div key={d.dayOfWeek} className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs flex items-center gap-1">
+            <div key={d.dayOfWeek} className="rounded-full glass px-3 py-1.5 text-xs flex items-center gap-1">
               <span>{d.emoji}</span>
-              <span className="font-semibold text-gray-700">{d.name}</span>
-              <span className="text-gray-400">· {d.planet}</span>
+              <span className="font-semibold text-fg">{d.name}</span>
+              <span className="text-fg-subtle">· {d.planet}</span>
             </div>
           ))}
         </div>
@@ -103,10 +104,10 @@ export function PlannerPredictResult({ result, onReset }: Props) {
       <Section title="🧭 추천 방위 (아유르베다 8방위)">
         <div className="grid grid-cols-2 gap-2">
           {result.ayurvedaDirections.map((d) => (
-            <div key={d.code} className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2">
-              <div className="font-semibold text-gray-800 text-sm">{d.label}</div>
-              <div className="text-[10px] text-gray-500">{d.reason}</div>
-            </div>
+            <GlassCard key={d.code} variant="soft" className="px-3 py-2">
+              <div className="font-semibold text-fg text-sm">{d.label}</div>
+              <div className="text-[10px] text-fg-muted">{d.reason}</div>
+            </GlassCard>
           ))}
         </div>
       </Section>
@@ -115,11 +116,11 @@ export function PlannerPredictResult({ result, onReset }: Props) {
       <Section title="🏠 집 · 풍수지리">
         <div className="space-y-2 text-sm">
           <div>
-            <span className="text-xs font-semibold text-gray-400">추천 층수</span>
-            <p className="text-gray-700">{result.fengshuiFloorAdvice}</p>
+            <span className="text-xs font-semibold text-fg-subtle">추천 층수</span>
+            <p className="text-fg">{result.fengshuiFloorAdvice}</p>
           </div>
           <div>
-            <span className="text-xs font-semibold text-gray-400">추천 집 방향</span>
+            <span className="text-xs font-semibold text-fg-subtle">추천 집 방향</span>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {result.fengshuiDirections.map((d) => (
                 <span key={d} className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${info.chip}`}>
@@ -133,7 +134,7 @@ export function PlannerPredictResult({ result, onReset }: Props) {
 
       {/* 5. 반구/계절 */}
       <Section title="🌬️ 계절 · 반구 팁">
-        <p className="text-sm text-gray-700 leading-relaxed">{result.hemisphereTip}</p>
+        <p className="text-sm text-fg leading-relaxed">{result.hemisphereTip}</p>
       </Section>
 
       {/* 6. 숫자 */}
@@ -145,7 +146,7 @@ export function PlannerPredictResult({ result, onReset }: Props) {
             </div>
           ))}
         </div>
-        <p className="text-[11px] text-gray-500 leading-tight">
+        <p className="text-[11px] text-fg-muted leading-tight">
           삼원공명 직감수·수비학에서 {info.label}에 유리한 {result.target === "Boy" ? "양수(홀수)" : "음수(짝수)"}.
         </p>
       </Section>
@@ -154,19 +155,19 @@ export function PlannerPredictResult({ result, onReset }: Props) {
       <Section title="💫 행운의 이모티콘">
         <div className="grid grid-cols-4 gap-2">
           {result.luckyEmojis.map((e) => (
-            <div key={e} className="aspect-square rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center text-3xl">
+            <GlassCard key={e} variant="soft" className="aspect-square flex items-center justify-center text-3xl">
               {e}
-            </div>
+            </GlassCard>
           ))}
         </div>
-        <p className="text-[11px] text-gray-500 leading-tight">
+        <p className="text-[11px] text-fg-muted leading-tight">
           디지털 DNA 알고리즘 역산 — 유니코드 {result.target === "Boy" ? "홀수" : "짝수"} codepoint 이모지.
         </p>
       </Section>
 
       {/* 8. 관심사 */}
       <Section title="💡 관심사 · 취미 추천">
-        <ul className="space-y-1 text-sm text-gray-700">
+        <ul className="space-y-1 text-sm text-fg">
           {result.interests.map((i) => (
             <li key={i}>{i}</li>
           ))}
@@ -175,14 +176,14 @@ export function PlannerPredictResult({ result, onReset }: Props) {
 
       {/* 9. 라이프스타일 */}
       <Section title="🧘 컨디션 · 라이프스타일 팁">
-        <ul className="space-y-1 text-sm text-gray-700">
+        <ul className="space-y-1 text-sm text-fg">
           {result.lifestyleTips.map((t) => (
             <li key={t}>{t}</li>
           ))}
         </ul>
       </Section>
 
-      <p className="text-center text-[11px] text-gray-400">
+      <p className="text-center text-[11px] text-fg-subtle">
         * 의학적 근거는 없으며, 전통 알고리즘의 역산 결과입니다.
       </p>
       </div>
@@ -196,7 +197,7 @@ export function PlannerPredictResult({ result, onReset }: Props) {
 
       <button
         onClick={onReset}
-        className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 shadow-sm transition-colors hover:bg-gray-50"
+        className="w-full rounded-xl glass py-3 text-sm font-semibold text-fg transition-colors hover:bg-white/70"
       >
         다시 추천받기
       </button>

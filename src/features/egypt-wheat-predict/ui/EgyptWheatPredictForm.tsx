@@ -1,4 +1,7 @@
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   momName: string;
@@ -19,20 +22,20 @@ export function EgyptWheatPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-yellow-50 px-4 py-3 text-sm text-yellow-700">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         🌾 엄마 이름 + 거주지 글자 수로 밀·보리 발아 일수를 겨룹니다.
         <br />
-        <span className="text-xs text-yellow-500">보리(보리) ≤ 밀(wheat) → 아들 / 밀이 더 짧으면 → 딸</span>
-      </div>
+        <span className="text-xs text-brand-700">보리(보리) ≤ 밀(wheat) → 아들 / 밀이 더 짧으면 → 딸</span>
+      </GlassCard>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">엄마 이름</label>
+        <label className="block text-sm font-semibold text-fg">엄마 이름</label>
         <input
           type="text"
           value={momName}
           onChange={(e) => onMomNameChange(e.target.value)}
           placeholder="예: 김지은"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
@@ -45,26 +48,19 @@ export function EgyptWheatPredictForm({
       />
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">거주 지역</label>
+        <label className="block text-sm font-semibold text-fg">거주 지역</label>
         <input
           type="text"
           value={locationString}
           onChange={(e) => onLocationStringChange(e.target.value)}
           placeholder="예: 김포시"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

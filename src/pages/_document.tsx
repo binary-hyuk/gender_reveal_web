@@ -20,6 +20,13 @@ export default function Document() {
         <meta property="og:locale" content="ko_KR" />
         <meta name="twitter:card" content="summary" />
 
+        {/* Pretendard 폰트 */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+
         {/* 파비콘 */}
         <link rel="icon" href="/favicon.ico" />
       </Head>

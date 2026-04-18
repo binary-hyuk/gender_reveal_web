@@ -1,5 +1,8 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   motherBirthDate: string;
@@ -24,12 +27,12 @@ export function GypsyPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4 text-sm text-amber-700">
+      <GlassCard variant="soft" className="px-5 py-4 text-sm text-fg">
         임신 당시 엄마 나이 + 임신 월의 합이 홀수면 아들, 짝수면 딸로 예측합니다.
-      </div>
+      </GlassCard>
 
-      <div className="rounded-2xl border border-gray-100 bg-white px-5 py-5 shadow-sm space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+      <GlassCard className="px-5 py-5 space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-fg-subtle">
           날짜 정보
         </p>
         <DateTextInput
@@ -45,20 +48,11 @@ export function GypsyPredictForm({
           onStartChange={onConceptionStartChange}
           onEndChange={onConceptionEndChange}
         />
-      </div>
+      </GlassCard>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-pink-400 to-blue-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

@@ -1,3 +1,7 @@
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
+
 interface Props {
   houseDirection: string;
   floorNumber: string;
@@ -17,14 +21,14 @@ export function KFengshuiPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-green-50 px-4 py-3 text-sm text-green-700">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         🏠 층수 홀짝 + 창문 방향 음양 + 주소 글자수로 기운을 합산합니다.
         <br />
-        <span className="text-xs text-green-500">양기(+) → 아들 / 음기(−) → 딸</span>
-      </div>
+        <span className="text-xs text-brand-700">양기(+) → 아들 / 음기(−) → 딸</span>
+      </GlassCard>
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">집 방향</label>
+        <label className="block text-sm font-semibold text-fg">집 방향</label>
         <div className="grid grid-cols-4 gap-1.5 mb-2">
           {DIRECTION_PRESETS.map((d) => (
             <button
@@ -33,8 +37,8 @@ export function KFengshuiPredictForm({
               className={[
                 "rounded-lg py-2 text-xs font-medium transition-colors",
                 houseDirection === d
-                  ? "bg-green-500 text-white shadow"
-                  : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+                  ? "bg-brand-600 text-white shadow"
+                  : "glass text-fg-muted hover:bg-white/70",
               ].join(" ")}
             >
               {d}
@@ -46,43 +50,36 @@ export function KFengshuiPredictForm({
           value={houseDirection}
           onChange={(e) => onHouseDirectionChange(e.target.value)}
           placeholder="직접 입력 (예: 남동향)"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">거주 층수</label>
+        <label className="block text-sm font-semibold text-fg">거주 층수</label>
         <input
           type="number"
           min={1}
           value={floorNumber}
           onChange={(e) => onFloorNumberChange(e.target.value)}
           placeholder="예: 15"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">거주 지역 <span className="font-normal text-gray-400">(시·구까지만 입력해도 됩니다)</span></label>
+        <label className="block text-sm font-semibold text-fg">거주 지역 <span className="font-normal text-fg-subtle">(시·구까지만 입력해도 됩니다)</span></label>
         <input
           type="text"
           value={locationString}
           onChange={(e) => onLocationStringChange(e.target.value)}
           placeholder="예: 서울시 종로구"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-green-500 to-teal-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

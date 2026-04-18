@@ -1,4 +1,5 @@
 import { GenderResultCard } from "@/shared/ui/GenderResultCard";
+import { GlassCard } from "@/shared/ui/GlassCard";
 import type {
   BloodRenewalResult,
   BloodRenewalGender,
@@ -20,38 +21,36 @@ export function BloodRenewalPredictResult({ result, onReset }: Props) {
   if (result.gender === "Tie") {
     return (
       <div className="w-full max-w-sm space-y-4">
-        <div
-          className={`rounded-2xl bg-gradient-to-br ${TIE_CONFIG.bg} p-8 text-center shadow-lg`}
-        >
+        <GlassCard variant="strong" className="p-8 text-center">
           <div className="mb-3 text-7xl">{TIE_CONFIG.emoji}</div>
-          <h2 className={`text-2xl font-extrabold ${TIE_CONFIG.text}`}>
+          <h2 className="text-2xl font-extrabold text-fg">
             {TIE_CONFIG.label}
           </h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-fg-muted">
             나머지가 동일하여 예측 불가
           </p>
-        </div>
+        </GlassCard>
 
-        <div className="rounded-2xl border border-gray-100 bg-white px-6 py-4 shadow-sm">
-          <div className="space-y-2 text-sm text-gray-600">
+        <GlassCard className="px-6 py-4">
+          <div className="space-y-2 text-sm text-fg-muted">
             <div className="flex justify-between">
               <span>아빠 나이 % 4</span>
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold text-fg">
                 {result.dadAge} % 4 = {result.dadRem}
               </span>
             </div>
             <div className="flex justify-between">
               <span>엄마 나이 % 3</span>
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold text-fg">
                 {result.momAge} % 3 = {result.momRem}
               </span>
             </div>
           </div>
-        </div>
+        </GlassCard>
 
         <button
           onClick={onReset}
-          className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-600 shadow-sm hover:bg-gray-50"
+          className="w-full rounded-xl glass py-3 text-sm font-semibold text-fg hover:bg-white/70"
         >
           다시 예측하기
         </button>
