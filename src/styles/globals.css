@@ -1,75 +1,27 @@
 @import "tailwindcss";
 
 /* =============================================================
- * 🎨 THEME TOKENS
- *
- * 👉 수정하기 좋은 변수는 [✏️] 표시.
- *    나머지는 [자동] — 위 값에서 파생되므로 건드릴 필요 없음.
- *
- * 1순위: --brand-hue (전체 톤)
- * 2순위: --brand-sat (포인트 채도), --bg-sat (배경 채도)
- * 3순위: --glass-* (카드 유리 강도)
+ * 🎨 색상 토큰 → src/styles/themeTokens.ts 에서 관리
+ *    여기는 구조(glass, 배경, 폰트)만 정의합니다.
  * ============================================================= */
+
+/* ── 글래스모피즘 강도 조절 ─────────────────────────────────── */
 :root {
-  /* ----- [✏️] 브랜드 톤 ----------------------------------- */
-  --brand-hue: 230;          /* [✏️] 0=red 30=orange 120=green 180=teal 210=sky 230=blue ← 현재 262=violet 320=pink */
-  --brand-sat: 54%;          /* [✏️] 포인트 채도. 낮추면 차분, 높이면 쨍함 (0~100%) */
-  --brand-lightness-shift: -10%; /* [✏️] 명도 오프셋 (-10%~+10%). 음수면 어둡게 */
+  --glass-opacity:        0.55;   /* 카드 불투명도 (0.4~0.85) */
+  --glass-opacity-strong: 0.72;   /* strong 변형 */
+  --glass-opacity-soft:   0.35;   /* soft 변형 */
+  --glass-blur:           16px;   /* 블러 강도 (8~24px) */
+  --glass-saturate:       150%;   /* 블러 채도 증폭 (100~180%) */
+  --glass-border-alpha:   0.7;    /* 흰 테두리 투명도 (0.3~0.9) */
 
-  /* [자동] 브랜드 팔레트 */
-  --brand-50:  hsl(var(--brand-hue) var(--brand-sat) calc(97% + var(--brand-lightness-shift)));
-  --brand-100: hsl(var(--brand-hue) var(--brand-sat) calc(94% + var(--brand-lightness-shift)));
-  --brand-200: hsl(var(--brand-hue) var(--brand-sat) calc(88% + var(--brand-lightness-shift)));
-  --brand-300: hsl(var(--brand-hue) var(--brand-sat) calc(78% + var(--brand-lightness-shift)));
-  --brand-400: hsl(var(--brand-hue) var(--brand-sat) calc(66% + var(--brand-lightness-shift)));
-  --brand-500: hsl(var(--brand-hue) var(--brand-sat) calc(55% + var(--brand-lightness-shift)));
-  --brand-600: hsl(var(--brand-hue) var(--brand-sat) calc(46% + var(--brand-lightness-shift)));
-  --brand-700: hsl(var(--brand-hue) var(--brand-sat) calc(36% + var(--brand-lightness-shift)));
-
-  /* ----- [✏️] 배경 (2색 그라데이션) ----------------------- */
-  --bg-sat: 45%;             /* [✏️] 배경 채도. 낮을수록 차분, 높을수록 색감 진해짐 (10~60%) */
-  --bg-light-top: 86%;       /* [✏️] 상단 명도. 낮추면 상단이 진해짐 (80~94%) ⚠ 95%+ 이상이면 색이 보이지 않음 */
-  --bg-light-bottom: 96%;    /* [✏️] 하단 명도. 높을수록 밝은 흰색에 가까워짐 (93~98%) */
-
-  /* [자동] — 위에서 brand hue 로 살짝 물든 색, 아래서 거의 흰색으로 */
-  --bg-from: hsl(var(--brand-hue) var(--bg-sat) var(--bg-light-top));
-  --bg-to:   hsl(var(--brand-hue) calc(var(--bg-sat) * 0.4) var(--bg-light-bottom));
-
-  /* ----- [✏️] 글래스모피즘 -------------------------------- */
-  --glass-opacity: 0.55;          /* [✏️] 카드 불투명도 (0.4~0.85). 높이면 선명, 낮추면 투명 */
-  --glass-opacity-strong: 0.72;   /* [✏️] strong 변형 (결과·드롭다운) */
-  --glass-opacity-soft: 0.35;     /* [✏️] soft 변형 (힌트·보조) */
-  --glass-blur: 16px;             /* [✏️] 블러 강도 (8~24px) */
-  --glass-saturate: 150%;         /* [✏️] 블러 채도 증폭 (100~180%) */
-  --glass-border-alpha: 0.7;      /* [✏️] 흰 테두리 투명도 (0.3~0.9) */
-
-  /* [자동] */
   --glass-bg:          rgba(255, 255, 255, var(--glass-opacity));
   --glass-bg-strong:   rgba(255, 255, 255, var(--glass-opacity-strong));
   --glass-bg-soft:     rgba(255, 255, 255, var(--glass-opacity-soft));
   --glass-border:      rgba(255, 255, 255, var(--glass-border-alpha));
   --glass-border-soft: rgba(255, 255, 255, calc(var(--glass-border-alpha) - 0.3));
-
-  /* ----- [✏️] 그림자 -------------------------------------- */
-  --shadow-color: 40 55 90;       /* [✏️] 그림자 RGB. 브랜드 계열 추천. 뉴트럴이면 "0 0 0" */
-  --shadow-strength: 1;           /* [✏️] 그림자 배율 (0.5=약 / 1=기본 / 2=강) */
-
-  /* [자동] 2레이어 그림자 */
-  --glass-shadow:
-    0 2px 8px   rgba(var(--shadow-color), calc(0.06 * var(--shadow-strength))),
-    0 12px 32px rgba(var(--shadow-color), calc(0.10 * var(--shadow-strength)));
-  --glass-shadow-lg:
-    0 4px 12px  rgba(var(--shadow-color), calc(0.08 * var(--shadow-strength))),
-    0 20px 48px rgba(var(--shadow-color), calc(0.14 * var(--shadow-strength)));
-
-  /* ----- [✏️] 텍스트 -------------------------------------- */
-  --fg-sat: 20%;             /* [✏️] 텍스트 채도 (0%=순회색 / 20%=브랜드 톤 살짝) */
-  --fg:        hsl(var(--brand-hue) var(--fg-sat) 13%);
-  --fg-muted:  hsl(var(--brand-hue) calc(var(--fg-sat) - 8%) 42%);
-  --fg-subtle: hsl(var(--brand-hue) calc(var(--fg-sat) - 12%) 58%);
 }
 
-/* [자동] Tailwind 에 노출 */
+/* ── Tailwind 컬러 토큰 노출 ────────────────────────────────── */
 @theme inline {
   --color-brand-50:  var(--brand-50);
   --color-brand-100: var(--brand-100);
@@ -84,6 +36,7 @@
   --color-fg-subtle: var(--fg-subtle);
 }
 
+/* ── 전역 타이포그래피 ──────────────────────────────────────── */
 body {
   color: var(--fg);
   font-family: "Pretendard Variable", Pretendard, -apple-system,
@@ -95,100 +48,15 @@ body {
 }
 
 /* =============================================================
- * 👦 Boy 테마 — 민트 초록 (아들 선택 / 아들 결과 시 적용)
- * ⚠ Chrome nested var() 제한으로 파생 변수 전부 명시적 재정의
- * ============================================================= */
-body[data-theme="boy"] {
-  --brand-hue: 155;
-  --brand-sat: 52%;
-  --brand-lightness-shift: -10%;
-
-  --brand-50:  hsl(155 52% 87%);
-  --brand-100: hsl(155 52% 84%);
-  --brand-200: hsl(155 52% 78%);
-  --brand-300: hsl(155 52% 68%);
-  --brand-400: hsl(155 52% 56%);
-  --brand-500: hsl(155 52% 45%);
-  --brand-600: hsl(155 52% 36%);
-  --brand-700: hsl(155 52% 26%);
-
-  --bg-sat: 40%;
-  --bg-light-top: 86%;
-  --bg-light-bottom: 96%;
-  --bg-from: hsl(155 40% 86%);
-  --bg-to:   hsl(155 16% 96%);
-
-  --fg:        hsl(155 20% 13%);
-  --fg-muted:  hsl(155 12% 42%);
-  --fg-subtle: hsl(155  8% 58%);
-
-  --shadow-color: 50 120 80;
-  --glass-shadow:
-    0 2px 8px   rgba(50, 120, 80, 0.07),
-    0 12px 32px rgba(50, 120, 80, 0.11);
-  --glass-shadow-lg:
-    0 4px 12px  rgba(50, 120, 80, 0.09),
-    0 20px 48px rgba(50, 120, 80, 0.15);
-}
-
-/* =============================================================
- * 👧 Girl 테마 — 살구 분홍 (딸 선택 / 딸 결과 시 적용)
- *
- * ⚠ Chrome은 :root에서 nested var()를 미리 치환해버리므로
- *   파생 변수(--brand-*, --bg-from 등)를 여기서 명시적으로 재정의해야 함.
- * ============================================================= */
-body[data-theme="girl"] {
-  /* 기본 토큰 */
-  --brand-hue: 350;
-  --brand-sat: 60%;
-  --brand-lightness-shift: -8%;
-
-  /* 브랜드 팔레트 (명시적 재정의) */
-  --brand-50:  hsl(350 60% 89%);
-  --brand-100: hsl(350 60% 86%);
-  --brand-200: hsl(350 60% 80%);
-  --brand-300: hsl(350 60% 70%);
-  --brand-400: hsl(350 60% 58%);
-  --brand-500: hsl(350 60% 47%);
-  --brand-600: hsl(350 60% 38%);
-  --brand-700: hsl(350 60% 28%);
-
-  /* 배경 */
-  --bg-sat: 48%;
-  --bg-light-top: 86%;
-  --bg-light-bottom: 96%;
-  --bg-from: hsl(350 48% 86%);
-  --bg-to:   hsl(350 19% 96%);
-
-  /* 텍스트 */
-  --fg:        hsl(350 20% 13%);
-  --fg-muted:  hsl(350 12% 42%);
-  --fg-subtle: hsl(350  8% 58%);
-
-  /* 그림자 */
-  --shadow-color: 160 55 75;
-  --glass-shadow:
-    0 2px 8px   rgba(160, 55, 75, 0.07),
-    0 12px 32px rgba(160, 55, 75, 0.11);
-  --glass-shadow-lg:
-    0 4px 12px  rgba(160, 55, 75, 0.09),
-    0 20px 48px rgba(160, 55, 75, 0.15);
-}
-
-/* =============================================================
- * Page background — 2색 그라데이션 + 소프트 블롭
+ * 페이지 배경 — 그라데이션 + 소프트 블롭
+ * (색상은 themeTokens.ts → --bg-from / --bg-to / --bg-accent)
  * ============================================================= */
 .app-bg {
-  background: linear-gradient(
-    160deg,
-    var(--bg-from) 0%,
-    var(--bg-to) 100%
-  );
+  background: linear-gradient(160deg, var(--bg-from) 0%, var(--bg-to) 100%);
   background-attachment: fixed;
   position: relative;
 }
 
-/* 배경 장식 블롭 — glass 효과가 잘 보이게 해주는 빛 덩어리 */
 .app-bg::before,
 .app-bg::after {
   content: "";
@@ -212,10 +80,9 @@ body[data-theme="girl"] {
   height: 400px;
   bottom: -80px;
   right: -80px;
-  background: hsl(var(--brand-hue) var(--bg-sat) 80%);
+  background: var(--bg-accent);
 }
 
-/* 블롭 위에 카드가 올라오도록 */
 .app-bg > * {
   position: relative;
   z-index: 1;
