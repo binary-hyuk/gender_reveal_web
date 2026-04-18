@@ -2,6 +2,7 @@ import { DateTextInput } from "@/shared/ui/DateTextInput";
 import { ErrorMessage } from "@/shared/ui/ErrorMessage";
 import { PredictButton } from "@/shared/ui/PredictButton";
 import { GlassCard } from "@/shared/ui/GlassCard";
+import { useBodyGenderTheme } from "@/shared/lib/useBodyGenderTheme";
 import type { PlannerTarget } from "../model/usePlannerPredictor";
 
 const MBTI_TYPES = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"] as const;
@@ -26,6 +27,7 @@ export function PlannerPredictForm({
   onMotherBirthDateChange, onFatherBirthDateChange, onMomMBTIChange, onDadMBTIChange,
   onTargetChange, onPredict,
 }: Props) {
+  useBodyGenderTheme(target);
   return (
     <div className="w-full max-w-sm space-y-5">
       <GlassCard variant="soft" className="px-5 py-4 text-sm text-fg space-y-1">

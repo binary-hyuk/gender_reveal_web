@@ -1,5 +1,6 @@
 import { Baby, RotateCcw } from "lucide-react";
 import { GlassCard } from "./GlassCard";
+import { useBodyGenderTheme } from "@/shared/lib/useBodyGenderTheme";
 
 type Gender = "Boy" | "Girl";
 
@@ -32,6 +33,7 @@ const CONFIG = {
 
 export function GenderResultCard({ gender, details, note, onReset }: Props) {
   const cfg = CONFIG[gender];
+  useBodyGenderTheme(gender);
 
   return (
     <div className="w-full max-w-sm space-y-5">

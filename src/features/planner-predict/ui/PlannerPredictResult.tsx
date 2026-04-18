@@ -2,6 +2,7 @@ import { useRef } from "react";
 import type { PlannerRecommendations } from "../model/recommender";
 import { ShareButton } from "@/shared/ui/ShareButton";
 import { GlassCard } from "@/shared/ui/GlassCard";
+import { useBodyGenderTheme } from "@/shared/lib/useBodyGenderTheme";
 
 interface Props {
   result: PlannerRecommendations;
@@ -39,6 +40,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function PlannerPredictResult({ result, onReset }: Props) {
   const info = TARGET_INFO[result.target];
   const captureRef = useRef<HTMLDivElement>(null);
+  useBodyGenderTheme(result.target);
 
   return (
     <div className="w-full max-w-sm space-y-4">
