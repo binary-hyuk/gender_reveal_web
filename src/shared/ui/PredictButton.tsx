@@ -1,16 +1,12 @@
 import type { ReactNode } from "react";
 
-type Variant = "primary" | "purple" | "indigo" | "amber" | "orange" | "sky" | "green";
-
-const VARIANT_CLASS: Record<Variant, string> = {
-  primary: "bg-gradient-to-r from-pink-400 to-blue-400",
-  purple:  "bg-gradient-to-r from-purple-500 to-pink-500",
-  indigo:  "bg-gradient-to-r from-indigo-500 to-violet-500",
-  amber:   "bg-gradient-to-r from-amber-500 to-orange-500",
-  orange:  "bg-gradient-to-r from-orange-400 to-amber-400",
-  sky:     "bg-gradient-to-r from-sky-400 to-cyan-400",
-  green:   "bg-gradient-to-r from-green-500 to-teal-400",
-};
+/**
+ * 과거에 7종 그라데이션 variant 가 있었지만 글래스 디자인으로 통합되면서
+ * 모두 브랜드 solid 버튼으로 수렴. 기존 호출부 타입 호환을 위해 이름만 유지.
+ */
+type Variant =
+  | "primary" | "purple" | "indigo" | "amber" | "orange" | "sky" | "green"
+  | "secondary";
 
 interface Props {
   onClick: () => void;
@@ -20,9 +16,6 @@ interface Props {
   "aria-label"?: string;
 }
 
-/**
- * 성별 예측 메인 액션 버튼. 페이지마다 색상 variant 만 다르고 레이아웃은 동일하여 공용화.
- */
 export function PredictButton({
   onClick,
   children,
@@ -30,6 +23,8 @@ export function PredictButton({
   disabled,
   "aria-label": ariaLabel,
 }: Props) {
+  const isSecondary = variant === "secondary";
+
   return (
     <button
       type="button"
@@ -37,9 +32,11 @@ export function PredictButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={[
-        "w-full rounded-xl py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90",
-        "disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100",
-        VARIANT_CLASS[variant],
+        "w-full rounded-2xl py-4 text-base font-semibold tracking-tight transition active:scale-[0.98]",
+        isSecondary
+          ? "glass text-fg hover:bg-white/70"
+          : "bg-brand-600 text-white shadow-[0_8px_24px_rgba(var(--shadow-color),0.25)] hover:bg-brand-700",
+        "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
       ].join(" ")}
     >
       {children}

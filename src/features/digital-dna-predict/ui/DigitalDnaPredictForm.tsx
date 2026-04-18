@@ -1,3 +1,7 @@
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
+
 const MBTI_TYPES = ["INTJ","INTP","ENTJ","ENTP","INFJ","INFP","ENFJ","ENFP","ISTJ","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"] as const;
 const EMOJI_PRESETS = ["🔥","💧","🌿","⚡","🌙","☀️","💎","🌊","🎯","🦋"];
 
@@ -12,10 +16,10 @@ interface Props {
   onPredict: () => void;
 }
 
-function MbtiSelector({ label, value, activeColor, onChange }: { label: string; value: string; activeColor: string; onChange: (v: string) => void }) {
+function MbtiSelector({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-semibold text-gray-700">{label}</label>
+      <label className="block text-sm font-semibold text-fg">{label}</label>
       <div className="grid grid-cols-4 gap-1.5">
         {MBTI_TYPES.map((t) => (
           <button
@@ -23,7 +27,7 @@ function MbtiSelector({ label, value, activeColor, onChange }: { label: string; 
             onClick={() => onChange(t)}
             className={[
               "rounded-lg py-2 text-xs font-bold transition-colors",
-              value === t ? `${activeColor} text-white shadow` : "border border-gray-200 bg-white text-gray-500 hover:bg-gray-50",
+              value === t ? "bg-brand-600 text-white shadow" : "glass text-fg-muted hover:bg-white/70",
             ].join(" ")}
           >
             {t}
@@ -40,15 +44,15 @@ export function DigitalDnaPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-purple-50 px-4 py-3 text-sm text-purple-700">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         🧬 MBTI 에너지(E·S·T·P vs I·N·F·J) + 이모티콘 유니코드 홀짝으로 판단합니다.
-      </div>
+      </GlassCard>
 
-      <MbtiSelector label="엄마 MBTI" value={momMBTI} activeColor="bg-pink-500" onChange={onMomMBTIChange} />
-      <MbtiSelector label="아빠 MBTI" value={dadMBTI} activeColor="bg-blue-500" onChange={onDadMBTIChange} />
+      <MbtiSelector label="엄마 MBTI" value={momMBTI} onChange={onMomMBTIChange} />
+      <MbtiSelector label="아빠 MBTI" value={dadMBTI} onChange={onDadMBTIChange} />
 
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">최애 이모티콘</label>
+        <label className="block text-sm font-semibold text-fg">최애 이모티콘</label>
         <div className="grid grid-cols-5 gap-2 mb-2">
           {EMOJI_PRESETS.map((e) => (
             <button
@@ -56,7 +60,7 @@ export function DigitalDnaPredictForm({
               onClick={() => onFavEmojiChange(e)}
               className={[
                 "aspect-square rounded-xl text-3xl flex items-center justify-center transition-colors",
-                favEmoji === e ? "bg-purple-500 shadow ring-2 ring-purple-300" : "border border-gray-200 bg-white hover:bg-gray-50",
+                favEmoji === e ? "bg-brand-600 text-white shadow" : "glass hover:bg-white/70",
               ].join(" ")}
             >
               {e}
@@ -68,20 +72,13 @@ export function DigitalDnaPredictForm({
           value={favEmoji}
           onChange={(e) => onFavEmojiChange(e.target.value)}
           placeholder="직접 입력 (이모티콘 1개)"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-purple-500 to-violet-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

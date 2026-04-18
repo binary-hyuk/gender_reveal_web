@@ -1,5 +1,8 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 const INTUITION_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
 
@@ -25,10 +28,10 @@ export function SamwonPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-5 py-4 text-sm text-indigo-700">
+      <GlassCard variant="soft" className="px-5 py-4 text-sm text-fg">
         삼원(三元)의 천간·오행·음양을 추출하고, 월상 에너지와 직감수를 합산하여
         대연지수 49로 정규화한 결과로 성별을 예측합니다.
-      </div>
+      </GlassCard>
 
       <div className="space-y-4">
         <DateTextInput
@@ -53,10 +56,10 @@ export function SamwonPredictForm({
         />
 
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-gray-600">
-            엄마의 직감수 <span className="font-normal text-gray-400">(1~9)</span>
+          <label className="block text-sm font-semibold text-fg">
+            엄마의 직감수 <span className="font-normal text-fg-subtle">(1~9)</span>
           </label>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-fg-subtle">
             마음속에 떠오르는 숫자를 골라주세요
           </p>
           <div className="grid grid-cols-9 gap-1.5">
@@ -67,8 +70,8 @@ export function SamwonPredictForm({
                 className={[
                   "rounded-xl py-2.5 text-sm font-bold transition-colors",
                   intuition === n
-                    ? "bg-indigo-500 text-white shadow"
-                    : "border border-gray-200 bg-white text-gray-600 hover:bg-gray-50",
+                    ? "bg-brand-600 text-white shadow"
+                    : "glass text-fg-muted hover:bg-white/70",
                 ].join(" ")}
               >
                 {n}
@@ -78,18 +81,9 @@ export function SamwonPredictForm({
         </div>
       </div>
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-pink-400 to-blue-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

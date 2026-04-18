@@ -1,5 +1,7 @@
 import { DateTextInput } from "@/shared/ui/DateTextInput";
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
 
 interface Props {
   motherBirthDate: string;
@@ -39,18 +41,9 @@ export function MayanPredictForm({
         onEndChange={onConceptionEndChange}
       />
 
-      {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-pink-400 to-blue-400 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>성별 예측하기</PredictButton>
     </div>
   );
 }

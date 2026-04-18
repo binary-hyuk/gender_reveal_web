@@ -1,87 +1,96 @@
-import { PageLayout } from "@/shared/ui/PageLayout";
-import { PredictionHistoryPanel } from "@/shared/ui/PredictionHistoryPanel";
-import {
-  useAiPredictor,
-  AiPredictForm,
-  AiPredictLoading,
-  AiPredictResult,
-} from "@/features/ai-predict";
+import Link from "next/link";
+import { ArrowRight, Sparkles, Target, type LucideIcon } from "lucide-react";
+import { NavBar } from "@/shared/ui/NavBar";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
-export default function AiPredictPage() {
-  const {
-    motherBirthDate, conceptionStart, conceptionEnd, fatherBirthDate,
-    momBlood, dadBlood, momName, dadName,
-    locationString, isNorthernHemisphere, lastPeriodDate, direction,
-    houseDirection, floorNumber, momMBTI, dadMBTI, favEmoji, fatherVibe, intuition,
-    selectedCategories,
-    isLoading, result, error,
-    setMotherBirthDate, setConceptionStart, setConceptionEnd, setFatherBirthDate,
-    setMomBlood, setDadBlood, setMomName, setDadName,
-    setLocationString, setIsNorthernHemisphere, setLastPeriodDate, setDirection,
-    setHouseDirection, setFloorNumber, setMomMBTI, setDadMBTI, setFavEmoji, setFatherVibe, setIntuition,
-    toggleCategory, clearSavedInputs,
-    predict, reset,
-  } = useAiPredictor();
+interface Entry {
+  href: string;
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+  description: string;
+}
 
+const ENTRIES: Entry[] = [
+  {
+    href: "/ai",
+    icon: Sparkles,
+    title: "AI 예측",
+    subtitle: "17가지 방법 종합",
+    description:
+      "고대 달력부터 현대 수비학까지, 서로 다른 관점을 하나의 AI가 조합해 성별을 판별합니다.",
+  },
+  {
+    href: "/planner",
+    icon: Target,
+    title: "플래너",
+    subtitle: "원하는 성별 역추천",
+    description:
+      "원하는 성별을 먼저 정하면, 유리한 시기·방위·라이프스타일을 역으로 제안합니다.",
+  },
+];
+
+export default function HomePage() {
   return (
-    <PageLayout
-      title="AI 성별 예측"
-      description="필수 정보만 입력하고, 관심있는 예측법을 골라서 추가해보세요"
-    >
-      {isLoading ? (
-        <AiPredictLoading />
-      ) : result ? (
-        <AiPredictResult result={result} onReset={reset} />
-      ) : (
-        <div className="w-full max-w-sm space-y-5">
-          <AiPredictForm
-            motherBirthDate={motherBirthDate}
-            conceptionStart={conceptionStart}
-            conceptionEnd={conceptionEnd}
-            fatherBirthDate={fatherBirthDate}
-            momBlood={momBlood}
-            dadBlood={dadBlood}
-            momName={momName}
-            dadName={dadName}
-            locationString={locationString}
-            isNorthernHemisphere={isNorthernHemisphere}
-            lastPeriodDate={lastPeriodDate}
-            direction={direction}
-            houseDirection={houseDirection}
-            floorNumber={floorNumber}
-            momMBTI={momMBTI}
-            dadMBTI={dadMBTI}
-            favEmoji={favEmoji}
-            fatherVibe={fatherVibe}
-            intuition={intuition}
-            selectedCategories={selectedCategories}
-            error={error}
-            onMotherBirthDateChange={setMotherBirthDate}
-            onConceptionStartChange={setConceptionStart}
-            onConceptionEndChange={setConceptionEnd}
-            onFatherBirthDateChange={setFatherBirthDate}
-            onMomBloodChange={setMomBlood}
-            onDadBloodChange={setDadBlood}
-            onMomNameChange={setMomName}
-            onDadNameChange={setDadName}
-            onLocationStringChange={setLocationString}
-            onIsNorthernHemisphereChange={setIsNorthernHemisphere}
-            onLastPeriodDateChange={setLastPeriodDate}
-            onDirectionChange={setDirection}
-            onHouseDirectionChange={setHouseDirection}
-            onFloorNumberChange={setFloorNumber}
-            onMomMBTIChange={setMomMBTI}
-            onDadMBTIChange={setDadMBTI}
-            onFavEmojiChange={setFavEmoji}
-            onFatherVibeChange={setFatherVibe}
-            onIntuitionChange={setIntuition}
-            onToggleCategory={toggleCategory}
-            onClearSavedInputs={clearSavedInputs}
-            onPredict={predict}
-          />
-          <PredictionHistoryPanel />
+    <div className="app-bg flex min-h-screen flex-col">
+      <NavBar />
+      <main className="flex flex-1 flex-col items-center px-4 pb-16 pt-10">
+        <div className="mb-8 w-full max-w-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-600/80">
+            Gender Reveal
+          </p>
+          <h1 className="mt-2 text-[28px] font-bold leading-tight tracking-tight text-fg">
+            시작할 방식을
+            <br />
+            골라주세요
+          </h1>
+          <p className="mt-3 text-sm leading-relaxed text-fg-muted">
+            두 가지 흐름 중 하나로 시작할 수 있어요. 개별 예측법은 상단{" "}
+            <strong className="font-semibold text-fg">전체</strong> 메뉴에서도 바로 열 수 있습니다.
+          </p>
         </div>
-      )}
-    </PageLayout>
+
+        <div className="flex w-full max-w-sm flex-col gap-4">
+          {ENTRIES.map(({ href, icon: Icon, title, subtitle, description }) => (
+            <GlassCard
+              key={href}
+              as={Link}
+              href={href}
+              aria-label={`${title} 시작하기`}
+              className="group flex items-start gap-4 p-5 transition active:scale-[0.99] hover:shadow-[0_12px_40px_rgba(80,60,140,0.18)]"
+            >
+              <span
+                aria-hidden
+                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white/70 ring-1 ring-white/60 shadow-sm"
+              >
+                <Icon size={22} strokeWidth={2.25} className="text-brand-600" />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="flex items-baseline gap-2">
+                  <span className="text-base font-semibold text-fg">{title}</span>
+                  <span className="text-[11px] font-medium text-fg-subtle">
+                    · {subtitle}
+                  </span>
+                </span>
+                <span className="mt-1 block text-[13px] leading-relaxed text-fg-muted">
+                  {description}
+                </span>
+              </span>
+              <ArrowRight
+                size={18}
+                strokeWidth={2}
+                aria-hidden
+                className="mt-1 flex-shrink-0 text-fg-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-brand-600"
+              />
+            </GlassCard>
+          ))}
+        </div>
+
+        <p className="mt-10 text-center text-[11px] text-fg-subtle">
+          처음이라면{" "}
+          <span className="font-medium text-fg-muted">AI 예측</span>을 추천합니다
+        </p>
+      </main>
+    </div>
   );
 }

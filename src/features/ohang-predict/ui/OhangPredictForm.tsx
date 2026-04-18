@@ -1,4 +1,7 @@
 import { ConceptionDateRangeInput } from "@/shared/ui/ConceptionDateRangeInput";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { PredictButton } from "@/shared/ui/PredictButton";
+import { GlassCard } from "@/shared/ui/GlassCard";
 
 interface Props {
   momBirth: string;
@@ -19,29 +22,29 @@ export function OhangPredictForm({
 }: Props) {
   return (
     <div className="w-full max-w-sm space-y-6">
-      <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-700">
+      <GlassCard variant="soft" className="px-4 py-3 text-sm text-fg">
         ☯️ 오행·간지·주역·황금비율을 융합한 천문 성별 예측법입니다.
         <br />
-        <span className="text-xs text-amber-500">오행점수 + 주역점수 &gt; 20 → 아들 / ≤ 20 → 딸</span>
-      </div>
+        <span className="text-xs text-brand-700">오행점수 + 주역점수 &gt; 20 → 아들 / ≤ 20 → 딸</span>
+      </GlassCard>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">엄마 생년월일 <span className="font-normal text-gray-400">(YYYYMMDD)</span></label>
+        <label className="block text-sm font-semibold text-fg">엄마 생년월일 <span className="font-normal text-fg-subtle">(YYYYMMDD)</span></label>
         <input
           type="text" maxLength={8} value={momBirth}
           onChange={(e) => onMomBirthChange(e.target.value.replace(/\D/g, ''))}
           placeholder="예: 19950115"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-gray-700">아빠 생년월일 <span className="font-normal text-gray-400">(YYYYMMDD)</span></label>
+        <label className="block text-sm font-semibold text-fg">아빠 생년월일 <span className="font-normal text-fg-subtle">(YYYYMMDD)</span></label>
         <input
           type="text" maxLength={8} value={dadBirth}
           onChange={(e) => onDadBirthChange(e.target.value.replace(/\D/g, ''))}
           placeholder="예: 19920320"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-800 shadow-sm outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+          className="w-full rounded-xl glass px-4 py-3 text-fg outline-none focus:ring-2 focus:ring-brand-200"
         />
       </div>
 
@@ -53,14 +56,9 @@ export function OhangPredictForm({
         onEndChange={onConceptionEndChange}
       />
 
-      {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-500">{error}</p>}
+      <ErrorMessage message={error} />
 
-      <button
-        onClick={onPredict}
-        className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-4 text-lg font-bold text-white shadow-md transition-transform active:scale-95 hover:opacity-90"
-      >
-        ☯️ 오행 성별 예측하기
-      </button>
+      <PredictButton onClick={onPredict}>☯️ 오행 성별 예측하기</PredictButton>
     </div>
   );
 }
