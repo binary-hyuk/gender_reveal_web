@@ -17,15 +17,15 @@ export type Target = "Boy" | "Girl";
 
 const WEEKDAYS = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"] as const;
 
-/** 월 단위 스코어 항목 */
+/** 2주 단위 스코어 항목 */
 export interface MonthRecommendation {
-  yearMonth: string;      // "2026-03"
-  label: string;          // "2026년 3월"
-  targetScore: number;    // 타겟 성별 점수
-  maxScore: number;       // 가능한 최대 점수 (현재 기여 알고리즘 합)
+  yearMonth: string;      // "2026-03-A" (상반기) / "2026-03-B" (하반기)
+  label: string;          // "2026년 3월 상반기 (1~14일)"
+  targetScore: number;
+  maxScore: number;
   boyScore: number;
   girlScore: number;
-  supportingAlgorithms: string[]; // 타겟 예측에 기여한 알고리즘 이름 목록
+  supportingAlgorithms: string[];
 }
 
 /** 추천 요일 */
@@ -56,71 +56,79 @@ export interface PlannerRecommendations {
 // ============================================================
 
 /**
- * 다음 N개월에 대해 주요 알고리즘으로 스코어링하여 타겟 성별에 가장 유리한
- * Top-K 월을 반환.
+ * 향후 N개월을 2주 단위로 쪼개서 스코어링.
+ * 각 월은 상반기(1~14일, 기준일 7일)와 하반기(15~말일, 기준일 22일) 2개 구간으로 분리.
+ * 2년(monthsAhead=24) 기준 → 48개 구간 생성 후 정렬하여 Top-K 반환.
  */
 export function scoreMonthsForTarget(
   motherBirth: Date,
   target: Target,
   now: Date = new Date(),
-  monthsAhead: number = 12
+  monthsAhead: number = 24
 ): MonthRecommendation[] {
   const results: MonthRecommendation[] = [];
 
+  const HALVES = [
+    { suffix: "A", midDay: 7,  labelSuffix: "상반기 (1~14일)" },
+    { suffix: "B", midDay: 22, labelSuffix: "하반기 (15~말일)" },
+  ];
+
   for (let i = 0; i < monthsAhead; i++) {
-    // 월의 중간 (15일) 기준 계산 - 평균적 근사치
-    const probe = new Date(now.getFullYear(), now.getMonth() + i + 1, 15);
-    const momAge = getAgeAtDate(motherBirth, probe);
-    const chineseAge = getChineseAge(motherBirth, probe);
-    const lunar = solarToLunar(probe);
-    const solarMonth = probe.getMonth() + 1;
+    for (const half of HALVES) {
+      const probe = new Date(now.getFullYear(), now.getMonth() + i + 1, half.midDay);
+      const momAge = getAgeAtDate(motherBirth, probe);
+      const chineseAge = getChineseAge(motherBirth, probe);
+      const lunar = solarToLunar(probe);
+      const solarMonth = probe.getMonth() + 1;
+      const solarYear = probe.getFullYear();
 
-    let boyScore = 0;
-    let girlScore = 0;
-    const supportsBoy: string[] = [];
-    const supportsGirl: string[] = [];
+      let boyScore = 0;
+      let girlScore = 0;
+      const supportsBoy: string[] = [];
+      const supportsGirl: string[] = [];
 
-    // 중국 황실 달력 (100)
-    if (momAge >= AGE_MIN && momAge <= AGE_MAX) {
-      const chinese = predictChinese(momAge, lunar.month);
-      if (chinese === "아들") { boyScore += 100; supportsBoy.push("중국 황실"); }
-      else if (chinese === "딸") { girlScore += 100; supportsGirl.push("중국 황실"); }
+      // 중국 황실 달력 (100)
+      if (momAge >= AGE_MIN && momAge <= AGE_MAX) {
+        const chinese = predictChinese(momAge, lunar.month);
+        if (chinese === "아들") { boyScore += 100; supportsBoy.push("중국 황실"); }
+        else if (chinese === "딸") { girlScore += 100; supportsGirl.push("중국 황실"); }
+      }
+
+      // 마야식 (90)
+      const mayan = predictByMayan(momAge, solarMonth);
+      if (mayan === "Boy") { boyScore += 90; supportsBoy.push("마야식"); }
+      else { girlScore += 90; supportsGirl.push("마야식"); }
+
+      // 주역 49법 (80)
+      if (chineseAge >= AGE_MIN && chineseAge <= AGE_MAX) {
+        const { gender: a49 } = predictByAncient49(chineseAge, lunar.month);
+        if (a49 === "Boy") { boyScore += 80; supportsBoy.push("주역 49법"); }
+        else { girlScore += 80; supportsGirl.push("주역 49법"); }
+      }
+
+      // 달 별자리 (50) — 구간 기준일로 계산
+      const zodiac = predictByLunarZodiac(probe);
+      if (zodiac.gender === "Boy") { boyScore += 50; supportsBoy.push("달 별자리"); }
+      else { girlScore += 50; supportsGirl.push("달 별자리"); }
+
+      // 히포크라테스 (18, 북반구 기준)
+      const hippo = predictByHippocratesWind(solarMonth, true);
+      if (hippo.gender === "Boy") { boyScore += 18; supportsBoy.push("히포크라테스"); }
+      else { girlScore += 18; supportsGirl.push("히포크라테스"); }
+
+      const targetScore = target === "Boy" ? boyScore : girlScore;
+      const supporting = target === "Boy" ? supportsBoy : supportsGirl;
+
+      results.push({
+        yearMonth: `${solarYear}-${String(solarMonth).padStart(2, "0")}-${half.suffix}`,
+        label: `${solarYear}년 ${solarMonth}월 ${half.labelSuffix}`,
+        targetScore,
+        maxScore: boyScore + girlScore,
+        boyScore,
+        girlScore,
+        supportingAlgorithms: supporting,
+      });
     }
-
-    // 마야식 (90)
-    const mayan = predictByMayan(momAge, solarMonth);
-    if (mayan === "Boy") { boyScore += 90; supportsBoy.push("마야식"); }
-    else { girlScore += 90; supportsGirl.push("마야식"); }
-
-    // 주역 49법 (80)
-    if (chineseAge >= AGE_MIN && chineseAge <= AGE_MAX) {
-      const { gender: a49 } = predictByAncient49(chineseAge, lunar.month);
-      if (a49 === "Boy") { boyScore += 80; supportsBoy.push("주역 49법"); }
-      else { girlScore += 80; supportsGirl.push("주역 49법"); }
-    }
-
-    // 달 별자리 (50) - 월 중간일 기준
-    const zodiac = predictByLunarZodiac(probe);
-    if (zodiac.gender === "Boy") { boyScore += 50; supportsBoy.push("달 별자리"); }
-    else { girlScore += 50; supportsGirl.push("달 별자리"); }
-
-    // 히포크라테스 (18, 북반구 가정)
-    const hippo = predictByHippocratesWind(solarMonth, true);
-    if (hippo.gender === "Boy") { boyScore += 18; supportsBoy.push("히포크라테스"); }
-    else { girlScore += 18; supportsGirl.push("히포크라테스"); }
-
-    const targetScore = target === "Boy" ? boyScore : girlScore;
-    const supporting = target === "Boy" ? supportsBoy : supportsGirl;
-
-    results.push({
-      yearMonth: `${probe.getFullYear()}-${String(solarMonth).padStart(2, "0")}`,
-      label: `${probe.getFullYear()}년 ${solarMonth}월`,
-      targetScore,
-      maxScore: boyScore + girlScore,
-      boyScore,
-      girlScore,
-      supportingAlgorithms: supporting,
-    });
   }
 
   return results.sort((a, b) => b.targetScore - a.targetScore);
@@ -279,10 +287,10 @@ export function buildRecommendations(
   target: Target,
   now: Date = new Date(),
 ): PlannerRecommendations {
-  const months = scoreMonthsForTarget(motherBirth, target, now, 12);
+  const months = scoreMonthsForTarget(motherBirth, target, now, 24);
   return {
     target,
-    topMonths: months.slice(0, 3),
+    topMonths: months.slice(0, 5),
     weekdays: recommendWeekdays(target),
     ayurvedaDirections: recommendAyurvedaDirections(target),
     fengshuiFloorAdvice: recommendFloorAdvice(target),

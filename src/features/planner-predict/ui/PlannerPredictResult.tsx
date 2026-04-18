@@ -55,9 +55,9 @@ export function PlannerPredictResult({ result, onReset }: Props) {
       </GlassCard>
 
       {/* 1. 추천 시기 */}
-      <Section title="📅 추천 거사 시기 (Top 3)">
+      <Section title="📅 추천 거사 시기 (Top 5)">
         <p className="text-xs text-fg-muted">
-          다음 12개월 중 <strong className="text-fg">{info.label}</strong>에 가장 유리한 달입니다.
+          향후 2년을 2주 단위로 분석해 <strong className="text-fg">{info.label}</strong>에 가장 유리한 구간입니다.
         </p>
         <div className="space-y-2">
           {result.topMonths.map((m, idx) => (
