@@ -27,18 +27,18 @@
   --brand-700: hsl(var(--brand-hue) var(--brand-sat) calc(36% + var(--brand-lightness-shift)));
 
   /* ----- [✏️] 배경 (2색 그라데이션) ----------------------- */
-  --bg-sat: 35%;             /* [✏️] 배경 채도. 낮을수록 차분, 높을수록 색감 진해짐 (10~60%) */
-  --bg-light-top: 95%;       /* [✏️] 상단 명도. 낮추면 상단이 진해짐 (90~97%) */
-  --bg-light-bottom: 98%;    /* [✏️] 하단 명도. 높을수록 밝은 흰색에 가까워짐 (95~100%) */
+  --bg-sat: 45%;             /* [✏️] 배경 채도. 낮을수록 차분, 높을수록 색감 진해짐 (10~60%) */
+  --bg-light-top: 86%;       /* [✏️] 상단 명도. 낮추면 상단이 진해짐 (80~94%) ⚠ 95%+ 이상이면 색이 보이지 않음 */
+  --bg-light-bottom: 96%;    /* [✏️] 하단 명도. 높을수록 밝은 흰색에 가까워짐 (93~98%) */
 
   /* [자동] — 위에서 brand hue 로 살짝 물든 색, 아래서 거의 흰색으로 */
   --bg-from: hsl(var(--brand-hue) var(--bg-sat) var(--bg-light-top));
   --bg-to:   hsl(var(--brand-hue) calc(var(--bg-sat) * 0.4) var(--bg-light-bottom));
 
   /* ----- [✏️] 글래스모피즘 -------------------------------- */
-  --glass-opacity: 0.65;          /* [✏️] 카드 불투명도 (0.4~0.85). 높이면 선명, 낮추면 투명 */
-  --glass-opacity-strong: 0.80;   /* [✏️] strong 변형 (결과·드롭다운) */
-  --glass-opacity-soft: 0.45;     /* [✏️] soft 변형 (힌트·보조) */
+  --glass-opacity: 0.55;          /* [✏️] 카드 불투명도 (0.4~0.85). 높이면 선명, 낮추면 투명 */
+  --glass-opacity-strong: 0.72;   /* [✏️] strong 변형 (결과·드롭다운) */
+  --glass-opacity-soft: 0.35;     /* [✏️] soft 변형 (힌트·보조) */
   --glass-blur: 16px;             /* [✏️] 블러 강도 (8~24px) */
   --glass-saturate: 150%;         /* [✏️] 블러 채도 증폭 (100~180%) */
   --glass-border-alpha: 0.7;      /* [✏️] 흰 테두리 투명도 (0.3~0.9) */
@@ -97,26 +97,49 @@ body {
 /* =============================================================
  * 👧 Girl 테마 — 살구 분홍 (딸 선택 / 딸 결과 시 적용)
  *
- * 조정 포인트:
- *   --brand-hue  : 색상환 각도 (350 = 로즈핑크)
- *   --brand-sat  : 포인트 채도
- *   --bg-sat     : 배경 채도 (낮을수록 차분)
- *   --bg-light-top : 배경 상단 명도
+ * ⚠ Chrome은 :root에서 nested var()를 미리 치환해버리므로
+ *   파생 변수(--brand-*, --bg-from 등)를 여기서 명시적으로 재정의해야 함.
  * ============================================================= */
 body[data-theme="girl"] {
-  --brand-hue: 350;            /* 로즈-핑크 */
-  --brand-sat: 62%;
+  /* 기본 토큰 */
+  --brand-hue: 350;
+  --brand-sat: 60%;
   --brand-lightness-shift: -8%;
 
-  --bg-sat: 42%;               /* 배경 살구-분홍 채도 */
-  --bg-light-top: 93%;
-  --bg-light-bottom: 98%;
+  /* 브랜드 팔레트 (명시적 재정의) */
+  --brand-50:  hsl(350 60% 89%);
+  --brand-100: hsl(350 60% 86%);
+  --brand-200: hsl(350 60% 80%);
+  --brand-300: hsl(350 60% 70%);
+  --brand-400: hsl(350 60% 58%);
+  --brand-500: hsl(350 60% 47%);
+  --brand-600: hsl(350 60% 38%);
+  --brand-700: hsl(350 60% 28%);
 
-  --shadow-color: 140 50 75;   /* 그림자 핑크 계열 */
+  /* 배경 */
+  --bg-sat: 48%;
+  --bg-light-top: 86%;
+  --bg-light-bottom: 96%;
+  --bg-from: hsl(350 48% 86%);
+  --bg-to:   hsl(350 19% 96%);
+
+  /* 텍스트 */
+  --fg:        hsl(350 20% 13%);
+  --fg-muted:  hsl(350 12% 42%);
+  --fg-subtle: hsl(350  8% 58%);
+
+  /* 그림자 */
+  --shadow-color: 160 55 75;
+  --glass-shadow:
+    0 2px 8px   rgba(160, 55, 75, 0.07),
+    0 12px 32px rgba(160, 55, 75, 0.11);
+  --glass-shadow-lg:
+    0 4px 12px  rgba(160, 55, 75, 0.09),
+    0 20px 48px rgba(160, 55, 75, 0.15);
 }
 
 /* =============================================================
- * Page background — 2색 그라데이션 (단순·차분)
+ * Page background — 2색 그라데이션 + 소프트 블롭
  * ============================================================= */
 .app-bg {
   background: linear-gradient(
@@ -125,6 +148,40 @@ body[data-theme="girl"] {
     var(--bg-to) 100%
   );
   background-attachment: fixed;
+  position: relative;
+}
+
+/* 배경 장식 블롭 — glass 효과가 잘 보이게 해주는 빛 덩어리 */
+.app-bg::before,
+.app-bg::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(60px);
+  opacity: 0.35;
+  transition: background 0.6s ease;
+}
+.app-bg::before {
+  width: 500px;
+  height: 500px;
+  top: -120px;
+  left: -100px;
+  background: var(--bg-from);
+}
+.app-bg::after {
+  width: 400px;
+  height: 400px;
+  bottom: -80px;
+  right: -80px;
+  background: hsl(var(--brand-hue) var(--bg-sat) 80%);
+}
+
+/* 블롭 위에 카드가 올라오도록 */
+.app-bg > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* =============================================================
