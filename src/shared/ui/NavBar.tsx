@@ -107,9 +107,9 @@ export function NavBar() {
   return (
     <nav
       aria-label="주요 네비게이션"
-      className="glass sticky top-3 z-20 mx-3 mt-3 rounded-2xl"
+      className="glass sticky top-4 z-20 mx-4 mt-4 rounded-2xl"
     >
-      <div className="flex h-12 items-center justify-between px-2">
+      <div className="flex h-13 items-center justify-between px-3">
         <div className="flex items-center gap-1">
           {PRIMARY.map(({ href, icon: Icon, label }) => {
             const active = pathname === href;

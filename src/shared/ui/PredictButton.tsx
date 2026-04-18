@@ -32,10 +32,10 @@ export function PredictButton({
       disabled={disabled}
       aria-label={ariaLabel}
       className={[
-        "w-full rounded-2xl py-4 text-base font-semibold tracking-tight transition active:scale-[0.98]",
+        "w-full rounded-2xl py-4 text-[15px] font-medium tracking-tight transition active:scale-[0.98]",
         isSecondary
           ? "glass text-fg hover:bg-white/70"
-          : "bg-brand-600 text-white shadow-[0_8px_24px_rgba(var(--shadow-color),0.25)] hover:bg-brand-700",
+          : "bg-brand-600 text-white shadow-[0_4px_16px_rgba(var(--shadow-color),0.20)] hover:bg-brand-700",
         "disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
       ].join(" ")}
     >

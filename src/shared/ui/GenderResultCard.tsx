@@ -34,34 +34,30 @@ export function GenderResultCard({ gender, details, note, onReset }: Props) {
   const cfg = CONFIG[gender];
 
   return (
-    <div className="w-full max-w-sm space-y-4">
-      <GlassCard variant="strong" className={`relative overflow-hidden p-8 text-center ring-1 ${cfg.ring}`}>
-        <div
-          aria-hidden
-          className={`absolute -top-10 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-gradient-to-b ${cfg.glow} to-transparent blur-2xl`}
-        />
+    <div className="w-full max-w-sm space-y-5">
+      <GlassCard variant="strong" className={`relative overflow-hidden px-8 py-10 text-center`}>
         <div className="relative">
           <div
-            className={`mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/80 shadow-sm ring-1 ring-white/60 ${cfg.accent}`}
+            className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 ${cfg.accent}`}
           >
-            <Baby size={30} strokeWidth={2.25} aria-hidden />
+            <Baby size={26} strokeWidth={2} aria-hidden />
           </div>
-          <h2 className={`text-2xl font-bold tracking-tight ${cfg.accent}`}>
+          <h2 className={`text-2xl font-semibold tracking-tight ${cfg.accent}`}>
             {cfg.label}
           </h2>
         </div>
       </GlassCard>
 
       {details && details.length > 0 && (
-        <GlassCard variant="soft" className="px-5 py-4">
-          <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-fg-subtle">
+        <GlassCard variant="soft" className="px-6 py-5">
+          <h3 className="mb-4 text-[11px] font-medium uppercase tracking-[0.15em] text-fg-subtle">
             계산 근거
           </h3>
-          <div className="space-y-2 text-sm text-fg-muted">
+          <div className="space-y-3 text-sm">
             {details.map(({ label, value }) => (
               <div key={label} className="flex justify-between gap-4">
-                <span className="truncate">{label}</span>
-                <span className="font-semibold text-fg">{value}</span>
+                <span className="text-fg-muted truncate">{label}</span>
+                <span className="font-medium text-fg">{value}</span>
               </div>
             ))}
           </div>
@@ -69,15 +65,15 @@ export function GenderResultCard({ gender, details, note, onReset }: Props) {
       )}
 
       {note && (
-        <p className="text-center text-xs text-fg-subtle">{note}</p>
+        <p className="text-center text-xs leading-relaxed text-fg-subtle">{note}</p>
       )}
 
       {onReset && (
         <button
           onClick={onReset}
-          className="glass flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-fg-muted transition hover:bg-white/70 active:scale-[0.98]"
+          className="glass flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-sm font-medium text-fg-muted transition hover:bg-white/70 active:scale-[0.98]"
         >
-          <RotateCcw size={16} strokeWidth={2.25} aria-hidden />
+          <RotateCcw size={15} strokeWidth={2} aria-hidden />
           다시 예측하기
         </button>
       )}

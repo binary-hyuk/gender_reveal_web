@@ -6,17 +6,17 @@
  * 👉 수정하기 좋은 변수는 [✏️] 표시.
  *    나머지는 [자동] — 위 값에서 파생되므로 건드릴 필요 없음.
  *
- * 1순위로 만지는 것: --brand-hue (전체 톤)
- * 2순위:             --brand-sat, --bg-sat (채도 강약)
- * 3순위:             --glass-* (글래스 강도)
+ * 1순위: --brand-hue (전체 톤)
+ * 2순위: --brand-sat (포인트 채도), --bg-sat (배경 채도)
+ * 3순위: --glass-* (카드 유리 강도)
  * ============================================================= */
 :root {
   /* ----- [✏️] 브랜드 톤 ----------------------------------- */
-  --brand-hue: 230;         /* [✏️] 0=red 30=orange 45=amber 120=green 180=teal ← 현재 / 210=sky 230=blue 262=violet 280=purple 320=pink 340=rose */
-  --brand-sat: 54%;         /* [✏️] 포인트 색 채도. 낮추면 차분, 높이면 쨍함 (0~100%) */
-  --brand-lightness-shift: -10%; /* [✏️] 전체 명도 오프셋 (-10%~+10%). 양수면 밝아지고 음수면 어두워짐 */
+  --brand-hue: 230;          /* [✏️] 0=red 30=orange 120=green 180=teal 210=sky 230=blue ← 현재 262=violet 320=pink */
+  --brand-sat: 54%;          /* [✏️] 포인트 채도. 낮추면 차분, 높이면 쨍함 (0~100%) */
+  --brand-lightness-shift: -10%; /* [✏️] 명도 오프셋 (-10%~+10%). 음수면 어둡게 */
 
-  /* ----- [자동] 브랜드 팔레트 (위 값에서 파생) -------------- */
+  /* [자동] 브랜드 팔레트 */
   --brand-50:  hsl(var(--brand-hue) var(--brand-sat) calc(97% + var(--brand-lightness-shift)));
   --brand-100: hsl(var(--brand-hue) var(--brand-sat) calc(94% + var(--brand-lightness-shift)));
   --brand-200: hsl(var(--brand-hue) var(--brand-sat) calc(88% + var(--brand-lightness-shift)));
@@ -26,63 +26,50 @@
   --brand-600: hsl(var(--brand-hue) var(--brand-sat) calc(46% + var(--brand-lightness-shift)));
   --brand-700: hsl(var(--brand-hue) var(--brand-sat) calc(36% + var(--brand-lightness-shift)));
 
-  /* ----- [✏️] 배경 그라데이션 ------------------------------- */
-  --bg-sat: 5%;            /* [✏️] 배경 채도. 60~85% 권장. ⚠ --bg-light 가 96% 이상이면 흰색이라 채도 효과 거의 안 보임 */
-  --bg-light: 93%;          /* [✏️] 배경 명도. 88~95% 권장. 96% 넘으면 순백에 가까워 --bg-sat 이 안 먹음 */
-  --bg-hue-spread: 10;      /* [✏️] 배경 3톤을 얼마나 퍼뜨릴지 (10~50). 작으면 단색톤, 크면 다채로움 */
+  /* ----- [✏️] 배경 (2색 그라데이션) ----------------------- */
+  --bg-sat: 35%;             /* [✏️] 배경 채도. 낮을수록 차분, 높을수록 색감 진해짐 (10~60%) */
+  --bg-light-top: 95%;       /* [✏️] 상단 명도. 낮추면 상단이 진해짐 (90~97%) */
+  --bg-light-bottom: 98%;    /* [✏️] 하단 명도. 높을수록 밝은 흰색에 가까워짐 (95~100%) */
 
-  /* [자동] */
-  --bg-from: hsl(calc(var(--brand-hue) - var(--bg-hue-spread) * 0.4) var(--bg-sat) calc(var(--bg-light) + 2%));
-  --bg-via:  hsl(var(--brand-hue) var(--bg-sat) var(--bg-light));
-  --bg-to:   hsl(calc(var(--brand-hue) + var(--bg-hue-spread)) calc(var(--bg-sat) - 8%) calc(var(--bg-light) + 1%));
+  /* [자동] — 위에서 brand hue 로 살짝 물든 색, 아래서 거의 흰색으로 */
+  --bg-from: hsl(var(--brand-hue) var(--bg-sat) var(--bg-light-top));
+  --bg-to:   hsl(var(--brand-hue) calc(var(--bg-sat) * 0.4) var(--bg-light-bottom));
 
-  /* ----- [✏️] 배경의 색 블롭 -------------------------------- */
-  --blob-sat: 80%;          /* [✏️] 블롭 채도 (70~90%). 높으면 색이 뚜렷, 낮으면 은은 */
-  --blob-light: 82%;        /* [✏️] 블롭 명도 (75~88%). 낮출수록 진해서 배경이 탁해짐 */
-  --blob-alpha: 1;          /* [✏️] 블롭 불투명도 (0~1). 0.5~0.8로 낮추면 차분해짐 */
-
-  /* [자동] — 3개의 블롭이 브랜드 hue 주변에서 ±40° 퍼짐 */
-  --blob-1: hsl(var(--brand-hue) var(--blob-sat) var(--blob-light));
-  --blob-2: hsl(calc(var(--brand-hue) + 40) calc(var(--blob-sat) + 5%) calc(var(--blob-light) + 3%));
-  --blob-3: hsl(calc(var(--brand-hue) - 30) calc(var(--blob-sat) - 5%) calc(var(--blob-light) + 4%));
-
-  /* ----- [✏️] 글래스모피즘 --------------------------------- */
-  --glass-opacity: 0.55;            /* [✏️] 카드 바탕 흰색 불투명도 (0.3~0.8). 높이면 덜 비침 */
-  --glass-opacity-strong: 0.72;     /* [✏️] "strong" 변형 불투명도 (결과·드롭다운용) */
-  --glass-opacity-soft: 0.35;       /* [✏️] "soft" 변형 불투명도 (힌트·보조용) */
-  --glass-blur: 14px;               /* [✏️] 블러 강도. 8~20px. 낮추면 또렷, 높이면 몽환 */
-  --glass-saturate: 160%;           /* [✏️] 블러 채도 증폭 (100~200%). 뒤 배경색이 살짝 번짐 */
-  --glass-border-alpha: 0.6;        /* [✏️] 흰 border 투명도 (0.2~0.8) */
+  /* ----- [✏️] 글래스모피즘 -------------------------------- */
+  --glass-opacity: 0.65;          /* [✏️] 카드 불투명도 (0.4~0.85). 높이면 선명, 낮추면 투명 */
+  --glass-opacity-strong: 0.80;   /* [✏️] strong 변형 (결과·드롭다운) */
+  --glass-opacity-soft: 0.45;     /* [✏️] soft 변형 (힌트·보조) */
+  --glass-blur: 16px;             /* [✏️] 블러 강도 (8~24px) */
+  --glass-saturate: 150%;         /* [✏️] 블러 채도 증폭 (100~180%) */
+  --glass-border-alpha: 0.7;      /* [✏️] 흰 테두리 투명도 (0.3~0.9) */
 
   /* [자동] */
   --glass-bg:          rgba(255, 255, 255, var(--glass-opacity));
   --glass-bg-strong:   rgba(255, 255, 255, var(--glass-opacity-strong));
   --glass-bg-soft:     rgba(255, 255, 255, var(--glass-opacity-soft));
   --glass-border:      rgba(255, 255, 255, var(--glass-border-alpha));
-  --glass-border-soft: rgba(255, 255, 255, calc(var(--glass-border-alpha) - 0.25));
+  --glass-border-soft: rgba(255, 255, 255, calc(var(--glass-border-alpha) - 0.3));
 
-  /* ----- [✏️] 그림자 톤 ------------------------------------ */
-  --shadow-color: 40 55 90;         /* [✏️] 그림자 RGB (공백 구분). 브랜드색과 어울리게. 뉴트럴이면 "0 0 0" */
-  --shadow-strength: 2;             /* [✏️] 그림자 전체 배율 (0.5=약하게 2=진하게). 배경과 카드 구분이 안되면 올려 */
+  /* ----- [✏️] 그림자 -------------------------------------- */
+  --shadow-color: 40 55 90;       /* [✏️] 그림자 RGB. 브랜드 계열 추천. 뉴트럴이면 "0 0 0" */
+  --shadow-strength: 1;           /* [✏️] 그림자 배율 (0.5=약 / 1=기본 / 2=강) */
 
-  /* [자동] 2중 레이어 — 가까운 sharp shadow + 먼 soft shadow 를 겹쳐서 공중에 뜬 느낌 */
+  /* [자동] 2레이어 그림자 */
   --glass-shadow:
-    0 1px 2px  rgba(var(--shadow-color), calc(0.08 * var(--shadow-strength))),
-    0 6px 16px rgba(var(--shadow-color), calc(0.12 * var(--shadow-strength))),
-    0 18px 40px rgba(var(--shadow-color), calc(0.18 * var(--shadow-strength)));
+    0 2px 8px   rgba(var(--shadow-color), calc(0.06 * var(--shadow-strength))),
+    0 12px 32px rgba(var(--shadow-color), calc(0.10 * var(--shadow-strength)));
   --glass-shadow-lg:
-    0 2px 4px   rgba(var(--shadow-color), calc(0.10 * var(--shadow-strength))),
-    0 10px 24px rgba(var(--shadow-color), calc(0.16 * var(--shadow-strength))),
-    0 30px 60px rgba(var(--shadow-color), calc(0.24 * var(--shadow-strength)));
+    0 4px 12px  rgba(var(--shadow-color), calc(0.08 * var(--shadow-strength))),
+    0 20px 48px rgba(var(--shadow-color), calc(0.14 * var(--shadow-strength)));
 
-  /* ----- [✏️] 텍스트 --------------------------------------- */
-  --fg-sat: 30%;            /* [✏️] 텍스트 채도. 30% 정도가 브랜드 톤 살짝 녹은 느낌. 0%면 완전 중성 회색 */
-  --fg:        hsl(var(--brand-hue) var(--fg-sat) 14%);
-  --fg-muted:  hsl(var(--brand-hue) calc(var(--fg-sat) - 12%) 40%);
-  --fg-subtle: hsl(var(--brand-hue) calc(var(--fg-sat) - 15%) 55%);
+  /* ----- [✏️] 텍스트 -------------------------------------- */
+  --fg-sat: 20%;             /* [✏️] 텍스트 채도 (0%=순회색 / 20%=브랜드 톤 살짝) */
+  --fg:        hsl(var(--brand-hue) var(--fg-sat) 13%);
+  --fg-muted:  hsl(var(--brand-hue) calc(var(--fg-sat) - 8%) 42%);
+  --fg-subtle: hsl(var(--brand-hue) calc(var(--fg-sat) - 12%) 58%);
 }
 
-/* ----- [자동] Tailwind 에 노출 (bg-brand-500 등 사용 가능) ----- */
+/* [자동] Tailwind 에 노출 */
 @theme inline {
   --color-brand-50:  var(--brand-50);
   --color-brand-100: var(--brand-100);
@@ -104,31 +91,19 @@ body {
     "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 /* =============================================================
- * Page background — soft gradient + ambient color blobs
+ * Page background — 2색 그라데이션 (단순·차분)
  * ============================================================= */
 .app-bg {
-  background:
-    radial-gradient(60% 50% at 15% 20%, var(--blob-1) 0%, transparent 60%),
-    radial-gradient(55% 55% at 85% 10%, var(--blob-2) 0%, transparent 65%),
-    radial-gradient(70% 60% at 50% 100%, var(--blob-3) 0%, transparent 65%),
-    linear-gradient(180deg, var(--bg-from) 0%, var(--bg-via) 50%, var(--bg-to) 100%);
+  background: linear-gradient(
+    160deg,
+    var(--bg-from) 0%,
+    var(--bg-to) 100%
+  );
   background-attachment: fixed;
-  opacity: 1;
-}
-
-.app-bg::before {
-  /* 블롭 alpha 조절용 오버레이 — --blob-alpha 가 1이 아닐 때만 의미 있음 */
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: white;
-  opacity: calc(1 - var(--blob-alpha));
-  pointer-events: none;
-  z-index: -1;
 }
 
 /* =============================================================
@@ -152,7 +127,7 @@ body {
 
 .glass-soft {
   background: var(--glass-bg-soft);
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
   border: 1px solid var(--glass-border-soft);
 }

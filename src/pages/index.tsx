@@ -18,7 +18,7 @@ const ENTRIES: Entry[] = [
     title: "AI 예측",
     subtitle: "17가지 방법 종합",
     description:
-      "고대 달력부터 현대 수비학까지, 서로 다른 관점을 하나의 AI가 조합해 성별을 판별합니다.",
+      "고대 달력부터 현대 수비학까지, 서로 다른 관점을 AI가 조합해 성별을 판별합니다.",
   },
   {
     href: "/planner",
@@ -26,7 +26,7 @@ const ENTRIES: Entry[] = [
     title: "플래너",
     subtitle: "원하는 성별 역추천",
     description:
-      "원하는 성별을 먼저 정하면, 유리한 시기·방위·라이프스타일을 역으로 제안합니다.",
+      "원하는 성별을 먼저 정하면 유리한 시기·방위·라이프스타일을 역으로 제안합니다.",
   },
 ];
 
@@ -34,22 +34,22 @@ export default function HomePage() {
   return (
     <div className="app-bg flex min-h-screen flex-col">
       <NavBar />
-      <main className="flex flex-1 flex-col items-center px-4 pb-16 pt-10">
-        <div className="mb-8 w-full max-w-sm">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-600/80">
+      <main className="flex flex-1 flex-col items-center px-5 pb-24 pt-16">
+
+        {/* 헤더 */}
+        <div className="mb-14 w-full max-w-sm">
+          <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-brand-600/70">
             Gender Reveal
           </p>
-          <h1 className="mt-2 text-[28px] font-bold leading-tight tracking-tight text-fg">
-            시작할 방식을
-            <br />
-            골라주세요
+          <h1 className="mt-3 text-[26px] font-semibold leading-snug tracking-tight text-fg">
+            어떻게 시작할까요?
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-            두 가지 흐름 중 하나로 시작할 수 있어요. 개별 예측법은 상단{" "}
-            <strong className="font-semibold text-fg">전체</strong> 메뉴에서도 바로 열 수 있습니다.
+          <p className="mt-4 text-sm leading-loose text-fg-muted">
+            두 가지 방식 중 하나를 선택하세요. 개별 예측법은 상단 <strong className="font-medium text-fg">전체</strong> 메뉴에서 바로 이용할 수 있습니다.
           </p>
         </div>
 
+        {/* 카드 목록 */}
         <div className="flex w-full max-w-sm flex-col gap-4">
           {ENTRIES.map(({ href, icon: Icon, title, subtitle, description }) => (
             <GlassCard
@@ -57,38 +57,37 @@ export default function HomePage() {
               as={Link}
               href={href}
               aria-label={`${title} 시작하기`}
-              className="group flex items-start gap-4 p-5 transition active:scale-[0.99] hover:shadow-[0_12px_40px_rgba(80,60,140,0.18)]"
+              className="group flex items-start gap-5 p-6 transition active:scale-[0.99]"
             >
               <span
                 aria-hidden
-                className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white/70 ring-1 ring-white/60 shadow-sm"
+                className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/80"
               >
-                <Icon size={22} strokeWidth={2.25} className="text-brand-600" />
+                <Icon size={20} strokeWidth={2} className="text-brand-600" />
               </span>
-              <span className="flex-1 min-w-0">
+
+              <span className="flex-1 min-w-0 space-y-1.5">
                 <span className="flex items-baseline gap-2">
-                  <span className="text-base font-semibold text-fg">{title}</span>
-                  <span className="text-[11px] font-medium text-fg-subtle">
-                    · {subtitle}
-                  </span>
+                  <span className="text-[15px] font-semibold text-fg">{title}</span>
+                  <span className="text-[11px] text-fg-subtle">{subtitle}</span>
                 </span>
-                <span className="mt-1 block text-[13px] leading-relaxed text-fg-muted">
+                <span className="block text-[13px] leading-relaxed text-fg-muted">
                   {description}
                 </span>
               </span>
+
               <ArrowRight
-                size={18}
+                size={16}
                 strokeWidth={2}
                 aria-hidden
-                className="mt-1 flex-shrink-0 text-fg-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-brand-600"
+                className="mt-1 flex-shrink-0 text-fg-subtle/50 transition-all group-hover:translate-x-0.5 group-hover:text-brand-500"
               />
             </GlassCard>
           ))}
         </div>
 
-        <p className="mt-10 text-center text-[11px] text-fg-subtle">
-          처음이라면{" "}
-          <span className="font-medium text-fg-muted">AI 예측</span>을 추천합니다
+        <p className="mt-12 text-center text-xs text-fg-subtle">
+          처음이라면 AI 예측을 추천드립니다
         </p>
       </main>
     </div>
