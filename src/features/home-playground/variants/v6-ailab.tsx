@@ -3,6 +3,7 @@
 // "AI가 일하는 공간" 느낌. 데이터 비주얼, 뉴럴 네트워크 그래프, 신뢰도 게이지
 // 다크 + 시안 네온. 기술적이고 지적인 톤의 카피라이팅
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V6_Home = () => {
@@ -123,7 +124,7 @@ export const V6_Home = () => {
         </div>
 
         {/* AI card with neural viz */}
-        <div style={{ ...card, marginTop: 20 }}>
+        <Link href="/ai" style={{ ...card, marginTop: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
             <div>
               <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', color: cyan, marginBottom: 6 }}>
@@ -165,10 +166,10 @@ export const V6_Home = () => {
             <span style={{ fontFamily: mono, fontSize: 10, color: 'rgba(228,237,245,0.5)' }}>~3s inference</span>
             <span style={{ fontFamily: mono, fontSize: 11, fontWeight: 600, color: cyan }}>run →</span>
           </div>
-        </div>
+        </Link>
 
         {/* Planner card — compact */}
-        <div style={{ ...card, marginTop: 12 }}>
+        <Link href="/planner" style={{ ...card, marginTop: 12, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', color: 'rgba(107,255,158,0.9)', marginBottom: 6 }}>
@@ -184,7 +185,7 @@ export const V6_Home = () => {
               <div style={{ marginTop: 2 }}>optimizer</div>
             </div>
           </div>
-        </div>
+        </Link>
 
         <p style={{ fontFamily: mono, fontSize: 10, textAlign: 'center', color: 'rgba(228,237,245,0.35)', marginTop: 22 }}>
           [ tip ] 첫 실행은 AI 예측을 권장합니다.

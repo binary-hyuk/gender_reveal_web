@@ -3,6 +3,7 @@
 // 터미널 / IDE 감성. 다크 에디터 배경 + 모노스페이스 + 줄번호 + 신택스 하이라이트
 // 코드 블록으로 예측을 "실행"하는 메타포
 
+import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 
 export const V11_Home = () => {
@@ -140,32 +141,34 @@ export const V11_Home = () => {
             <span style={{ color: c.acc }}>▸</span> Suggested tasks
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{
+            <Link href="/ai" style={{
               padding: '10px 12px', borderRadius: 6,
               background: '#0d0f13',
               border: '1px solid #21242b',
               fontSize: 12,
               display: 'flex', alignItems: 'center', gap: 10,
+              textDecoration: 'none', color: 'inherit',
             }}>
               <span style={{ color: c.str, fontSize: 11 }}>$</span>
               <span style={{ color: '#e6e8ee', flex: 1 }}>
                 reveal <span style={{ color: c.num }}>--all</span> <span style={{ color: c.cm }}># AI 종합 실행</span>
               </span>
               <span style={{ color: c.acc, fontSize: 14 }}>↵</span>
-            </div>
-            <div style={{
+            </Link>
+            <Link href="/planner" style={{
               padding: '10px 12px', borderRadius: 6,
               background: '#0d0f13',
               border: '1px solid #21242b',
               fontSize: 12,
               display: 'flex', alignItems: 'center', gap: 10,
+              textDecoration: 'none', color: 'inherit',
             }}>
               <span style={{ color: c.str, fontSize: 11 }}>$</span>
               <span style={{ color: '#e6e8ee', flex: 1 }}>
                 plan <span style={{ color: c.prop }}>target</span>=<span style={{ color: c.str }}>"girl"</span> <span style={{ color: c.cm }}># 플래너</span>
               </span>
               <span style={{ color: c.acc, fontSize: 14 }}>↵</span>
-            </div>
+            </Link>
           </div>
 
           <div style={{

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, Target, Home, LayoutGrid } from "lucide-react";
 import { VARIANTS, VARIANT_MAP } from "@/features/home-playground";
 
 interface Props {
@@ -10,8 +10,9 @@ const FRAME_W = 375;
 const FRAME_H = 760;
 
 /**
- * 특정 variant 를 풀스크린(실제 모바일 해상도 375×760) 프레임에 표시.
- * 상단에 이전/다음 네비게이션 바와 현재 variant 이름 표시.
+ * 특정 variant 를 375×760 프레임에 표시하고, 프레임 내부 카드·네비게이션이
+ * 프로덕션 라우트(/ai, /planner)로 이동하도록 연결된다.
+ * 프레임 외부 하단에는 시안 상관없이 항상 접근 가능한 Quick Action Bar 를 둔다.
  */
 export function VariantViewer({ slug }: Props) {
   const current = VARIANT_MAP[slug];
@@ -32,8 +33,12 @@ export function VariantViewer({ slug }: Props) {
     <div className="min-h-screen bg-[#0f0f0f] text-white">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0f0f0f]/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-3 px-6 py-3">
-          <Link href="/playground" className="text-xs text-white/60 hover:text-white">
-            ← Playground 목록
+          <Link
+            href="/playground"
+            className="inline-flex items-center gap-1 text-xs text-white/60 hover:text-white"
+          >
+            <LayoutGrid size={14} strokeWidth={2.25} />
+            Playground
           </Link>
           <div className="text-center">
             <p className="text-sm font-semibold tracking-tight">{title}</p>
@@ -50,7 +55,7 @@ export function VariantViewer({ slug }: Props) {
                 이전
               </Link>
             ) : (
-              <span className="inline-flex h-8 items-center gap-1 rounded-full border border-white/5 bg-white/0 pl-2 pr-3 text-xs text-white/25">
+              <span className="inline-flex h-8 items-center gap-1 rounded-full border border-white/5 pl-2 pr-3 text-xs text-white/25">
                 <ChevronLeft size={14} strokeWidth={2.25} />
                 이전
               </span>
@@ -65,7 +70,7 @@ export function VariantViewer({ slug }: Props) {
                 <ChevronRight size={14} strokeWidth={2.25} />
               </Link>
             ) : (
-              <span className="inline-flex h-8 items-center gap-1 rounded-full border border-white/5 bg-white/0 pl-3 pr-2 text-xs text-white/25">
+              <span className="inline-flex h-8 items-center gap-1 rounded-full border border-white/5 pl-3 pr-2 text-xs text-white/25">
                 다음
                 <ChevronRight size={14} strokeWidth={2.25} />
               </span>
@@ -74,14 +79,58 @@ export function VariantViewer({ slug }: Props) {
         </div>
       </header>
 
-      <main className="flex min-h-[calc(100vh-64px)] items-center justify-center p-6">
+      <main className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center gap-6 p-6">
+        {/* 프레임: 375×760 실기기 해상도 */}
         <div
           className="overflow-hidden rounded-[40px] border border-white/10 bg-white shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
           style={{ width: FRAME_W, height: FRAME_H }}
         >
           <Component />
         </div>
+
+        {/* 액션 바: 프레임 밖에서 실제 프로덕션 라우트로 이동 */}
+        <div className="w-full max-w-[720px] space-y-2">
+          <p className="text-center text-[11px] uppercase tracking-[0.22em] text-white/40">
+            이 시안으로 실제 앱 써보기
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <ActionButton href="/" icon={Home} label="프로덕션 홈" />
+            <ActionButton href="/ai" icon={Sparkles} label="AI 예측" primary />
+            <ActionButton href="/planner" icon={Target} label="플래너" primary />
+          </div>
+          <p className="text-center text-[10px] text-white/30 leading-relaxed">
+            프레임 내부의 네비·카드 또한 실제 라우트로 연결됩니다. 클릭하면 이 시안을 떠나
+            실제 프로덕션 페이지로 이동합니다.
+          </p>
+        </div>
       </main>
     </div>
+  );
+}
+
+function ActionButton({
+  href,
+  icon: Icon,
+  label,
+  primary,
+}: {
+  href: string;
+  icon: typeof Sparkles;
+  label: string;
+  primary?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      className={[
+        "inline-flex h-11 items-center justify-center gap-2 rounded-2xl text-sm font-medium transition",
+        primary
+          ? "bg-white text-[#0f0f0f] hover:bg-white/90"
+          : "border border-white/15 bg-white/5 text-white/80 hover:bg-white/10",
+      ].join(" ")}
+    >
+      <Icon size={15} strokeWidth={2.25} aria-hidden />
+      {label}
+    </Link>
   );
 }

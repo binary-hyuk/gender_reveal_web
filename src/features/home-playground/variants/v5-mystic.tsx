@@ -3,6 +3,7 @@
 // 딥 네이비 + 골드 + 얇은 라인. 점성술/타로 카드 스타일
 // 극도의 미니멀, 타이포 중심, 고급스러운 카드
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V5_Home = () => {
@@ -122,7 +123,7 @@ export const V5_Home = () => {
 
       {/* Two tarot-like cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, padding: '42px 24px 0', position: 'relative', zIndex: 2 }}>
-        <div style={card}>
+        <Link href="/ai" style={{ ...card, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <span style={corner('tl')} /><span style={corner('tr')} />
           <span style={corner('bl')} /><span style={corner('br')} />
 
@@ -137,9 +138,9 @@ export const V5_Home = () => {
               17가지 관점을<br/>하나의 해석으로
             </p>
           </div>
-        </div>
+        </Link>
 
-        <div style={card}>
+        <Link href="/planner" style={{ ...card, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <span style={corner('tl')} /><span style={corner('tr')} />
           <span style={corner('bl')} /><span style={corner('br')} />
 
@@ -154,7 +155,7 @@ export const V5_Home = () => {
               원하는 성별로부터<br/>시기와 방위까지
             </p>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* CTA hint */}

@@ -3,6 +3,7 @@
 // 다크 섹션 + 모노톤 베이스 + 민트 그린 포인트 (OpenAI 느낌)
 // 중앙 정렬 대형 input, 프롬프트 스타터 카드 그리드
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V10_Home = () => {
@@ -72,16 +73,17 @@ export const V10_Home = () => {
           marginTop: 28, textAlign: 'left',
         }}>
           {[
-            { icon: '🔮', title: 'AI 종합 예측', sub: '17가지 방법 한 번에', badge: true },
-            { icon: '🎯', title: '원하는 성별', sub: '플래너 역추천' },
-            { icon: '🀄', title: '중국 황실', sub: '단독 예측' },
-            { icon: '🌿', title: '더 많은 방법', sub: '14가지 더 보기' },
+            { icon: '🔮', title: 'AI 종합 예측', sub: '17가지 방법 한 번에', badge: true, href: '/ai' },
+            { icon: '🎯', title: '원하는 성별', sub: '플래너 역추천', href: '/planner' },
+            { icon: '🀄', title: '중국 황실', sub: '단독 예측', href: '/chinese' },
+            { icon: '🌿', title: '더 많은 방법', sub: '14가지 더 보기', href: '/playground' },
           ].map((c, i) => (
-            <div key={i} style={{
+            <Link key={i} href={c.href} style={{
               padding: 14, borderRadius: 12,
               border: '1px solid #ececec',
               background: '#fff',
               position: 'relative',
+              textDecoration: 'none', color: 'inherit',
             }}>
               <div style={{ fontSize: 18, marginBottom: 10 }}>{c.icon}</div>
               <div style={{ fontSize: 12, fontWeight: 500, color: '#0d0d0d', lineHeight: 1.35 }}>{c.title}</div>
@@ -94,7 +96,7 @@ export const V10_Home = () => {
                   background: accent, color: '#fff',
                 }}>NEW</span>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       </main>

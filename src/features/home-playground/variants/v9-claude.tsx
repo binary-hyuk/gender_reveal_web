@@ -3,6 +3,7 @@
 // 웜 톤 크림 배경, 세리프 헤드라인, 오렌지 코랄 악센트
 // 서재/북 스타일, 인라인 꼬리표(tag), 아티팩트 느낌
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V9_Home = () => {
@@ -113,9 +114,10 @@ export const V9_Home = () => {
             Recent · 시작점
           </div>
 
-          <div style={{
+          <Link href="/ai" style={{
             display: 'flex', gap: 12, padding: '14px 0',
             borderBottom: '1px solid rgba(31,26,21,0.06)',
+            textDecoration: 'none', color: 'inherit',
           }}>
             <div style={{
               width: 36, height: 36, borderRadius: 8,
@@ -144,10 +146,11 @@ export const V9_Home = () => {
               </div>
             </div>
             <span style={{ color: '#9b9087', fontSize: 16 }}>↗</span>
-          </div>
+          </Link>
 
-          <div style={{
+          <Link href="/planner" style={{
             display: 'flex', gap: 12, padding: '14px 0',
+            textDecoration: 'none', color: 'inherit',
           }}>
             <div style={{
               width: 36, height: 36, borderRadius: 8,
@@ -164,7 +167,7 @@ export const V9_Home = () => {
               </p>
             </div>
             <span style={{ color: '#9b9087', fontSize: 16 }}>↗</span>
-          </div>
+          </Link>
         </div>
 
         <p style={{

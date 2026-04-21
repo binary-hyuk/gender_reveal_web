@@ -3,6 +3,7 @@
 // 세리프 타이포그래피, 크고 과감한 숫자, 좌우 비대칭 레이아웃
 // 페이퍼 텍스처 배경. 흑백에 가까운 팔레트 + 1가지 잉크 레드 포인트
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V3_Home = () => {
@@ -100,6 +101,7 @@ export const V3_Home = () => {
       <div style={{ ...rule(1), marginTop: 22, opacity: 0.4 }} />
 
       {/* Feature 1 — AI */}
+      <Link href="/ai" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
       <article style={{ padding: '22px 20px 0', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
           <span style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#7a6d5e' }}>CH. I — Algorithmic</span>
@@ -117,10 +119,12 @@ export const V3_Home = () => {
           <span style={{ color: ink, fontSize: 16 }}>→</span>
         </div>
       </article>
+      </Link>
 
       <div style={{ ...rule(1), marginTop: 22, opacity: 0.4 }} />
 
       {/* Feature 2 — Planner */}
+      <Link href="/planner" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
       <article style={{ padding: '22px 20px 0', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
           <span style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#7a6d5e' }}>CH. II — Reverse</span>
@@ -138,6 +142,7 @@ export const V3_Home = () => {
           <span style={{ color: ink, fontSize: 16 }}>→</span>
         </div>
       </article>
+      </Link>
 
       {/* Footer pull quote */}
       <div style={{ position: 'absolute', bottom: 24, left: 20, right: 20, zIndex: 2 }}>

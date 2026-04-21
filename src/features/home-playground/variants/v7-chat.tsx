@@ -3,6 +3,7 @@
 // ChatGPT/Copilot처럼 대화 입력으로 시작. "무엇을 예측해드릴까요?"
 // AI가 먼저 말을 거는 느낌. 부드러운 페이퍼 화이트 + 블루 포인트
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V7_Home = () => {
@@ -91,12 +92,13 @@ export const V7_Home = () => {
             SUGGESTED
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <button style={{
+            <Link href="/ai" style={{
               textAlign: 'left', padding: '12px 14px',
               border: `1.5px solid ${accent}`, borderRadius: 14,
               background: '#fff', cursor: 'pointer',
               boxShadow: '0 1px 3px rgba(47,107,255,0.08)',
               display: 'flex', alignItems: 'center', gap: 10,
+              textDecoration: 'none', color: 'inherit',
             }}>
               <div style={{
                 width: 32, height: 32, borderRadius: 10,
@@ -115,13 +117,14 @@ export const V7_Home = () => {
                 background: `${accent}15`, color: accent, fontWeight: 600,
                 fontFamily: mono, letterSpacing: '0.05em',
               }}>RECOMMENDED</span>
-            </button>
+            </Link>
 
-            <button style={{
+            <Link href="/planner" style={{
               textAlign: 'left', padding: '12px 14px',
               border: '1px solid #ececea', borderRadius: 14,
               background: '#fff', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 10,
+              textDecoration: 'none', color: 'inherit',
             }}>
               <div style={{
                 width: 32, height: 32, borderRadius: 10,
@@ -135,13 +138,14 @@ export const V7_Home = () => {
                 <div style={{ fontSize: 13, fontWeight: 600 }}>원하는 성별부터 정할게</div>
                 <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>플래너 · 역추천 모드</div>
               </div>
-            </button>
+            </Link>
 
-            <button style={{
+            <Link href="/playground" style={{
               textAlign: 'left', padding: '10px 14px',
               border: '1px solid #ececea', borderRadius: 14,
               background: '#fff', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 10,
+              textDecoration: 'none', color: 'inherit',
             }}>
               <div style={{ fontSize: 14, width: 20, textAlign: 'center' }}>📚</div>
               <div style={{ flex: 1 }}>
@@ -149,7 +153,7 @@ export const V7_Home = () => {
                 <div style={{ fontSize: 10, color: '#9ca3af', marginTop: 1 }}>마야식 · 중국달력 · 수비학 · 외 14가지</div>
               </div>
               <span style={{ color: '#9ca3af' }}>→</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

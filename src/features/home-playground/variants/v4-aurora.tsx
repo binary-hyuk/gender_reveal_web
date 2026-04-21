@@ -3,6 +3,7 @@
 // 애니메이션 오로라 메쉬 그라데이션 + 둥실거리는 별 파티클
 // 다크 우주 배경 + 네온 글로우 카드. 즐거운 느낌, 인스타 스토리 스타일
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V4_Home = () => {
@@ -140,7 +141,7 @@ export const V4_Home = () => {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 36 }}>
-          <div style={card('', '#a478ff')}>
+          <Link href="/ai" style={{ ...card('', '#a478ff'), textDecoration: 'none', color: 'inherit' }}>
             <div style={cardAura('linear-gradient(135deg, #ff8fbe, #a478ff)')} />
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', position: 'relative' }}>
               <div style={{
@@ -165,9 +166,9 @@ export const V4_Home = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
 
-          <div style={card('', '#6ac4ff')}>
+          <Link href="/planner" style={{ ...card('', '#6ac4ff'), textDecoration: 'none', color: 'inherit' }}>
             <div style={cardAura('linear-gradient(135deg, #6ac4ff, #8a6aff)')} />
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', position: 'relative' }}>
               <div style={{
@@ -192,7 +193,7 @@ export const V4_Home = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
         <p style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.45)', marginTop: 32 }}>

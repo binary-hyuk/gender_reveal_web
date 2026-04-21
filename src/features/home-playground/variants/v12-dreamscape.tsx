@@ -4,6 +4,7 @@
 // 부드러운 세리프 + sans 조합, 마치 에디토리얼 앱 같은 분위기
 // 자체 판단 — 가장 우아하고 이모셔널한 방향
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V12_Home = () => {
@@ -104,12 +105,13 @@ export const V12_Home = () => {
         </p>
 
         {/* CTA primary */}
-        <div style={{
+        <Link href="/ai" style={{
           marginTop: 28,
           position: 'relative',
           borderRadius: 24,
           padding: '2px',
           background: `linear-gradient(135deg, ${peach}, ${rose}, ${lav})`,
+          textDecoration: 'none', color: 'inherit', display: 'block',
         }}>
           <div style={{
             background: 'rgba(255,255,255,0.92)',
@@ -149,10 +151,10 @@ export const V12_Home = () => {
               </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Planner — secondary */}
-        <div style={{
+        <Link href="/planner" style={{
           marginTop: 14,
           padding: '16px 18px',
           borderRadius: 22,
@@ -161,6 +163,7 @@ export const V12_Home = () => {
           WebkitBackdropFilter: 'blur(18px)',
           border: '1px solid rgba(255,255,255,0.8)',
           display: 'flex', alignItems: 'center', gap: 12,
+          textDecoration: 'none', color: 'inherit',
         }}>
           <div style={{
             width: 36, height: 36, borderRadius: '50%',
@@ -178,7 +181,7 @@ export const V12_Home = () => {
             </div>
           </div>
           <span style={{ color: '#a89aa8', fontSize: 14 }}>→</span>
-        </div>
+        </Link>
 
         {/* Tiny dot indicator line */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 26 }}>

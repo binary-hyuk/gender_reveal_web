@@ -2,6 +2,7 @@
 // V1 — AS-IS: 현재 프로덕션 디자인 재현
 // 파스텔 블루 그라데이션 + glassmorphism card + pretendard
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V1_Home = () => {
@@ -98,7 +99,7 @@ export const V1_Home = () => {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 40 }}>
-          <div style={card}>
+          <Link href="/ai" style={{ ...card, textDecoration: 'none', color: 'inherit' }}>
             <div style={iconBox}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="hsl(230 54% 36%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
             </div>
@@ -112,9 +113,9 @@ export const V1_Home = () => {
               </p>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(230 8% 58% / 0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 4 }}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </div>
+          </Link>
 
-          <div style={card}>
+          <Link href="/planner" style={{ ...card, textDecoration: 'none', color: 'inherit' }}>
             <div style={iconBox}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="hsl(230 54% 36%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             </div>
@@ -128,7 +129,7 @@ export const V1_Home = () => {
               </p>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(230 8% 58% / 0.5)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 4 }}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </div>
+          </Link>
         </div>
 
         <p style={{ textAlign: 'center', fontSize: 11, color: 'hsl(230 8% 58%)', marginTop: 40 }}>

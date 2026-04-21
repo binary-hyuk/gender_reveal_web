@@ -3,6 +3,7 @@
 // 밝은 배경, 컬러풀한 Spark 글리프, 그라데이션 텍스트
 // 친근하고 넓은 여백, Google Material 3 Expressive 느낌
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 export const V8_Home = () => {
@@ -98,12 +99,13 @@ export const V8_Home = () => {
         {/* Cards */}
         <div style={{ display: 'grid', gap: 12, marginTop: 32 }}>
           {/* Primary AI card */}
-          <div style={{
+          <Link href="/ai" style={{
             position: 'relative',
             borderRadius: 28,
             padding: 20,
             background: 'linear-gradient(135deg, #e8f0fe 0%, #f3e8fd 50%, #fce8ec 100%)',
             overflow: 'hidden',
+            textDecoration: 'none', color: 'inherit', display: 'block',
           }}>
             {/* sparkle decoration */}
             <svg width="60" height="60" viewBox="0 0 24 24" style={{ position: 'absolute', top: -8, right: -8, opacity: 0.5 }}>
@@ -134,12 +136,13 @@ export const V8_Home = () => {
               지금 시작하기
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </div>
-          </div>
+          </Link>
 
           {/* Planner card */}
-          <div style={{
+          <Link href="/planner" style={{
             borderRadius: 28, padding: 18,
             background: '#f8f9fa',
+            textDecoration: 'none', color: 'inherit', display: 'block',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
               <div style={{
@@ -154,7 +157,7 @@ export const V8_Home = () => {
             <p style={{ fontSize: 12, lineHeight: 1.55, color: '#5f6368', margin: 0 }}>
               원하는 성별을 알려주세요. 시기·방위·라이프스타일을 AI가 맞춤 제안합니다.
             </p>
-          </div>
+          </Link>
         </div>
 
         {/* Prompt chips */}
