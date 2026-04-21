@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { VARIANT_MAP } from "@/features/home-playground";
 import { useAiPredictor } from "@/features/ai-predict";
+import { VariantSpinner } from "./VariantSpinner";
 
 interface Props {
   slug: string;
@@ -110,8 +111,8 @@ export function VariantAiPage({ slug }: Props) {
           </p>
         </div>
 
-        {/* 입력 폼 */}
-        {!result && (
+        {/* 입력 폼 — 결과·로딩 중엔 숨김 */}
+        {!result && !isLoading && (
           <div style={{ ...cardStyle, display: "flex", flexDirection: "column", gap: 14 }}>
             <Field label="엄마 생년월일 (YYYY-MM-DD)" value={motherBirthDate} onChange={setMotherBirthDate} style={inputStyle} placeholder="1994-03-12" t={t} />
             <Field label="아빠 생년월일 (YYYY-MM-DD)" value={fatherBirthDate} onChange={setFatherBirthDate} style={inputStyle} placeholder="1992-07-22" t={t} />
@@ -156,12 +157,10 @@ export function VariantAiPage({ slug }: Props) {
           </div>
         )}
 
-        {/* 로딩 상태 */}
+        {/* 로딩 상태 — variant 테마 스피너 */}
         {isLoading && (
-          <div style={{ ...cardStyle, textAlign: "center", marginTop: 14 }}>
-            <p style={{ fontSize: 13, color: t.textMuted, margin: 0 }}>
-              17가지 알고리즘을 조합하고 있어요…
-            </p>
+          <div style={{ ...cardStyle, marginTop: 14, padding: 8 }}>
+            <VariantSpinner slug={slug} label="17가지 알고리즘을 조합하고 있어요…" />
           </div>
         )}
 

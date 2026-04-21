@@ -1,8 +1,10 @@
 // @ts-nocheck — 테마 inline style 이 variant 별 문자열 값이라 타입 우회
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Target } from "lucide-react";
 import { VARIANT_MAP } from "@/features/home-playground";
 import { usePlannerPredictor } from "@/features/planner-predict";
+import { VariantSpinner } from "./VariantSpinner";
 
 interface Props {
   slug: string;
@@ -11,6 +13,7 @@ interface Props {
 /**
  * 각 시안 테마의 "플래너" 실제 기능 페이지.
  * 엄마 생년월일 + 원하는 성별만 입력 받고 buildRecommendations 로 추천 결과 생성.
+ * 플래너 predict 는 즉시 실행되지만 UX 일관성을 위해 2.5초 인위적 로딩 표시.
  */
 export function VariantPlannerPage({ slug }: Props) {
   const meta = VARIANT_MAP[slug];
@@ -21,6 +24,40 @@ export function VariantPlannerPage({ slug }: Props) {
     motherBirthDate, target, result, error,
     setMotherBirthDate, setTarget, predict, reset,
   } = usePlannerPredictor();
+
+  // 의도적 로딩 상태 — predict 전후로 2.2~2.8s 사이 랜덤 딜레이
+  const [isLoading, setIsLoading] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  // result 가 나오는 순간 로딩 종료 (error 도 마찬가지)
+  useEffect(() => {
+    if (result || error) {
+      setIsLoading(false);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+  }, [result, error]);
+
+  function handlePredict() {
+    if (isLoading) return;
+    setIsLoading(true);
+    const delay = 2200 + Math.random() * 600;
+    timerRef.current = setTimeout(() => {
+      predict();
+      // result useEffect 에서 isLoading false 로 내려가지만, 안전장치
+      setIsLoading(false);
+    }, delay);
+  }
+
+  function handleReset() {
+    setIsLoading(false);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    reset();
+  }
 
   const pageStyle = {
     minHeight: "100vh",
@@ -85,7 +122,14 @@ export function VariantPlannerPage({ slug }: Props) {
           </h1>
         </div>
 
-        {!result && (
+        {/* 로딩 상태 — variant 테마 스피너 */}
+        {isLoading && (
+          <div style={{ ...cardStyle, padding: 8 }}>
+            <VariantSpinner slug={slug} label="별과 숫자를 읽어보는 중이에요…" />
+          </div>
+        )}
+
+        {!result && !isLoading && (
           <div style={{ ...cardStyle, display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
               <p style={{ fontSize: 11, color: t.textMuted, fontWeight: 600, margin: "0 0 10px" }}>원하는 아이 성별</p>
@@ -114,7 +158,7 @@ export function VariantPlannerPage({ slug }: Props) {
 
             <button
               type="button"
-              onClick={predict}
+              onClick={handlePredict}
               style={{
                 width: "100%", padding: "14px 18px", borderRadius: 12,
                 background: t.accent, color: t.accentOn,
@@ -201,7 +245,7 @@ export function VariantPlannerPage({ slug }: Props) {
 
             <button
               type="button"
-              onClick={reset}
+              onClick={handleReset}
               style={{
                 width: "100%", padding: "12px 16px", borderRadius: 12,
                 background: "transparent", color: t.text,
