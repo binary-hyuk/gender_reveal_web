@@ -99,7 +99,7 @@ export const V8_Home = () => {
         {/* Cards */}
         <div style={{ display: 'grid', gap: 12, marginTop: 32 }}>
           {/* Primary AI card */}
-          <Link href="/ai" style={{
+          <Link href="/playground/v8/ai" style={{
             position: 'relative',
             borderRadius: 28,
             padding: 20,
@@ -139,7 +139,7 @@ export const V8_Home = () => {
           </Link>
 
           {/* Planner card */}
-          <Link href="/planner" style={{
+          <Link href="/playground/v8/planner" style={{
             borderRadius: 28, padding: 18,
             background: '#f8f9fa',
             textDecoration: 'none', color: 'inherit', display: 'block',

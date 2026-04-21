@@ -123,7 +123,7 @@ export const V5_Home = () => {
 
       {/* Two tarot-like cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, padding: '42px 24px 0', position: 'relative', zIndex: 2 }}>
-        <Link href="/ai" style={{ ...card, textDecoration: 'none', color: 'inherit', display: 'block' }}>
+        <Link href="/playground/v5/ai" style={{ ...card, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <span style={corner('tl')} /><span style={corner('tr')} />
           <span style={corner('bl')} /><span style={corner('br')} />
 
@@ -140,7 +140,7 @@ export const V5_Home = () => {
           </div>
         </Link>
 
-        <Link href="/planner" style={{ ...card, textDecoration: 'none', color: 'inherit', display: 'block' }}>
+        <Link href="/playground/v5/planner" style={{ ...card, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <span style={corner('tl')} /><span style={corner('tr')} />
           <span style={corner('bl')} /><span style={corner('br')} />
 

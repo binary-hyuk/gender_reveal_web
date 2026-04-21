@@ -92,7 +92,7 @@ export const V7_Home = () => {
             SUGGESTED
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Link href="/ai" style={{
+            <Link href="/playground/v7/ai" style={{
               textAlign: 'left', padding: '12px 14px',
               border: `1.5px solid ${accent}`, borderRadius: 14,
               background: '#fff', cursor: 'pointer',
@@ -119,7 +119,7 @@ export const V7_Home = () => {
               }}>RECOMMENDED</span>
             </Link>
 
-            <Link href="/planner" style={{
+            <Link href="/playground/v7/planner" style={{
               textAlign: 'left', padding: '12px 14px',
               border: '1px solid #ececea', borderRadius: 14,
               background: '#fff', cursor: 'pointer',

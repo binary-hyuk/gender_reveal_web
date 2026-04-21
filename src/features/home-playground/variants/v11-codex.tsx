@@ -141,7 +141,7 @@ export const V11_Home = () => {
             <span style={{ color: c.acc }}>▸</span> Suggested tasks
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <Link href="/ai" style={{
+            <Link href="/playground/v11/ai" style={{
               padding: '10px 12px', borderRadius: 6,
               background: '#0d0f13',
               border: '1px solid #21242b',
@@ -155,7 +155,7 @@ export const V11_Home = () => {
               </span>
               <span style={{ color: c.acc, fontSize: 14 }}>↵</span>
             </Link>
-            <Link href="/planner" style={{
+            <Link href="/playground/v11/planner" style={{
               padding: '10px 12px', borderRadius: 6,
               background: '#0d0f13',
               border: '1px solid #21242b',

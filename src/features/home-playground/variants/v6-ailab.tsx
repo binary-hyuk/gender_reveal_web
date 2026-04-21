@@ -124,7 +124,7 @@ export const V6_Home = () => {
         </div>
 
         {/* AI card with neural viz */}
-        <Link href="/ai" style={{ ...card, marginTop: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
+        <Link href="/playground/v6/ai" style={{ ...card, marginTop: 20, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
             <div>
               <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', color: cyan, marginBottom: 6 }}>
@@ -169,7 +169,7 @@ export const V6_Home = () => {
         </Link>
 
         {/* Planner card — compact */}
-        <Link href="/planner" style={{ ...card, marginTop: 12, textDecoration: 'none', color: 'inherit', display: 'block' }}>
+        <Link href="/playground/v6/planner" style={{ ...card, marginTop: 12, textDecoration: 'none', color: 'inherit', display: 'block' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <div style={{ fontFamily: mono, fontSize: 9, letterSpacing: '0.2em', color: 'rgba(107,255,158,0.9)', marginBottom: 6 }}>

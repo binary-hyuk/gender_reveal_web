@@ -114,7 +114,7 @@ export const V9_Home = () => {
             Recent · 시작점
           </div>
 
-          <Link href="/ai" style={{
+          <Link href="/playground/v9/ai" style={{
             display: 'flex', gap: 12, padding: '14px 0',
             borderBottom: '1px solid rgba(31,26,21,0.06)',
             textDecoration: 'none', color: 'inherit',
@@ -148,7 +148,7 @@ export const V9_Home = () => {
             <span style={{ color: '#9b9087', fontSize: 16 }}>↗</span>
           </Link>
 
-          <Link href="/planner" style={{
+          <Link href="/playground/v9/planner" style={{
             display: 'flex', gap: 12, padding: '14px 0',
             textDecoration: 'none', color: 'inherit',
           }}>

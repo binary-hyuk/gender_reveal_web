@@ -88,19 +88,19 @@ export function VariantViewer({ slug }: Props) {
           <Component />
         </div>
 
-        {/* 액션 바: 프레임 밖에서 실제 프로덕션 라우트로 이동 */}
+        {/* 액션 바: 이 시안의 AI / 플래너 기능 페이지로 이동 */}
         <div className="w-full max-w-[720px] space-y-2">
           <p className="text-center text-[11px] uppercase tracking-[0.22em] text-white/40">
-            이 시안으로 실제 앱 써보기
+            이 시안 테마로 실제 기능 써보기
           </p>
           <div className="grid grid-cols-3 gap-2">
             <ActionButton href="/" icon={Home} label="프로덕션 홈" />
-            <ActionButton href="/ai" icon={Sparkles} label="AI 예측" primary />
-            <ActionButton href="/planner" icon={Target} label="플래너" primary />
+            <ActionButton href={`/playground/${slug}/ai`} icon={Sparkles} label="AI 예측" primary />
+            <ActionButton href={`/playground/${slug}/planner`} icon={Target} label="플래너" primary />
           </div>
           <p className="text-center text-[10px] text-white/30 leading-relaxed">
-            프레임 내부의 네비·카드 또한 실제 라우트로 연결됩니다. 클릭하면 이 시안을 떠나
-            실제 프로덕션 페이지로 이동합니다.
+            AI/플래너 페이지는 이 시안의 배경·폰트·악센트를 그대로 유지합니다. 프레임 내부
+            카드를 눌러도 동일한 테마 페이지로 이동합니다.
           </p>
         </div>
       </main>

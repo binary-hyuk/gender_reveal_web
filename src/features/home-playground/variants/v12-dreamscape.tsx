@@ -105,7 +105,7 @@ export const V12_Home = () => {
         </p>
 
         {/* CTA primary */}
-        <Link href="/ai" style={{
+        <Link href="/playground/v12/ai" style={{
           marginTop: 28,
           position: 'relative',
           borderRadius: 24,
@@ -154,7 +154,7 @@ export const V12_Home = () => {
         </Link>
 
         {/* Planner — secondary */}
-        <Link href="/planner" style={{
+        <Link href="/playground/v12/planner" style={{
           marginTop: 14,
           padding: '16px 18px',
           borderRadius: 22,

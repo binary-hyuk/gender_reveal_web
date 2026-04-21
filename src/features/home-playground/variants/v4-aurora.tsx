@@ -141,7 +141,7 @@ export const V4_Home = () => {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 36 }}>
-          <Link href="/ai" style={{ ...card('', '#a478ff'), textDecoration: 'none', color: 'inherit' }}>
+          <Link href="/playground/v4/ai" style={{ ...card('', '#a478ff'), textDecoration: 'none', color: 'inherit' }}>
             <div style={cardAura('linear-gradient(135deg, #ff8fbe, #a478ff)')} />
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', position: 'relative' }}>
               <div style={{
@@ -168,7 +168,7 @@ export const V4_Home = () => {
             </div>
           </Link>
 
-          <Link href="/planner" style={{ ...card('', '#6ac4ff'), textDecoration: 'none', color: 'inherit' }}>
+          <Link href="/playground/v4/planner" style={{ ...card('', '#6ac4ff'), textDecoration: 'none', color: 'inherit' }}>
             <div style={cardAura('linear-gradient(135deg, #6ac4ff, #8a6aff)')} />
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', position: 'relative' }}>
               <div style={{

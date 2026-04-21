@@ -101,7 +101,7 @@ export const V3_Home = () => {
       <div style={{ ...rule(1), marginTop: 22, opacity: 0.4 }} />
 
       {/* Feature 1 — AI */}
-      <Link href="/ai" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+      <Link href="/playground/v3/ai" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
       <article style={{ padding: '22px 20px 0', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
           <span style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#7a6d5e' }}>CH. I — Algorithmic</span>
@@ -124,7 +124,7 @@ export const V3_Home = () => {
       <div style={{ ...rule(1), marginTop: 22, opacity: 0.4 }} />
 
       {/* Feature 2 — Planner */}
-      <Link href="/planner" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+      <Link href="/playground/v3/planner" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
       <article style={{ padding: '22px 20px 0', position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
           <span style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#7a6d5e' }}>CH. II — Reverse</span>
