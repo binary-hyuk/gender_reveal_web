@@ -89,6 +89,13 @@ export default function HomePage() {
         <p className="mt-12 text-center text-xs text-fg-subtle">
           처음이라면 AI 예측을 추천드립니다
         </p>
+
+        <Link
+          href="/playground"
+          className="mt-4 inline-block text-center text-[11px] text-fg-subtle underline decoration-dotted hover:text-brand-600"
+        >
+          🎨 디자인 시안 12종 비교 (Playground)
+        </Link>
       </main>
     </div>
   );
