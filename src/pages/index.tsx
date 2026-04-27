@@ -90,12 +90,20 @@ export default function HomePage() {
           처음이라면 AI 예측을 추천드립니다
         </p>
 
-        <Link
-          href="/playground"
-          className="mt-4 inline-block text-center text-[11px] text-fg-subtle underline decoration-dotted hover:text-brand-600"
-        >
-          🎨 디자인 시안 12종 비교 (Playground)
-        </Link>
+        <div className="mt-4 flex flex-col items-center gap-1.5">
+          <Link
+            href="/playground"
+            className="text-[11px] text-fg-subtle underline decoration-dotted hover:text-brand-600"
+          >
+            🎨 디자인 시안 12종 비교 (Playground · 모바일 홈)
+          </Link>
+          <Link
+            href="/landings"
+            className="text-[11px] text-fg-subtle underline decoration-dotted hover:text-brand-600"
+          >
+            🖥️ 풀 랜딩 8종 비교 (V1·V4·V5·V10 × A/B)
+          </Link>
+        </div>
       </main>
     </div>
   );
